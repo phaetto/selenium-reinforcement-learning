@@ -1,0 +1,63 @@
+﻿using OpenQA.Selenium;
+using Selenium.Algorithms.ReinforcementLearning;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Selenium.Algorithms
+{
+    /// <summary>
+    /// State is defined as the actionable elements state plus the target(s) (?) elements state
+    /// </summary>
+    public class SeleniumState : State<IReadOnlyCollection<IWebElement>>
+    {
+        public readonly string CachedName;
+        public readonly int CachedHash;
+
+        public SeleniumState(
+            in IReadOnlyCollection<IWebElement> actionableAndTargetElements,
+            in IReadOnlyCollection<IWebElement> actionableElements) : base(actionableAndTargetElements)
+        {
+            ActionableElements = actionableElements;
+
+            // We have to cache those values because the elements will get out of the DOM eventually
+            CachedHash = 13;
+            foreach (var item in Data)
+            {
+                CachedHash = (CachedHash * 7) + item.ExtendedGetHashCode();
+            }
+
+            CachedName = string.Join(", ", Data.Select(x => x.ExtendedToString()));
+        }
+
+        public IReadOnlyCollection<IWebElement> ActionableElements { get; }
+
+        public override bool Equals(object obj)
+        {
+            var otherState = obj as SeleniumState;
+            if (obj == null || Data.Count != otherState.Data.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < Data.Count; ++i)
+            {
+                if (CachedHash != otherState.CachedHash)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return CachedHash;
+        }
+
+        public override string ToString()
+        {
+            return CachedName;
+        }
+    }
+}

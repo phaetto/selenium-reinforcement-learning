@@ -1,4 +1,4 @@
-namespace Selenium.Algorithms.UnitTests
+namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
 {
     using Selenium.Algorithms.ReinforcementLearning;
     using Shouldly;
