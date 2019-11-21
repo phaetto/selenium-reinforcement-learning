@@ -1,12 +1,13 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public abstract class Environment<TData>
     {
-        public abstract State<TData> GetInitialState();
-        public abstract double RewardFunction(in State<TData> stateFrom, in AgentAction<TData> action);
-        public abstract IEnumerable<AgentAction<TData>> GetPossibleActions(in State<TData> state);
-        public abstract bool HasReachedAGoalState(in State<TData> state);
+        public abstract Task<State<TData>> GetInitialState();
+        public abstract Task<double> RewardFunction(State<TData> stateFrom, AgentAction<TData> action);
+        public abstract Task<IEnumerable<AgentAction<TData>>> GetPossibleActions(State<TData> state);
+        public abstract Task<bool> HasReachedAGoalCondition(State<TData> state, AgentAction<TData> action);
     }
 }

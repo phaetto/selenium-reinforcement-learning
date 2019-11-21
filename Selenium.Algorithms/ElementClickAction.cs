@@ -1,22 +1,21 @@
-﻿using OpenQA.Selenium;
-using Selenium.Algorithms.ReinforcementLearning;
-using System;
-using System.Collections.Generic;
-
-namespace Selenium.Algorithms
+﻿namespace Selenium.Algorithms
 {
+    using OpenQA.Selenium;
+    using Selenium.Algorithms.ReinforcementLearning;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     public class ElementClickAction : AgentAction<IReadOnlyCollection<IWebElement>>
     {
         private readonly IWebElement webElement;
-        private readonly Policy<IReadOnlyCollection<IWebElement>> policy;
 
         public readonly string CachedName;
         public readonly int CachedHash;
 
-        public ElementClickAction(IWebElement webElement, Policy<IReadOnlyCollection<IWebElement>> policy)
+        public ElementClickAction(IWebElement webElement)
         {
             this.webElement = webElement;
-            this.policy = policy;
 
             // We have to cache those values because the element will get out of the DOM eventually
             CachedHash = webElement.ExtendedGetHashCode();
@@ -25,26 +24,28 @@ namespace Selenium.Algorithms
 
         public override bool Equals(object obj)
         {
-            var otherAction = obj as ElementClickAction;
-
-            return otherAction != null
+            return obj is ElementClickAction otherAction
                 && CachedHash == otherAction.CachedHash;
         }
 
-        public override State<IReadOnlyCollection<IWebElement>> ExecuteAction(in Environment<IReadOnlyCollection<IWebElement>> environment, in State<IReadOnlyCollection<IWebElement>> state)
+        public override async Task<State<IReadOnlyCollection<IWebElement>>> ExecuteAction(Environment<IReadOnlyCollection<IWebElement>> environment, State<IReadOnlyCollection<IWebElement>> state)
         {
             try
             {
+                Console.Write($"\t- clicking on {webElement.ExtendedToString()}");
                 webElement.Click();
-                return (environment as SeleniumEnvironment).GetCurrentState();
+                Console.WriteLine($" ... done!");
+
+                // Small pause
+                //await Task.Delay(200);
             }
-            catch (Exception exception) // TODO: specific exceptions here
+            catch (Exception) // TODO: specific exceptions here
             {
-                // This action seems to be impossible to do
-                // We should ask policy for alternative action
-                var otherAction = policy.GetNextAction(environment, state); // TODO: do without deep recurse
-                return otherAction.ExecuteAction(environment, state);
+                Console.WriteLine($"... failed!");
+                // Do not move at all if we cannot click, it should penalize it
             }
+
+            return (environment as SeleniumEnvironment).GetCurrentState();
         }
 
         public override int GetHashCode()

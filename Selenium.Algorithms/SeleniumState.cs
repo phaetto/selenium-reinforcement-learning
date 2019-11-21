@@ -1,10 +1,9 @@
-﻿using OpenQA.Selenium;
-using Selenium.Algorithms.ReinforcementLearning;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Selenium.Algorithms
+﻿namespace Selenium.Algorithms
 {
+    using OpenQA.Selenium;
+    using Selenium.Algorithms.ReinforcementLearning;
+    using System.Collections.Generic;
+
     /// <summary>
     /// State is defined as the actionable elements state plus the target(s) (?) elements state
     /// </summary>
@@ -20,13 +19,8 @@ namespace Selenium.Algorithms
             ActionableElements = actionableElements;
 
             // We have to cache those values because the elements will get out of the DOM eventually
-            CachedHash = 13;
-            foreach (var item in Data)
-            {
-                CachedHash = (CachedHash * 7) + item.ExtendedGetHashCode();
-            }
-
-            CachedName = string.Join(", ", Data.Select(x => x.ExtendedToString()));
+            CachedHash = Data.ExtendedGetHashCode();
+            CachedName = Data.ExtendedToString();
         }
 
         public IReadOnlyCollection<IWebElement> ActionableElements { get; }

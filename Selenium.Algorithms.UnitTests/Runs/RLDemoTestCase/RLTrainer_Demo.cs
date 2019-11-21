@@ -5,6 +5,7 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class RLTrainer_Demo
@@ -14,7 +15,7 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
         /// https://docs.microsoft.com/en-us/archive/msdn-magazine/2018/august/test-run-introduction-to-q-learning-using-csharp
         /// </summary>
         [Fact]
-        public void Run_WhenTrainingWithPredefinedDemo_ThenItFindsTheCorrectSolution()
+        public async Task Run_WhenTrainingWithPredefinedDemo_ThenItFindsTheCorrectSolution()
         {
             // Prepare
             var testEnvironment = new TestEnvironment();
@@ -22,10 +23,10 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
             var rlTrainer = new RLTrainer<int>(testEnvironment, testPolicy);
 
             // Execute
-            rlTrainer.Run(epochs: 50);
+            await rlTrainer.Run(epochs: 50);
 
 
-            var result = rlTrainer.Walk(new TestState(8), s => s == new TestState(11));
+            var result = await rlTrainer.Walk(new TestState(8), async (s, a) => s == new TestState(11));
             result.ShouldNotBeEmpty();
             result[0].ShouldBe(new StateAndActionPair<int>(new TestState(8), new TestAction(new TestState(9))));
             result[1].ShouldBe(new StateAndActionPair<int>(new TestState(9), new TestAction(new TestState(5))));
@@ -47,13 +48,13 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
                 R = CreateReward(ns);
             }
 
-            public override State<int> GetInitialState()
+            public override async Task<State<int>> GetInitialState()
             {
                 var randomState = rnd.Next(0, R.Length);
                 return new TestState(randomState);
             }
 
-            public override double RewardFunction(in State<int> state, in AgentAction<int> action)
+            public override async Task<double> RewardFunction(State<int> state, AgentAction<int> action)
             {
                 if (action is TestAction testAction)
                 {
@@ -63,7 +64,7 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
                 throw new InvalidCastException();
             }
 
-            public override IEnumerable<AgentAction<int>> GetPossibleActions(in State<int> state)
+            public override async Task<IEnumerable<AgentAction<int>>> GetPossibleActions(State<int> state)
             {
                 return GetPossNextStates(state.Data)
                     .Select(x => new TestAction(new TestState(x)));
@@ -86,7 +87,7 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
                 return possNextStates[idx];
             }
 
-            public override bool HasReachedAGoalState(in State<int> state)
+            public override async Task<bool> HasReachedAGoalCondition(State<int> state, AgentAction<int> action)
             {
                 return new TestState(11).Equals(state);
             }
@@ -135,9 +136,9 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
                 return action != null && action.ToState.Data == ToState.Data;
             }
 
-            public override State<int> ExecuteAction(in Environment<int> environment, in State<int> state)
+            public override Task<State<int>> ExecuteAction(Environment<int> environment, State<int> state)
             {
-                return ToState;
+                return Task.FromResult(ToState);
             }
 
             public override int GetHashCode()
@@ -153,7 +154,7 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
 
         class TestPolicy : Policy<int>
         {
-            public override AgentAction<int> GetNextAction(in Environment<int> environment, in State<int> state)
+            public override async Task<AgentAction<int>> GetNextAction(Environment<int> environment, State<int> state)
             {
                 var randNextAction = (environment as TestEnvironment).GetRandNextState(state.Data);
                 return new TestAction(new TestState(randNextAction));

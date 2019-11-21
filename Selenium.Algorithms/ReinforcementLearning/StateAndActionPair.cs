@@ -5,7 +5,7 @@
     [DebuggerDisplay("[{State.ToString()}, {Action.ToString()}]")]
     public class StateAndActionPair<TData>
     {
-        public StateAndActionPair(State<TData> state, AgentAction<TData> action)
+        public StateAndActionPair(in State<TData> state, in AgentAction<TData> action)
         {
             State = state;
             Action = action;
@@ -16,8 +16,7 @@
 
         public override bool Equals(object obj)
         {
-            var stateAndAction = obj as StateAndActionPair<TData>;
-            return stateAndAction != null 
+            return obj is StateAndActionPair<TData> stateAndAction
                 && Equals(stateAndAction.State, State)
                 && Equals(stateAndAction.Action, Action);
         }

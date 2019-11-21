@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Reinforcement learning trainer
@@ -33,17 +34,17 @@
         /// Runs a training session for the number of prespecified epochs
         /// </summary>
         /// <param name="epochs">The amount of iterations that the algorithm will make</param>
-        public void Run(in int epochs = 1000)
+        public async Task Run(int epochs = 1000)
         {
             for (int epoch = 0; epoch < epochs; ++epoch)
             {
-                var currentState = environment.GetInitialState();
+                var currentState = await environment.GetInitialState();
                 while (true)
                 {
-                    var nextAction = policy.GetNextAction(environment, currentState);
+                    var nextAction = await policy.GetNextAction(environment, currentState);
 
-                    currentState = Step(currentState, nextAction);
-                    if (environment.HasReachedAGoalState(currentState))
+                    currentState = await Step(currentState, nextAction);
+                    if (await environment.HasReachedAGoalCondition(currentState, nextAction))
                     {
                         break;
                     }
@@ -51,19 +52,17 @@
             }
         }
 
-        public State<TData> Step(State<TData> currentState, AgentAction<TData> nextAction)
+        public async Task<State<TData>> Step(State<TData> currentState, AgentAction<TData> nextAction)
         {
-            var nextState = nextAction.ExecuteAction(environment, currentState);
+            var nextState = await nextAction.ExecuteAction(environment, currentState);
 
-            var nextNextActions = environment.GetPossibleActions(nextState);
+            var nextNextActions = await environment.GetPossibleActions(nextState);
             var maxQ = nextNextActions.Max(x => {
                 var pair = new StateAndActionPair<TData>(nextState, x);
                 return QualityMatrix.ContainsKey(pair)
                 ? QualityMatrix[pair]
                 : 0D;
             });
-
-            // TODO: If max is 0 then get to exploration mode
 
             var selectedPair = new StateAndActionPair<TData>(currentState, nextAction);
             if (!QualityMatrix.ContainsKey(selectedPair))
@@ -74,7 +73,7 @@
             // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
             QualityMatrix[selectedPair] =
                 ((1 - learningRate) * QualityMatrix[selectedPair])
-                + (learningRate * (environment.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
+                + (learningRate * (await environment.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
 
             return nextState;
         }
@@ -86,7 +85,7 @@
         /// <param name="target">The target state</param>
         /// <param name="maxSteps">Maximum steps that should be taken</param>
         /// <returns></returns>
-        public List<StateAndActionPair<TData>> Walk(in State<TData> start, in Func<State<TData>, bool> goalCondition, in int maxSteps = 10)
+        public async Task<List<StateAndActionPair<TData>>> Walk(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
         {
             // TODO: loop sense
             var resultStates = new List<StateAndActionPair<TData>>();
@@ -95,7 +94,7 @@
             var iterationNumber = maxSteps;
             while (iterationNumber-- > 0)
             {
-                var actions = environment.GetPossibleActions(currentState);
+                var actions = await environment.GetPossibleActions(currentState);
                 var stateAndActionPairs = actions.Select(x => {
                         var pair = new StateAndActionPair<TData>(currentState, x);
                         return QualityMatrix.ContainsKey(pair)
@@ -123,9 +122,9 @@
 
                 resultStates.Add(new StateAndActionPair<TData>(currentState, maximumReturnAction));
 
-                currentState = maximumReturnAction.ExecuteAction(environment, currentState);
+                currentState = await maximumReturnAction.ExecuteAction(environment, currentState);
 
-                if (goalCondition(currentState))
+                if (await goalCondition(currentState, maximumReturnAction))
                 {
                     break;
                 }
