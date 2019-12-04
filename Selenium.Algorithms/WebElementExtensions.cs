@@ -1,6 +1,7 @@
 ﻿namespace Selenium.Algorithms
 {
     using OpenQA.Selenium;
+    using OpenQA.Selenium.Interactions;
     using OpenQA.Selenium.Remote;
     using System;
     using System.Collections.Generic;
@@ -85,23 +86,37 @@
 
         public static bool CanBeInteracted(this IWebElement webElement, in IWebDriver webDriver)
         {
-            if (!((webElement?.Displayed ?? false)
-                && (webElement?.Enabled ?? false)))
+            try
+            {
+                if (!((webElement?.Displayed ?? false)
+                    && (webElement?.Enabled ?? false)))
+                {
+                    return false;
+                }
+
+                var remoteWebDriver = webDriver as RemoteWebDriver;
+                if (remoteWebDriver == null)
+                {
+                    return true;
+                }
+
+                var remoteWebElement = (RemoteWebElement)webElement;
+
+                // For non headless runs:
+                //var actions = new Actions(remoteWebDriver);
+                //actions.MoveToElement(remoteWebElement);
+                //actions.Perform();
+
+                var script = $"return document.elementFromPoint({remoteWebElement.Coordinates.LocationInViewport.X + 1}, {remoteWebElement.Coordinates.LocationInViewport.Y + 1});";
+                var remoteWebElementFromPoint = (RemoteWebElement)remoteWebDriver.ExecuteScript(script);
+
+                return remoteWebElementFromPoint != null
+                    && ExtendedEquals(remoteWebElement, remoteWebElementFromPoint);
+            }
+            catch (StaleElementReferenceException)
             {
                 return false;
             }
-
-            var remoteWebDriver = webDriver as RemoteWebDriver;
-            if (remoteWebDriver == null)
-            {
-                return true;
-            }
-
-            var remoteWebElement = (RemoteWebElement)webElement;
-            var remoteWebElementFromPoint = (RemoteWebElement)remoteWebDriver.ExecuteScript($"return document.elementFromPoint({remoteWebElement.Coordinates.LocationInViewport.X + 1}, {remoteWebElement.Coordinates.LocationInViewport.Y + 1})");
-
-            return remoteWebElementFromPoint != null
-                && ExtendedEquals(remoteWebElement, remoteWebElementFromPoint);
         }
 
         public static int ExtendedGetHashCode(this IReadOnlyCollection<IWebElement> webElements)

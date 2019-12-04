@@ -35,7 +35,18 @@
         {
             var seleniumState = state as SeleniumState;
             return seleniumState.ActionableElements
-                .Select(x => new ElementClickAction(x)); // These actions will not run, only compared
+                .Select(x =>
+                {
+                    try
+                    {
+                        return new ElementClickAction(x);
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        return null;
+                    }
+                })
+                .Where(x => x != null); // These actions will not run, only compared
         }
 
         public override async Task<double> RewardFunction(State<IReadOnlyCollection<IWebElement>> stateFrom, AgentAction<IReadOnlyCollection<IWebElement>> action)

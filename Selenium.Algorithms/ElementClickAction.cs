@@ -35,9 +35,6 @@
                 Console.Write($"\t- clicking on {webElement.ExtendedToString()}");
                 webElement.Click();
                 Console.WriteLine($" ... done!");
-
-                // Small pause
-                //await Task.Delay(200);
             }
             catch (Exception) // TODO: specific exceptions here
             {
