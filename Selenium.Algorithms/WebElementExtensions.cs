@@ -46,7 +46,7 @@ return list;
                     Class = dictionary["class"] as string,
                     Id = dictionary["id"] as string,
                     DataAutomationId = dictionary["data-automation-id"] as string,
-                    TagName = dictionary["tagName"] as string,
+                    TagName = (dictionary["tagName"] as string).ToLowerInvariant(),
                     Text = dictionary["text"] as string,
                 };
             })
@@ -156,8 +156,10 @@ return list;
         {
             try
             {
-                if (!((webElement?.Displayed ?? false)
-                    && (webElement?.Enabled ?? false)))
+                /*
+                 * Speed optimization: Do not check Displayed here - it can be done cheaper using the script execution.
+                 */
+                if (!(webElement?.Enabled ?? false))
                 {
                     return false;
                 }

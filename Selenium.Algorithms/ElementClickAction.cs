@@ -32,7 +32,7 @@
         {
             try
             {
-                Console.Write($"\t- clicking on {webElement.ExtendedToString()}");
+                Console.Write($"\t- clicking on {CachedName}");
                 webElement.Click();
                 Console.WriteLine($" ... done!");
             }
