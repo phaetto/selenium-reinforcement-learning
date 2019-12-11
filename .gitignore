@@ -293,3 +293,5 @@ __pycache__/
 dist/
 workbench-packages/
 /*.sspkg
+
+IntraActive/

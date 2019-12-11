@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumReinforcementLearning", "SeleniumReinforcementLearning\SeleniumReinforcementLearning.csproj", "{5395A3E9-2691-4BD6-A515-D972E5A790A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selenium.Algorithms", "Selenium.Algorithms\Selenium.Algorithms.csproj", "{8F8B8084-7516-4C72-B731-F5A95EA75DCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selenium.Algorithms", "Selenium.Algorithms\Selenium.Algorithms.csproj", "{8F8B8084-7516-4C72-B731-F5A95EA75DCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selenium.Algorithms.UnitTests", "Selenium.Algorithms.UnitTests\Selenium.Algorithms.UnitTests.csproj", "{2D0657CD-4710-4086-A72C-E80041F0A6A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selenium.Algorithms.UnitTests", "Selenium.Algorithms.UnitTests\Selenium.Algorithms.UnitTests.csproj", "{2D0657CD-4710-4086-A72C-E80041F0A6A1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntraActive", "IntraActive", "{494EE502-589B-43B9-AF53-E970F9EEDE0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selenium.RL.Test", "IntraActive\Selenium.RL.Test\Selenium.RL.Test.csproj", "{C4BB58D1-97BD-44B7-9554-CA60FC5668DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5395A3E9-2691-4BD6-A515-D972E5A790A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5395A3E9-2691-4BD6-A515-D972E5A790A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5395A3E9-2691-4BD6-A515-D972E5A790A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5395A3E9-2691-4BD6-A515-D972E5A790A3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8F8B8084-7516-4C72-B731-F5A95EA75DCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8F8B8084-7516-4C72-B731-F5A95EA75DCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F8B8084-7516-4C72-B731-F5A95EA75DCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,9 +25,16 @@ Global
 		{2D0657CD-4710-4086-A72C-E80041F0A6A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D0657CD-4710-4086-A72C-E80041F0A6A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D0657CD-4710-4086-A72C-E80041F0A6A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4BB58D1-97BD-44B7-9554-CA60FC5668DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4BB58D1-97BD-44B7-9554-CA60FC5668DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4BB58D1-97BD-44B7-9554-CA60FC5668DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4BB58D1-97BD-44B7-9554-CA60FC5668DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C4BB58D1-97BD-44B7-9554-CA60FC5668DA} = {494EE502-589B-43B9-AF53-E970F9EEDE0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {938D3BB4-E4F7-430D-BE68-DCBBE183E4A1}
