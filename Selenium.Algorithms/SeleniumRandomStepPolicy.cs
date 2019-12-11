@@ -23,7 +23,7 @@
             // Intermediate states (e.g. loading): when you have a state with no elements, create a wait-for-time-action
             if (state.Data.Count == 0)
             {
-                return new WaitAction(random.Next(100, 1000));
+                return new WaitAction(random.Next(100, 500));
             }
 
             return new ElementClickAction(state.Data.ElementAt(random.Next(0, state.Data.Count)));

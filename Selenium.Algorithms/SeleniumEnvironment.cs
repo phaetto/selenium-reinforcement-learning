@@ -23,6 +23,10 @@
             this.webDriver = webDriver;
             this.url = url;
             this.hasReachedGoalCondition = hasReachedGoalCondition;
+
+            // Setup webdriver training defaults
+            this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
+            this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(300);
         }
 
         public override Task<State<IReadOnlyCollection<IWebElement>>> GetInitialState()
@@ -33,20 +37,9 @@
 
         public override async Task<IEnumerable<AgentAction<IReadOnlyCollection<IWebElement>>>> GetPossibleActions(State<IReadOnlyCollection<IWebElement>> state)
         {
-            var seleniumState = state as SeleniumState;
-            return seleniumState.ActionableElements
-                .Select(x =>
-                {
-                    try
-                    {
-                        return new ElementClickAction(x);
-                    }
-                    catch (StaleElementReferenceException)
-                    {
-                        return null;
-                    }
-                })
-                .Where(x => x != null); // These actions will not run, only compared
+            //var seleniumState = state as SeleniumState;
+            var seleniumState = GetCurrentState();
+            return seleniumState.Data.Select(x => new ElementClickAction(x));
         }
 
         public override async Task<double> RewardFunction(State<IReadOnlyCollection<IWebElement>> stateFrom, AgentAction<IReadOnlyCollection<IWebElement>> action)
@@ -70,8 +63,21 @@
             var elementList = new List<IWebElement>(actionableElements);
 
             var actionableElementsWithTarget = elementList
-                .Where(x => x.CanBeInteracted(webDriver)); // TODO: fix to one collection only
-            return new SeleniumState(actionableElementsWithTarget.ToList().AsReadOnly(), actionableElements);
+                .Where(x =>
+                {
+                    try
+                    {
+                        return x.CanBeInteracted();
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        return false;
+                    }
+                })
+                .ToList()
+                .AsReadOnly();
+
+            return new SeleniumState(actionableElementsWithTarget);
         }
 
         protected virtual IReadOnlyCollection<IWebElement> GetActionableElements()

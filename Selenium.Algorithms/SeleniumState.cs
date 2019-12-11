@@ -5,7 +5,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// State is defined as the actionable elements state plus the target(s) (?) elements state
+    /// State is defined as the actionable elements state
     /// </summary>
     public class SeleniumState : State<IReadOnlyCollection<IWebElement>>
     {
@@ -13,17 +13,12 @@
         public readonly int CachedHash;
 
         public SeleniumState(
-            in IReadOnlyCollection<IWebElement> actionableAndTargetElements,
-            in IReadOnlyCollection<IWebElement> actionableElements) : base(actionableAndTargetElements)
+            in IReadOnlyCollection<IWebElement> actionableElements) : base(actionableElements)
         {
-            ActionableElements = actionableElements;
-
             // We have to cache those values because the elements will get out of the DOM eventually
             CachedHash = Data.ExtendedGetHashCode();
             CachedName = Data.ExtendedToString();
         }
-
-        public IReadOnlyCollection<IWebElement> ActionableElements { get; }
 
         public override bool Equals(object obj)
         {
