@@ -7,11 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Runs\SeleniumSimpleTestCase\test.html" />
+    <None Remove="Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions.html" />
+    <None Remove="Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions.html" />
+    <None Remove="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="SimpleTestCase_test.html">
+    <Content Include="Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Run_WhenTrainingASimpleTestCase_ThenItSuccessfullyFindsTheCorrectActions.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

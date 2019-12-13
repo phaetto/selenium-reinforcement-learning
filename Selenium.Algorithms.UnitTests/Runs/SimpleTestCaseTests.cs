@@ -1,4 +1,4 @@
-﻿namespace Selenium.Algorithms.UnitTests.Runs.SeleniumSimpleTestCase
+﻿namespace Selenium.Algorithms.UnitTests.Runs
 {
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
@@ -9,47 +9,48 @@
     using Shouldly;
     using System.IO;
     using System.Threading.Tasks;
+    using Selenium.Algorithms;
+    using System.Drawing;
 
-    public sealed class SimpleTestCase_test
+    public sealed class SimpleTestCaseTests
     {
         [Fact]
-        public async Task Run_WhenTrainingOnTestFile_ThenItSuccessfullyFindsTheCorrectActions()
+        public async Task Run_WhenTrainingASimpleTestCase_ThenItSuccessfullyFindsTheCorrectActions()
         {
-            // TODO: Needs configuration for build agent
             var chromeOptions = new ChromeOptions();
             chromeOptions.AddArgument("headless");
-            chromeOptions.BinaryLocation = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";// @"C:\Program Files (x86)\Chromium\Application\chrome.exe";
-            chromeOptions.AddArgument("--log-level=3");
-            chromeOptions.SetLoggingPreference(LogType.Browser, LogLevel.Warning);
 
             using (var driver = new ChromeDriver(@".\", chromeOptions))
             {
+                driver.Manage().Window.Size = new Size(1000, 768);
+
                 try
                 {
-                    // TODO: need a base class with these stuff
-                    var fileUri = new Uri(Path.GetFullPath($"{nameof(SimpleTestCase_test)}.html"));
+                    var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenTrainingASimpleTestCase_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
                     var random = new Random(1);
                     var seleniumEnvironment = new SeleniumEnvironment(
                         driver,
                         fileUri.AbsoluteUri,
-                        (driver, _) => {
+                        (driver, _) =>
+                        {
                             var target = driver.FindElementByCssSelector(".third");
                             return target.Displayed && target.Enabled;
                         });
                     var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
                     var rlTrainer = new RLTrainer<IReadOnlyCollection<IWebElement>>(seleniumEnvironment, seleniumRandomStepPolicy);
 
-                    await rlTrainer.Run(epochs: 2);
+                    await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
                     var initialState = await seleniumEnvironment.GetInitialState();
                     var pathList = await rlTrainer.Walk(initialState, goalCondition: (s, a) => seleniumEnvironment.HasReachedAGoalCondition(s, a));
 
-                    // TODO: verify state
-                    pathList.ShouldNotBeEmpty();
-                    pathList.Count.ShouldBe(3);
-                    pathList[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
-                    pathList[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
-                    pathList[2].Action.ToString().ShouldEndWith("button[data-automation-id='third']");
+                    pathList.State.ShouldBe(WalkResultState.GoalReached);
+                    pathList.Steps.ShouldNotBeNull();
+                    pathList.Steps.ShouldNotBeEmpty();
+                    pathList.Steps.Count.ShouldBe(3);
+                    pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
+                    pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
+                    pathList.Steps[2].Action.ToString().ShouldEndWith("button[data-automation-id='third']");
                 }
                 finally
                 {

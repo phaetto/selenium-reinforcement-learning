@@ -34,12 +34,13 @@
         /// Runs a training session for the number of prespecified epochs
         /// </summary>
         /// <param name="epochs">The amount of iterations that the algorithm will make</param>
-        public async Task Run(int epochs = 1000)
+        /// <param name="maximumActions">The max actions to apply in an epoch</param>
+        public async Task Run(int epochs = 1000, int maximumActions = 1000)
         {
             for (int epoch = 0; epoch < epochs; ++epoch)
             {
                 var currentState = await environment.GetInitialState();
-                while (true)
+                for (int actionNumber = 0; actionNumber < maximumActions; ++actionNumber)
                 {
                     var nextAction = await policy.GetNextAction(environment, currentState);
 
@@ -85,7 +86,7 @@
         /// <param name="target">The target state</param>
         /// <param name="maxSteps">Maximum steps that should be taken</param>
         /// <returns></returns>
-        public async Task<List<StateAndActionPair<TData>>> Walk(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
+        public async Task<WalkResult<TData>> Walk(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
         {
             // TODO: loop sense
             var resultStates = new List<StateAndActionPair<TData>>();
@@ -104,13 +105,15 @@
                     .ToList();
 
                 if (stateAndActionPairs.Count < 1)
-                {
-                    // Unreachable
-                    return null;
+                {   
+                    return new WalkResult<TData>
+                    {
+                        State = WalkResultState.Unreachable
+                    };
                 }
 
                 var maximumValue = 0D;
-                AgentAction<TData> maximumReturnAction = stateAndActionPairs.First().x;
+                var maximumReturnAction = stateAndActionPairs.First().x;
                 foreach (var pair in stateAndActionPairs)
                 {
                     if (pair.Item2 > maximumValue)
@@ -126,11 +129,19 @@
 
                 if (await goalCondition(currentState, maximumReturnAction))
                 {
-                    break;
+                    return new WalkResult<TData>
+                    {
+                        State = WalkResultState.GoalReached,
+                        Steps = resultStates,
+                    };
                 }
             }
 
-            return resultStates;
+            return new WalkResult<TData>
+            {
+                State = WalkResultState.StepsExhausted,
+                Steps = resultStates,
+            };
         }
     }
 }

@@ -39,6 +39,12 @@
         {
             //var seleniumState = state as SeleniumState;
             var seleniumState = GetCurrentState();
+
+            if (seleniumState.Data.Count == 0)
+            {
+                return new [] { new WaitAction(300) };
+            }
+
             return seleniumState.Data.Select(x => new ElementClickAction(x));
         }
 
@@ -62,7 +68,7 @@
             var actionableElements = GetActionableElements();
             var elementList = new List<IWebElement>(actionableElements);
 
-            var actionableElementsWithTarget = elementList
+            var filteredActionableElements = elementList
                 .Where(x =>
                 {
                     try
@@ -77,7 +83,13 @@
                 .ToList()
                 .AsReadOnly();
 
-            return new SeleniumState(actionableElementsWithTarget);
+#if DEBUG
+            // Debug info
+            var allElementsData = elementList.GetElementsInformation().ToArray();
+            var elementsData = filteredActionableElements.GetElementsInformation().ToArray();
+#endif
+
+            return new SeleniumState(filteredActionableElements);
         }
 
         protected virtual IReadOnlyCollection<IWebElement> GetActionableElements()

@@ -8,7 +8,7 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
     using System.Threading.Tasks;
     using Xunit;
 
-    public sealed class RLTrainer_Demo
+    public sealed class RLTrainerDemoTests
     {
         /// <summary>
         /// Tests the following scenario at
@@ -27,12 +27,14 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
 
 
             var result = await rlTrainer.Walk(new TestState(8), async (s, a) => s == new TestState(11));
-            result.ShouldNotBeEmpty();
-            result[0].ShouldBe(new StateAndActionPair<int>(new TestState(8), new TestAction(new TestState(9))));
-            result[1].ShouldBe(new StateAndActionPair<int>(new TestState(9), new TestAction(new TestState(5))));
-            result[2].ShouldBe(new StateAndActionPair<int>(new TestState(5), new TestAction(new TestState(6))));
-            result[3].ShouldBe(new StateAndActionPair<int>(new TestState(6), new TestAction(new TestState(7))));
-            result[4].ShouldBe(new StateAndActionPair<int>(new TestState(7), new TestAction(new TestState(11))));
+            result.State.ShouldBe(WalkResultState.GoalReached);
+            result.Steps.ShouldNotBeNull();
+            result.Steps.ShouldNotBeEmpty();
+            result.Steps[0].ShouldBe(new StateAndActionPair<int>(new TestState(8), new TestAction(new TestState(9))));
+            result.Steps[1].ShouldBe(new StateAndActionPair<int>(new TestState(9), new TestAction(new TestState(5))));
+            result.Steps[2].ShouldBe(new StateAndActionPair<int>(new TestState(5), new TestAction(new TestState(6))));
+            result.Steps[3].ShouldBe(new StateAndActionPair<int>(new TestState(6), new TestAction(new TestState(7))));
+            result.Steps[4].ShouldBe(new StateAndActionPair<int>(new TestState(7), new TestAction(new TestState(11))));
         }
 
         class TestEnvironment : Environment<int>

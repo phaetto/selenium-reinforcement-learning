@@ -36,12 +36,12 @@
                 webElement.Click();
                 Console.WriteLine($" ... done!");
             }
-            catch (ElementNotInteractableException) // TODO: specific exceptions here
+            catch (ElementNotInteractableException)
             {
                 Console.WriteLine($"... failed: non-interactable");
                 // Do not move at all if we cannot click, it should penalize it
             }
-            catch (StaleElementReferenceException) // TODO: specific exceptions here
+            catch (StaleElementReferenceException)
             {
                 Console.WriteLine($"... failed: stale");
                 // Do not move at all if we cannot click, it should penalize it

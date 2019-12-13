@@ -1,18 +1,18 @@
 ﻿namespace Selenium.Algorithms
 {
     using OpenQA.Selenium;
+    using OpenQA.Selenium.Interactions;
     using OpenQA.Selenium.Remote;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     public static partial class WebElementExtensions
     {
         /*
-         * TODO:
-         *  GetAttribute is super slow in selenium.
-         *  We should be able to find another way, either using javascript and get all necessary info,
-         *  or getting outerHTML and parsing it locally
+         * GetAttribute is super slow in selenium.
+         *  We are using JavaScript to get the necessary information for elements.
          */
         private const string GetElementsInformationJavaScript = @"
 var list = [];
@@ -130,7 +130,7 @@ return list;
         public static string ExtendedToString(this ElementData elementData)
         {
             var tagName = elementData.TagName;
-            var dataAutomationId = elementData.DataAutomationId; // TODO: accept as argument
+            var dataAutomationId = elementData.DataAutomationId;
             if (!string.IsNullOrWhiteSpace(dataAutomationId))
             {
                 return $"qs:{tagName}[data-automation-id='{dataAutomationId}']";
@@ -156,23 +156,46 @@ return list;
         {
             try
             {
-                /*
-                 * Speed optimization: Do not check Displayed here - it can be done cheaper using the script execution.
-                 */
-                if (!(webElement?.Enabled ?? false))
+#if DEBUG
+                // Debug info
+                var elementData = GetElementsInformation(new IWebElement[] { webElement }).First();
+#endif
+
+                if (!(webElement?.Enabled ?? false) || !(webElement?.Displayed ?? false))
                 {
                     return false;
                 }
 
                 var javaScriptExecutor = webElement.GetJavascriptExecutor();
                 var remoteWebElement = (RemoteWebElement)webElement;
+                var webDriver = remoteWebElement.WrappedDriver;
 
-                // TODO: For non headless runs:
-                //var actions = new Actions(remoteWebDriver);
-                //actions.MoveToElement(remoteWebElement);
-                //actions.Perform();
+                if (remoteWebElement.Coordinates.LocationInViewport.X >= webDriver.Manage().Window.Size.Width
+                   || remoteWebElement.Coordinates.LocationInViewport.Y >= webDriver.Manage().Window.Size.Height
+                   || remoteWebElement.Coordinates.LocationInViewport.X < 0
+                   || remoteWebElement.Coordinates.LocationInViewport.Y < 0)
+                {
+                    var actions = new Actions(javaScriptExecutor as IWebDriver);
+                    actions.MoveToElement(remoteWebElement);
+                    try
+                    {
+                        actions.Perform();
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
+                }
 
                 var script = $"return document.elementFromPoint({remoteWebElement.Coordinates.LocationInViewport.X + 1}, {remoteWebElement.Coordinates.LocationInViewport.Y + 1});";
+
+                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.X >= 0, "Element outside of viewport: Left");
+                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.Y >= 0, "Element outside of viewport: Top");
+                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.X >= webDriver.Manage().Window.Size.Width, "Element outside of viewport: Right");
+                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.Y >= webDriver.Manage().Window.Size.Height, "Element outside of viewport: Bottom");
+                Debug.Assert(remoteWebElement.Size.Width > 0, "Element does not have width");
+                Debug.Assert(remoteWebElement.Size.Height > 0, "Element does not have height");
+
                 var remoteWebElementFromPoint = (RemoteWebElement)javaScriptExecutor.ExecuteScript(script);
 
                 return remoteWebElementFromPoint != null
@@ -190,7 +213,13 @@ return list;
             var hash = 13;
             foreach (var item in elementsData)
             {
-                hash = (hash * 7) + item.ExtendedGetHashCode();
+                try
+                {
+                    hash = (hash * 7) + item.ExtendedGetHashCode();
+                }
+                catch (StaleElementReferenceException)
+                {
+                }
             }
             return hash;
         }
@@ -198,7 +227,22 @@ return list;
         public static string ExtendedToString(this IReadOnlyCollection<IWebElement> webElements)
         {
             var elementsData = GetElementsInformation(webElements);
-            return string.Join(", ", elementsData.Select(x => x.ExtendedToString()));
+
+            var filteredElementDataAsString = elementsData
+                .Select(x =>
+                {
+                    try
+                    {
+                        return x.ExtendedToString();
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        return null;
+                    }
+                })
+                .Where(x => x != null);
+
+            return string.Join(", ", filteredElementDataAsString);
         }
 
         public static IJavaScriptExecutor GetJavascriptExecutor(this IWebElement webElement)

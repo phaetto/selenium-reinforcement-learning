@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        .first-panel, .second-panel, .third-panel {
+            height: 500px;
+        }
+
+        .second-panel, .third-panel {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+
+        html, body {
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selenium test</h1>
+
+    <div class="first-panel">
+        <label>
+            Open UI
+            <input type="checkbox" class="first" data-automation-id="first" />
+        </label>
+    </div>
+
+    <div class="second-panel">
+        <label>
+            Open UI #2
+            <input type="checkbox" class="second" data-automation-id="second" />
+        </label>
+    </div>
+
+    <div class="third-panel">
+        <label>
+            UI Visible
+        </label>
+    </div>
+
+    <script type="text/javascript">
+        document.querySelector('.first').addEventListener('click', (e) => {
+            if (e.target.checked) {
+                document.querySelector('.second-panel').classList.add('show');
+            } else {
+                document.querySelector('.second-panel').classList.remove('show');
+            }
+        });
+
+        document.querySelector('.second').addEventListener('click', (e) => {
+            if (e.target.checked) {
+                document.querySelector('.third-panel').classList.add('show');
+            } else {
+                document.querySelector('.third-panel').classList.remove('show');
+            }
+        });
+
+        /*
+         * This will unfortunately move the browser window, even if there is no scrollbar
+         * document.querySelector('.second').scrollIntoView()
+         */
+    </script>
+</body>
+</html>
