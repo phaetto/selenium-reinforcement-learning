@@ -37,7 +37,7 @@
 
         public override async Task<IEnumerable<AgentAction<IReadOnlyCollection<IWebElement>>>> GetPossibleActions(State<IReadOnlyCollection<IWebElement>> state)
         {
-            //var seleniumState = state as SeleniumState;
+            // We need to get the fresh page's state instead of using the input
             var seleniumState = GetCurrentState();
 
             if (seleniumState.Data.Count == 0)

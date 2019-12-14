@@ -23,18 +23,17 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
             var rlTrainer = new RLTrainer<int>(testEnvironment, testPolicy);
 
             // Execute
-            await rlTrainer.Run(epochs: 50);
+            await rlTrainer.Run(epochs: 50, maximumActions: 100);
 
-
-            var result = await rlTrainer.Walk(new TestState(8), async (s, a) => s == new TestState(11));
+            var result = await rlTrainer.Walk(new TestState(8), async (s, a) => Equals(s, new TestState(11)));
             result.State.ShouldBe(WalkResultState.GoalReached);
             result.Steps.ShouldNotBeNull();
             result.Steps.ShouldNotBeEmpty();
-            result.Steps[0].ShouldBe(new StateAndActionPair<int>(new TestState(8), new TestAction(new TestState(9))));
-            result.Steps[1].ShouldBe(new StateAndActionPair<int>(new TestState(9), new TestAction(new TestState(5))));
-            result.Steps[2].ShouldBe(new StateAndActionPair<int>(new TestState(5), new TestAction(new TestState(6))));
-            result.Steps[3].ShouldBe(new StateAndActionPair<int>(new TestState(6), new TestAction(new TestState(7))));
-            result.Steps[4].ShouldBe(new StateAndActionPair<int>(new TestState(7), new TestAction(new TestState(11))));
+            result.Steps[0].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(8), new TestAction(new TestState(9))));
+            result.Steps[1].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(9), new TestAction(new TestState(5))));
+            result.Steps[2].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(5), new TestAction(new TestState(6))));
+            result.Steps[3].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(6), new TestAction(new TestState(7))));
+            result.Steps[4].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(7), new TestAction(new TestState(11))));
         }
 
         class TestEnvironment : Environment<int>

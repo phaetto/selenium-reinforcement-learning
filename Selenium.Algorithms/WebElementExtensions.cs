@@ -191,8 +191,8 @@ return list;
 
                 Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.X >= 0, "Element outside of viewport: Left");
                 Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.Y >= 0, "Element outside of viewport: Top");
-                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.X >= webDriver.Manage().Window.Size.Width, "Element outside of viewport: Right");
-                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.Y >= webDriver.Manage().Window.Size.Height, "Element outside of viewport: Bottom");
+                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.X <= webDriver.Manage().Window.Size.Width, "Element outside of viewport: Right");
+                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.Y <= webDriver.Manage().Window.Size.Height, "Element outside of viewport: Bottom");
                 Debug.Assert(remoteWebElement.Size.Width > 0, "Element does not have width");
                 Debug.Assert(remoteWebElement.Size.Height > 0, "Element does not have height");
 

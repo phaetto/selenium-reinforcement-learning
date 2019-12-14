@@ -2,21 +2,26 @@
 {
     using System.Diagnostics;
 
-    [DebuggerDisplay("[{State.ToString()}, {Action.ToString()}]")]
-    public class StateAndActionPair<TData>
+    [DebuggerDisplay("State: {State.ToString()} --- Action: {Action.ToString()}")]
+    public class StateAndActionPairWithResultState<TData>
     {
-        public StateAndActionPair(in State<TData> state, in AgentAction<TData> action)
+        public StateAndActionPairWithResultState(
+            in State<TData> state,
+            in AgentAction<TData> action,
+            in State<TData> resultState = null)
         {
             State = state;
             Action = action;
+            ResultState = resultState;
         }
 
         public State<TData> State { get; }
         public AgentAction<TData> Action { get; }
+        public State<TData> ResultState { get; }
 
         public override bool Equals(object obj)
         {
-            return obj is StateAndActionPair<TData> stateAndAction
+            return obj is StateAndActionPairWithResultState<TData> stateAndAction
                 && Equals(stateAndAction.State, State)
                 && Equals(stateAndAction.Action, Action);
         }

@@ -16,8 +16,6 @@
         private readonly double learningRate;
         private readonly double discountRate;
 
-        public readonly IDictionary<StateAndActionPair<TData>, double> QualityMatrix = new Dictionary<StateAndActionPair<TData>, double>();
-
         public RLTrainer(
             in Environment<TData> environment,
             in Policy<TData> policy,
@@ -59,21 +57,21 @@
 
             var nextNextActions = await environment.GetPossibleActions(nextState);
             var maxQ = nextNextActions.Max(x => {
-                var pair = new StateAndActionPair<TData>(nextState, x);
-                return QualityMatrix.ContainsKey(pair)
-                ? QualityMatrix[pair]
+                var pair = new StateAndActionPairWithResultState<TData>(nextState, x);
+                return policy.QualityMatrix.ContainsKey(pair)
+                ? policy.QualityMatrix[pair]
                 : 0D;
             });
 
-            var selectedPair = new StateAndActionPair<TData>(currentState, nextAction);
-            if (!QualityMatrix.ContainsKey(selectedPair))
+            var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, nextState);
+            if (!policy.QualityMatrix.ContainsKey(selectedPair))
             {
-                QualityMatrix.Add(selectedPair, 0D);
+                policy.QualityMatrix.Add(selectedPair, 0D);
             }
 
             // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
-            QualityMatrix[selectedPair] =
-                ((1 - learningRate) * QualityMatrix[selectedPair])
+            policy.QualityMatrix[selectedPair] =
+                ((1 - learningRate) * policy.QualityMatrix[selectedPair])
                 + (learningRate * (await environment.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
 
             return nextState;
@@ -89,7 +87,7 @@
         public async Task<WalkResult<TData>> Walk(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
         {
             // TODO: loop sense
-            var resultStates = new List<StateAndActionPair<TData>>();
+            var resultStates = new List<StateAndActionPairWithResultState<TData>>();
 
             var currentState = start;
             var iterationNumber = maxSteps;
@@ -97,9 +95,9 @@
             {
                 var actions = await environment.GetPossibleActions(currentState);
                 var stateAndActionPairs = actions.Select(x => {
-                        var pair = new StateAndActionPair<TData>(currentState, x);
-                        return QualityMatrix.ContainsKey(pair)
-                            ? (x, QualityMatrix[pair])
+                        var pair = new StateAndActionPairWithResultState<TData>(currentState, x);
+                        return policy.QualityMatrix.ContainsKey(pair)
+                            ? (x, policy.QualityMatrix[pair])
                             : (x, 0D);
                     })
                     .ToList();
@@ -123,9 +121,11 @@
                     }
                 }
 
-                resultStates.Add(new StateAndActionPair<TData>(currentState, maximumReturnAction));
+                var newState = await maximumReturnAction.ExecuteAction(environment, currentState);
 
-                currentState = await maximumReturnAction.ExecuteAction(environment, currentState);
+                resultStates.Add(new StateAndActionPairWithResultState<TData>(currentState, maximumReturnAction, newState));
+
+                currentState = newState;
 
                 if (await goalCondition(currentState, maximumReturnAction))
                 {
