@@ -1,23 +1,22 @@
 ﻿namespace Selenium.Algorithms
 {
-    using OpenQA.Selenium;
     using Selenium.Algorithms.ReinforcementLearning;
     using System.Collections.Generic;
 
     /// <summary>
     /// State is defined as the actionable elements state
     /// </summary>
-    public class SeleniumState : State<IReadOnlyCollection<IWebElement>>
+    public class SeleniumState : State<IReadOnlyCollection<ElementData>>
     {
         public readonly string CachedName;
         public readonly int CachedHash;
 
         public SeleniumState(
-            in IReadOnlyCollection<IWebElement> actionableElements) : base(actionableElements)
+            in IReadOnlyCollection<ElementData> actionableElementsData) : base(actionableElementsData)
         {
             // We have to cache those values because the elements will get out of the DOM eventually
-            CachedHash = Data.ExtendedGetHashCode();
-            CachedName = Data.ExtendedToString();
+            CachedHash = actionableElementsData.ExtendedGetHashCode();
+            CachedName = actionableElementsData.ExtendedToString();
         }
 
         public override bool Equals(object obj)

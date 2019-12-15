@@ -36,8 +36,8 @@
                             var target = driver.FindElementByCssSelector(".third-panel");
                             return target.Displayed && target.Enabled;
                         });
-                    var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<IWebElement>>(seleniumEnvironment, seleniumRandomStepPolicy);
+                    var seleniumRandomStepPolicy = new SeleniumQLearningStepPolicy(random);
+                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
 
                     await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
@@ -81,8 +81,8 @@
                             var target = driver.FindElementByCssSelector(".third-panel");
                             return target.Displayed && target.Enabled;
                         });
-                    var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<IWebElement>>(seleniumEnvironment, seleniumRandomStepPolicy);
+                    var seleniumRandomStepPolicy = new SeleniumQLearningStepPolicy(random);
+                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
 
                     await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
@@ -126,8 +126,8 @@
                             var target = driver.FindElementByCssSelector(".third-panel");
                             return target.Displayed && target.Enabled;
                         });
-                    var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<IWebElement>>(seleniumEnvironment, seleniumRandomStepPolicy);
+                    var seleniumRandomStepPolicy = new SeleniumQLearningStepPolicy(random);
+                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
 
                     await rlTrainer.Run(epochs: 2, maximumActions: 20);
 

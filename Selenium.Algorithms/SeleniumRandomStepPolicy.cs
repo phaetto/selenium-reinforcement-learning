@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class SeleniumRandomStepPolicy : Policy<IReadOnlyCollection<IWebElement>>
+    public class SeleniumRandomStepPolicy : Policy<IReadOnlyCollection<ElementData>>
     {
         private readonly Random random;
 
@@ -16,7 +16,7 @@
             this.random = random;
         }
 
-        public override async Task<AgentAction<IReadOnlyCollection<IWebElement>>> GetNextAction(Environment<IReadOnlyCollection<IWebElement>> environment, State<IReadOnlyCollection<IWebElement>> state)
+        public override async Task<AgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
         {
             // TODO: typing: when element is an input, type instead of click (remember it has to be able to be traced from the goal/reward)
 

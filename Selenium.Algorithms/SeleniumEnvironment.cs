@@ -8,16 +8,16 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class SeleniumEnvironment : Environment<IReadOnlyCollection<IWebElement>>
+    public class SeleniumEnvironment : Environment<IReadOnlyCollection<ElementData>>
     {
         private readonly RemoteWebDriver webDriver;
         private readonly string url;
-        private readonly Func<RemoteWebDriver, State<IReadOnlyCollection<IWebElement>>, bool> hasReachedGoalCondition;
+        private readonly Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition;
 
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
             string url,
-            Func<RemoteWebDriver, State<IReadOnlyCollection<IWebElement>>, bool> hasReachedGoalCondition
+            Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition
         )
         {
             this.webDriver = webDriver;
@@ -29,13 +29,13 @@
             this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(300);
         }
 
-        public override Task<State<IReadOnlyCollection<IWebElement>>> GetInitialState()
+        public override Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
             webDriver.Navigate().GoToUrl(url);
             return Task.FromResult(GetCurrentState());
         }
 
-        public override async Task<IEnumerable<AgentAction<IReadOnlyCollection<IWebElement>>>> GetPossibleActions(State<IReadOnlyCollection<IWebElement>> state)
+        public override async Task<IEnumerable<AgentAction<IReadOnlyCollection<ElementData>>>> GetPossibleActions(State<IReadOnlyCollection<ElementData>> state)
         {
             // We need to get the fresh page's state instead of using the input
             var seleniumState = GetCurrentState();
@@ -48,7 +48,7 @@
             return seleniumState.Data.Select(x => new ElementClickAction(x));
         }
 
-        public override async Task<double> RewardFunction(State<IReadOnlyCollection<IWebElement>> stateFrom, AgentAction<IReadOnlyCollection<IWebElement>> action)
+        public override async Task<double> RewardFunction(State<IReadOnlyCollection<ElementData>> stateFrom, AgentAction<IReadOnlyCollection<ElementData>> action)
         {
             if (await HasReachedAGoalCondition(stateFrom, action))
             {
@@ -58,12 +58,12 @@
             return -1;
         }
 
-        public override async Task<bool> HasReachedAGoalCondition(State<IReadOnlyCollection<IWebElement>> state, AgentAction<IReadOnlyCollection<IWebElement>> action)
+        public override async Task<bool> HasReachedAGoalCondition(State<IReadOnlyCollection<ElementData>> state, AgentAction<IReadOnlyCollection<ElementData>> action)
         {
             return hasReachedGoalCondition(webDriver, state);
         }
 
-        public State<IReadOnlyCollection<IWebElement>> GetCurrentState()
+        public State<IReadOnlyCollection<ElementData>> GetCurrentState()
         {
             var actionableElements = GetActionableElements();
             var elementList = new List<IWebElement>(actionableElements);
@@ -85,11 +85,11 @@
 
 #if DEBUG
             // Debug info
-            var allElementsData = elementList.GetElementsInformation().ToArray();
-            var elementsData = filteredActionableElements.GetElementsInformation().ToArray();
+            var allElementsData = elementList.GetElementsInformation();
 #endif
+            var filteredElementsData = filteredActionableElements.GetElementsInformation();
 
-            return new SeleniumState(filteredActionableElements);
+            return new SeleniumState(filteredElementsData);
         }
 
         protected virtual IReadOnlyCollection<IWebElement> GetActionableElements()

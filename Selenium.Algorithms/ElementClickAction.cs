@@ -6,14 +6,14 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class ElementClickAction : AgentAction<IReadOnlyCollection<IWebElement>>
+    public class ElementClickAction : AgentAction<IReadOnlyCollection<ElementData>>
     {
-        private readonly IWebElement webElement;
+        private readonly ElementData webElement;
 
         public readonly string CachedName;
         public readonly int CachedHash;
 
-        public ElementClickAction(IWebElement webElement)
+        public ElementClickAction(ElementData webElement)
         {
             this.webElement = webElement;
 
@@ -28,12 +28,12 @@
                 && CachedHash == otherAction.CachedHash;
         }
 
-        public override async Task<State<IReadOnlyCollection<IWebElement>>> ExecuteAction(Environment<IReadOnlyCollection<IWebElement>> environment, State<IReadOnlyCollection<IWebElement>> state)
+        public override async Task<State<IReadOnlyCollection<ElementData>>> ExecuteAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
         {
             try
             {
                 Console.Write($"\t- clicking on {CachedName}");
-                webElement.Click();
+                webElement.WebElementReference.Click();
                 Console.WriteLine($" ... done!");
             }
             catch (ElementNotInteractableException)

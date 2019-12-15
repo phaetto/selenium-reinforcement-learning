@@ -6,7 +6,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class WaitAction : AgentAction<IReadOnlyCollection<IWebElement>>
+    public class WaitAction : AgentAction<IReadOnlyCollection<ElementData>>
     {
         private readonly int milliseconds;
 
@@ -21,7 +21,7 @@
                 && milliseconds == otherAction.milliseconds;
         }
 
-        public override async Task<State<IReadOnlyCollection<IWebElement>>> ExecuteAction(Environment<IReadOnlyCollection<IWebElement>> environment, State<IReadOnlyCollection<IWebElement>> state)
+        public override async Task<State<IReadOnlyCollection<ElementData>>> ExecuteAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
         {
             Console.Write($"\t- waiting for {milliseconds}ms");
             await Task.Delay(milliseconds);
