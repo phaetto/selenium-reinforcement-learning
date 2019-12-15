@@ -10,6 +10,11 @@
         {
             var hash = 13;
 
+            if (!string.IsNullOrWhiteSpace(elementData.ExtraState))
+            {
+                hash = (hash * 7) + elementData.ExtraState.GetHashCode();
+            }
+
             if (!string.IsNullOrWhiteSpace(elementData.DataAutomationId))
             {
                 hash = (hash * 7) + elementData.DataAutomationId.GetHashCode();
@@ -39,7 +44,7 @@
             var dataAutomationId = elementData.DataAutomationId;
             if (!string.IsNullOrWhiteSpace(dataAutomationId))
             {
-                return $"qs:{tagName}[data-automation-id='{dataAutomationId}']";
+                return $"qs:{tagName}[data-automation-id='{dataAutomationId}'], State: {elementData.ExtraState}";
             }
 
             var id = elementData.Id;
@@ -52,10 +57,10 @@
             var webElementClass = elementData.Class;
             if (!string.IsNullOrWhiteSpace(webElementText))
             {
-                return $"xpath://{tagName}[@class='{webElementClass}'][text()={EncodeXPathExpression(webElementText)}]";
+                return $"xpath://{tagName}[@class='{webElementClass}'][text()={EncodeXPathExpression(webElementText)}], State: {elementData.ExtraState}";
             }
 
-            return $"qs:{tagName}.{webElementClass.Trim().Replace(" ", ".")}";
+            return $"qs:{tagName}.{webElementClass.Trim().Replace(" ", ".")}, State: {elementData.ExtraState}";
         }
 
         public static int ExtendedGetHashCode(this IReadOnlyCollection<ElementData> elementsData)

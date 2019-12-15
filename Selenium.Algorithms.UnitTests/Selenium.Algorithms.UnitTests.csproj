@@ -10,6 +10,7 @@
     <None Remove="Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html" />
+    <None Remove="Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +18,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html">

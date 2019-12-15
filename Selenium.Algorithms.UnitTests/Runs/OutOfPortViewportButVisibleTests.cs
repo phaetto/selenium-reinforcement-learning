@@ -31,7 +31,7 @@
                     var seleniumEnvironment = new SeleniumEnvironment(
                         driver,
                         fileUri.AbsoluteUri,
-                        (driver, _) =>
+                        hasReachedGoalCondition: (driver, _) =>
                         {
                             var target = driver.FindElementByCssSelector(".third-panel");
                             return target.Displayed && target.Enabled;
@@ -76,7 +76,7 @@
                     var seleniumEnvironment = new SeleniumEnvironment(
                         driver,
                         fileUri.AbsoluteUri,
-                        (driver, _) =>
+                        hasReachedGoalCondition: (driver, _) =>
                         {
                             var target = driver.FindElementByCssSelector(".third-panel");
                             return target.Displayed && target.Enabled;
@@ -121,7 +121,7 @@
                     var seleniumEnvironment = new SeleniumEnvironment(
                         driver,
                         fileUri.AbsoluteUri,
-                        (driver, _) =>
+                        hasReachedGoalCondition: (driver, _) =>
                         {
                             var target = driver.FindElementByCssSelector(".third-panel");
                             return target.Displayed && target.Enabled;

@@ -12,16 +12,19 @@
     {
         private readonly RemoteWebDriver webDriver;
         private readonly string url;
+        private readonly IReadOnlyDictionary<string, string> inputTextData;
         private readonly Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition;
 
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
             string url,
-            Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition
+            IReadOnlyDictionary<string, string> inputTextData = null,
+            Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition = null
         )
         {
             this.webDriver = webDriver;
             this.url = url;
+            this.inputTextData = inputTextData;
             this.hasReachedGoalCondition = hasReachedGoalCondition;
 
             // Setup webdriver training defaults
@@ -42,10 +45,18 @@
 
             if (seleniumState.Data.Count == 0)
             {
-                return new [] { new WaitAction(300) };
+                return new[] { new WaitAction(300) };
             }
 
-            return seleniumState.Data.Select(x => new ElementClickAction(x));
+            return seleniumState.Data.Select(x =>
+                    (AgentAction<IReadOnlyCollection<ElementData>>)
+                    (x.IsTypingElement switch
+                    {
+                        true => GetElementTypeAction(x, seleniumState),
+                        _ => new ElementClickAction(x),
+                    })
+                )
+                .Where(x => x != null);
         }
 
         public override async Task<double> RewardFunction(State<IReadOnlyCollection<ElementData>> stateFrom, AgentAction<IReadOnlyCollection<ElementData>> action)
@@ -95,6 +106,39 @@
         protected virtual IReadOnlyCollection<IWebElement> GetActionableElements()
         {
             return webDriver.FindElementsByCssSelector("body *[data-automation-id]");
+        }
+
+        protected virtual string FindBestDataToType(ElementData elementData)
+        {
+            if (inputTextData == null)
+            {
+                throw new InvalidOperationException("No data has been provided for this environment");
+            }
+
+            // TODO: make a more sofisticated 'the closest value to name'
+            return inputTextData.ContainsKey(elementData.Name)
+                ? inputTextData[elementData.Name]
+                : "todo: random string to provide";
+        }
+
+        protected virtual ElementTypeAction GetElementTypeAction(ElementData elementData, State<IReadOnlyCollection<ElementData>> state)
+        {
+            if (inputTextData == null)
+            {
+                throw new InvalidOperationException("No data has been provided for this environment");
+            }
+
+            var inputDataState = inputTextData.ContainsKey(elementData.Name)
+                ? inputTextData[elementData.Name]
+                : "todo: random string to provide";
+
+            if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have and ElementData.Equals
+            {
+                return null;
+            }
+
+            // TODO: make a more sofisticated 'the closest value to name'
+            return new ElementTypeAction(elementData, inputDataState);
         }
     }
 }

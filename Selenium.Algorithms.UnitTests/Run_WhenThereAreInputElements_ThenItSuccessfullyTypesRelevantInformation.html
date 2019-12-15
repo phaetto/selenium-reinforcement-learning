@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        .second-panel, .third-panel {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selenium test</h1>
+
+    <div>
+        <label>
+            Fill out form
+            <input type="text" name="name" placeholder="input name" data-automation-id="name" />
+            <input type="text" name="description" placeholder="input description" data-automation-id="description" />
+            <textarea name="text" placeholder="textarea text" data-automation-id="text"></textarea>
+            <input type="button" class="first" data-automation-id="done" value="Process form" />
+        </label>
+    </div>
+
+    <div class="second-panel">
+        <label>
+            Accept conditions
+            <input type="checkbox" class="second" data-automation-id="accept" />
+        </label>
+    </div>
+
+    <div class="third-panel">
+        <label>
+            UI Visible
+        </label>
+    </div>
+
+    <script type="text/javascript">
+        document.querySelector('.first').addEventListener('click', (e) => {
+            // Basic form validation
+            var name = document.querySelector('input[data-automation-id="name"]').value;
+            var description = document.querySelector('input[data-automation-id="description"]').value;
+            var text = document.querySelector('textarea[data-automation-id="text"]').value;
+
+            if (name && description && text) {
+                document.querySelector('.second-panel').classList.add('show');
+            } else {
+                document.querySelector('.second-panel').classList.remove('show');
+            }
+        });
+
+        document.querySelector('.second').addEventListener('click', (e) => {
+            if (e.target.checked) {
+                document.querySelector('.third-panel').classList.add('show');
+            } else {
+                document.querySelector('.third-panel').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

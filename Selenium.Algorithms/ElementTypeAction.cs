@@ -6,28 +6,31 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class ElementClickAction : AgentAction<IReadOnlyCollection<ElementData>>
+    public class ElementTypeAction : AgentAction<IReadOnlyCollection<ElementData>>
     {
         private readonly ElementData webElement;
-
+        private readonly string text;
         public readonly string CachedName;
         public readonly int CachedHash;
 
-        public ElementClickAction(in ElementData webElement)
+        public ElementTypeAction(in ElementData webElement, in string text)
         {
             this.webElement = webElement;
+            this.text = text;
 
             // We have to cache those values because the element will get out of the DOM eventually
             CachedHash = webElement.ExtendedGetHashCode();
-            CachedName = $"Click on {webElement.ExtendedToString()}";
+            CachedHash = (CachedHash * 7) + text.GetHashCode();
+            CachedName = $"Type '{text}' on {webElement.ExtendedToString()}";
         }
 
         public override async Task<State<IReadOnlyCollection<ElementData>>> ExecuteAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
         {
             try
             {
-                Console.Write($"\t- clicking on {CachedName}");
-                webElement.WebElementReference.Click();
+                Console.Write($"\t- typing on {CachedName}");
+                webElement.WebElementReference.Clear();
+                webElement.WebElementReference.SendKeys(text);
                 Console.WriteLine($" ... done!");
             }
             catch (ElementNotInteractableException)
@@ -46,7 +49,7 @@
 
         public override bool Equals(object obj)
         {
-            return obj is ElementClickAction otherAction
+            return obj is ElementTypeAction otherAction
                 && CachedHash == otherAction.CachedHash;
         }
 

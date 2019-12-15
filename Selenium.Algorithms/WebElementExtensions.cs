@@ -17,12 +17,19 @@
         private const string GetElementsInformationJavaScript = @"
 var list = [];
 for(var i = 0; i < arguments.length; ++i) {
+    var isTypingElement = (arguments[i].tagName.toLowerCase() === 'input' && arguments[i].getAttribute('type').toLowerCase() === 'text')
+        || (arguments[i].tagName.toLowerCase() === 'textarea');
+    
     list.push({
         'class': arguments[i].className || null,
         'id': arguments[i].id || null,
         'data-automation-id': arguments[i].getAttribute('data-automation-id') || null,
-        'tagName': arguments[i].tagName || null,
+        'data-automation-actions': arguments[i].getAttribute('data-automation-actions') || null,
+        'name': arguments[i].getAttribute('name') || null,
+        'tagName': arguments[i].tagName.toLowerCase() || null,
         'text': arguments[i].innerText || null,
+        'isTypingElement': isTypingElement,
+        'extraState': isTypingElement ? arguments[i].value : null,
     });
 }
 return list;
@@ -46,8 +53,12 @@ return list;
                     Class = dictionary["class"] as string,
                     Id = dictionary["id"] as string,
                     DataAutomationId = dictionary["data-automation-id"] as string,
-                    TagName = (dictionary["tagName"] as string).ToLowerInvariant(),
+                    DataAutomationActions = ParseAutomationActions(dictionary["data-automation-actions"] as string),
+                    TagName = dictionary["tagName"] as string,
                     Text = dictionary["text"] as string,
+                    Name = dictionary["name"] as string,
+                    IsTypingElement = (bool)dictionary["isTypingElement"],
+                    ExtraState = dictionary["extraState"] as string,
                     WebElementReference = webElementCollection.ElementAt(index),
                 };
             })
@@ -159,6 +170,16 @@ return list;
         public static IJavaScriptExecutor GetJavascriptExecutor(this IWebElement webElement)
         {
             return (IJavaScriptExecutor)((IWrapsDriver)webElement).WrappedDriver;
+        }
+
+        private static IReadOnlyCollection<string> ParseAutomationActions(string actions)
+        {
+            return actions?.Split(' ')
+                ?.Select(x => x.Trim())
+                ?.Where(x => !string.IsNullOrWhiteSpace(x))
+                ?.ToList()
+                ?.AsReadOnly()
+                ?? new List<string>().AsReadOnly();
         }
     }
 }
