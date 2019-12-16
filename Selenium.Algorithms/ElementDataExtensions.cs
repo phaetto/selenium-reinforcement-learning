@@ -44,23 +44,64 @@
             var dataAutomationId = elementData.DataAutomationId;
             if (!string.IsNullOrWhiteSpace(dataAutomationId))
             {
-                return $"qs:{tagName}[data-automation-id='{dataAutomationId}'], State: {elementData.ExtraState}";
+                return $"{tagName}[data-automation-id='{dataAutomationId}'], state: {elementData.ExtraState}";
             }
 
             var id = elementData.Id;
             if (!string.IsNullOrWhiteSpace(id))
             {
-                return $"qs:{tagName}#{id}";
+                return $"{tagName}#{id}, state: {elementData.ExtraState}";
             }
 
             var webElementText = elementData.Text;
             var webElementClass = elementData.Class;
             if (!string.IsNullOrWhiteSpace(webElementText))
             {
-                return $"xpath://{tagName}[@class='{webElementClass}'][text()={EncodeXPathExpression(webElementText)}], State: {elementData.ExtraState}";
+                return $"//{tagName}[@class='{webElementClass}'][text()={EncodeXPathExpression(webElementText)}], state: {elementData.ExtraState}";
             }
 
-            return $"qs:{tagName}.{webElementClass.Trim().Replace(" ", ".")}, State: {elementData.ExtraState}";
+            return $"{tagName}.{webElementClass.Trim().Replace(" ", ".")}, state: {elementData.ExtraState}";
+        }
+
+        public static ElementDataQuery GetQuery(this ElementData elementData)
+        {
+            var tagName = elementData.TagName;
+            var dataAutomationId = elementData.DataAutomationId;
+            if (!string.IsNullOrWhiteSpace(dataAutomationId))
+            {
+                return new ElementDataQuery
+                {
+                    QueryType = QueryType.CssSelector,
+                    Query = $"{tagName}[data-automation-id='{dataAutomationId}']",
+                };
+            }
+
+            var id = elementData.Id;
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                return new ElementDataQuery
+                {
+                    QueryType = QueryType.CssSelector,
+                    Query = $"{tagName}#{id}",
+                };
+            }
+
+            var webElementText = elementData.Text;
+            var webElementClass = elementData.Class;
+            if (!string.IsNullOrWhiteSpace(webElementText))
+            {
+                return new ElementDataQuery
+                {
+                    QueryType = QueryType.XPath,
+                    Query = $"//{tagName}[@class='{webElementClass}'][text()={EncodeXPathExpression(webElementText)}]",
+                };
+            }
+
+            return new ElementDataQuery
+            {
+                QueryType = QueryType.CssSelector,
+                Query = $"{tagName}.{webElementClass.Trim().Replace(" ", ".")}",
+            };
         }
 
         public static int ExtendedGetHashCode(this IReadOnlyCollection<ElementData> elementsData)

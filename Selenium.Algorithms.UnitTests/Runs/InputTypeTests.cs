@@ -18,7 +18,7 @@
         public async Task Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation()
         {
             var chromeOptions = new ChromeOptions();
-            //chromeOptions.AddArgument("headless");
+            chromeOptions.AddArgument("headless");
 
             using (var driver = new ChromeDriver(@".\", chromeOptions))
             {
@@ -56,8 +56,11 @@
                     pathList.Steps.ShouldNotBeNull();
                     pathList.Steps.ShouldNotBeEmpty();
                     pathList.Steps.Count.ShouldBe(5);
-                    //pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
-                    //pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
+                    pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='name']");
+                    pathList.Steps[1].Action.ToString().ShouldEndWith("textarea[data-automation-id='text']");
+                    pathList.Steps[2].Action.ToString().ShouldEndWith("input[data-automation-id='description']");
+                    pathList.Steps[3].Action.ToString().ShouldEndWith("input[data-automation-id='done']");
+                    pathList.Steps[4].Action.ToString().ShouldEndWith("input[data-automation-id='accept']");
                 }
                 finally
                 {

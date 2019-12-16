@@ -21,7 +21,7 @@
             // We have to cache those values because the element will get out of the DOM eventually
             CachedHash = webElement.ExtendedGetHashCode();
             CachedHash = (CachedHash * 7) + text.GetHashCode();
-            CachedName = $"Type '{text}' on {webElement.ExtendedToString()}";
+            CachedName = $"Type '{text}' on {webElement.GetQuery().Query}";
         }
 
         public override async Task<State<IReadOnlyCollection<ElementData>>> ExecuteAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)

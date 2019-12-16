@@ -19,7 +19,7 @@
 
             // We have to cache those values because the element will get out of the DOM eventually
             CachedHash = webElement.ExtendedGetHashCode();
-            CachedName = $"Click on {webElement.ExtendedToString()}";
+            CachedName = $"Click on {webElement.GetQuery().Query}";
         }
 
         public override async Task<State<IReadOnlyCollection<ElementData>>> ExecuteAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)

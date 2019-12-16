@@ -108,19 +108,6 @@
             return webDriver.FindElementsByCssSelector("body *[data-automation-id]");
         }
 
-        protected virtual string FindBestDataToType(ElementData elementData)
-        {
-            if (inputTextData == null)
-            {
-                throw new InvalidOperationException("No data has been provided for this environment");
-            }
-
-            // TODO: make a more sofisticated 'the closest value to name'
-            return inputTextData.ContainsKey(elementData.Name)
-                ? inputTextData[elementData.Name]
-                : "todo: random string to provide";
-        }
-
         protected virtual ElementTypeAction GetElementTypeAction(ElementData elementData, State<IReadOnlyCollection<ElementData>> state)
         {
             if (inputTextData == null)
@@ -128,6 +115,8 @@
                 throw new InvalidOperationException("No data has been provided for this environment");
             }
 
+            // TODO: make a more sofisticated 'the closest value to name'
+            // Question: What happens if we have more that 1 good matches?
             var inputDataState = inputTextData.ContainsKey(elementData.Name)
                 ? inputTextData[elementData.Name]
                 : "todo: random string to provide";
@@ -137,7 +126,6 @@
                 return null;
             }
 
-            // TODO: make a more sofisticated 'the closest value to name'
             return new ElementTypeAction(elementData, inputDataState);
         }
     }
