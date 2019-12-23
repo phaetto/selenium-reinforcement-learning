@@ -94,10 +94,6 @@
                 .ToList()
                 .AsReadOnly();
 
-#if DEBUG
-            // Debug info
-            var allElementsData = elementList.GetElementsInformation();
-#endif
             var filteredElementsData = filteredActionableElements.GetElementsInformation();
 
             return new SeleniumState(filteredElementsData);

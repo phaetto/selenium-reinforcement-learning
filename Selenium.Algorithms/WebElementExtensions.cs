@@ -35,7 +35,7 @@ for(var i = 0; i < arguments.length; ++i) {
 return list;
 ";
 
-        private const string GetElementsPositionalDataJavaScript = @"
+        private const string GetElementsInteractionDataJavaScript = @"
 var list = [];
 for(var i = 0; i < arguments.length; ++i) {
     var rect = arguments[i].getBoundingClientRect();
@@ -53,6 +53,7 @@ for(var i = 0; i < arguments.length; ++i) {
         'left': rect.left,
         'width': rect.width,
         'height': rect.height,
+        'isEnabled': !arguments[i].disabled,
     });
 }
 return list;
@@ -108,26 +109,27 @@ return true;
             .AsReadOnly();
         }
 
-        public static IReadOnlyList<ElementPositionalData> GetElementsPositionalData(this IReadOnlyCollection<IWebElement> webElementCollection)
+        public static IReadOnlyList<ElementInteractionData> GetElementsInteractionData(this IReadOnlyCollection<IWebElement> webElementCollection)
         {
             if (webElementCollection.Count == 0)
             {
-                return new List<ElementPositionalData>().AsReadOnly();
+                return new List<ElementInteractionData>().AsReadOnly();
             }
 
             var javaScriptExecutor = webElementCollection.ElementAt(0).GetJavascriptExecutor();
 
-            var result = (IReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(GetElementsPositionalDataJavaScript, webElementCollection.Cast<object>().ToArray());
+            var result = (IReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(GetElementsInteractionDataJavaScript, webElementCollection.Cast<object>().ToArray());
             return result.Select((x, index) =>
             {
                 var dictionary = x as IDictionary<string, object>;
-                return new ElementPositionalData
+                return new ElementInteractionData
                 {
                     IsInViewPort = Convert.ToBoolean(dictionary["isInViewPort"]),
                     Y = Convert.ToInt32(dictionary["top"]),
                     X = Convert.ToInt32(dictionary["left"]),
                     Width = Convert.ToInt32(dictionary["width"]),
                     Height = Convert.ToInt32(dictionary["height"]),
+                    IsEnabled = Convert.ToBoolean(dictionary["isEnabled"]),
                     WebElementReference = webElementCollection.ElementAt(index),
                 };
             })
@@ -185,12 +187,19 @@ return true;
         {
             try
             {
-                if (!(webElement?.Enabled ?? false) || !(webElement?.Displayed ?? false))
+                // webElement.Enabled is slow and we use JS to find it out
+                if (!(webElement?.Displayed ?? false))
                 {
                     return false;
                 }
 
-                var elementPositionalData = GetElementsPositionalData(new IWebElement[] { webElement }).First();
+                var elementPositionalData = GetElementsInteractionData(new IWebElement[] { webElement }).First();
+
+                if (!elementPositionalData.IsEnabled)
+                {
+                    return false;
+                }
+                    
                 var javaScriptExecutor = webElement.GetJavascriptExecutor();
                 var remoteWebElement = (RemoteWebElement)webElement;
                 var webDriver = remoteWebElement.WrappedDriver;
@@ -204,7 +213,7 @@ return true;
                     {
                         actions.Perform();
                         // Recalculate the position
-                        elementPositionalData = GetElementsPositionalData(new IWebElement[] { webElement }).First();
+                        elementPositionalData = GetElementsInteractionData(new IWebElement[] { webElement }).First();
                     }
                     catch (Exception ex)
                     {
