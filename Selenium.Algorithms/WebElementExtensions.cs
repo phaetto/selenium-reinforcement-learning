@@ -35,6 +35,48 @@ for(var i = 0; i < arguments.length; ++i) {
 return list;
 ";
 
+        private const string GetElementsPositionalDataJavaScript = @"
+var list = [];
+for(var i = 0; i < arguments.length; ++i) {
+    var rect = arguments[i].getBoundingClientRect();
+
+    var isInViewPort = (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.left <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+    
+    list.push({
+        'isInViewPort': isInViewPort,
+        'top': rect.top,
+        'left': rect.left,
+        'width': rect.width,
+        'height': rect.height,
+    });
+}
+return list;
+";
+
+        private const string IsElementInCoordinatesChildOfElementJavaScript = @"
+var coordX = arguments[0];
+var coordY = arguments[1];
+var element = arguments[2];
+
+var elementAtCoordinates = document.elementFromPoint(coordX, coordY);
+
+var checkForElement = elementAtCoordinates;
+while(!checkForElement.isSameNode(element)) {
+    checkForElement = checkForElement.parentNode;
+
+    if (checkForElement === document.body) {
+        return false;
+    }
+}
+
+return true;
+";
+
         public static IReadOnlyList<ElementData> GetElementsInformation(this IReadOnlyCollection<IWebElement> webElementCollection)
         {
             if (webElementCollection.Count == 0)
@@ -57,8 +99,35 @@ return list;
                     TagName = dictionary["tagName"] as string,
                     Text = dictionary["text"] as string,
                     Name = dictionary["name"] as string,
-                    IsTypingElement = (bool)dictionary["isTypingElement"],
+                    IsTypingElement = Convert.ToBoolean(dictionary["isTypingElement"]),
                     ExtraState = dictionary["extraState"] as string,
+                    WebElementReference = webElementCollection.ElementAt(index),
+                };
+            })
+            .ToList()
+            .AsReadOnly();
+        }
+
+        public static IReadOnlyList<ElementPositionalData> GetElementsPositionalData(this IReadOnlyCollection<IWebElement> webElementCollection)
+        {
+            if (webElementCollection.Count == 0)
+            {
+                return new List<ElementPositionalData>().AsReadOnly();
+            }
+
+            var javaScriptExecutor = webElementCollection.ElementAt(0).GetJavascriptExecutor();
+
+            var result = (IReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(GetElementsPositionalDataJavaScript, webElementCollection.Cast<object>().ToArray());
+            return result.Select((x, index) =>
+            {
+                var dictionary = x as IDictionary<string, object>;
+                return new ElementPositionalData
+                {
+                    IsInViewPort = Convert.ToBoolean(dictionary["isInViewPort"]),
+                    Y = Convert.ToInt32(dictionary["top"]),
+                    X = Convert.ToInt32(dictionary["left"]),
+                    Width = Convert.ToInt32(dictionary["width"]),
+                    Height = Convert.ToInt32(dictionary["height"]),
                     WebElementReference = webElementCollection.ElementAt(index),
                 };
             })
@@ -116,30 +185,26 @@ return list;
         {
             try
             {
-#if DEBUG
-                // Debug info
-                var elementData = GetElementsInformation(new IWebElement[] { webElement }).First();
-#endif
-
                 if (!(webElement?.Enabled ?? false) || !(webElement?.Displayed ?? false))
                 {
                     return false;
                 }
 
+                var elementPositionalData = GetElementsPositionalData(new IWebElement[] { webElement }).First();
                 var javaScriptExecutor = webElement.GetJavascriptExecutor();
                 var remoteWebElement = (RemoteWebElement)webElement;
                 var webDriver = remoteWebElement.WrappedDriver;
+                var windowSize = webDriver.Manage().Window.Size;
 
-                if (remoteWebElement.Coordinates.LocationInViewport.X >= webDriver.Manage().Window.Size.Width
-                   || remoteWebElement.Coordinates.LocationInViewport.Y >= webDriver.Manage().Window.Size.Height
-                   || remoteWebElement.Coordinates.LocationInViewport.X < 0
-                   || remoteWebElement.Coordinates.LocationInViewport.Y < 0)
+                if (!elementPositionalData.IsInViewPort)
                 {
                     var actions = new Actions(javaScriptExecutor as IWebDriver);
                     actions.MoveToElement(remoteWebElement);
                     try
                     {
                         actions.Perform();
+                        // Recalculate the position
+                        elementPositionalData = GetElementsPositionalData(new IWebElement[] { webElement }).First();
                     }
                     catch (Exception ex)
                     {
@@ -147,19 +212,18 @@ return list;
                     }
                 }
 
-                var script = $"return document.elementFromPoint({remoteWebElement.Coordinates.LocationInViewport.X + 1}, {remoteWebElement.Coordinates.LocationInViewport.Y + 1});";
+                Debug.Assert(elementPositionalData.X >= 0, "Element outside of viewport: Left");
+                Debug.Assert(elementPositionalData.Y >= 0, "Element outside of viewport: Top");
+                Debug.Assert(elementPositionalData.X <= windowSize.Width, "Element outside of viewport: Right");
+                Debug.Assert(elementPositionalData.Y <= windowSize.Height, "Element outside of viewport: Bottom");
+                Debug.Assert(elementPositionalData.Width > 0, "Element does not have width");
+                Debug.Assert(elementPositionalData.Height > 0, "Element does not have height");
 
-                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.X >= 0, "Element outside of viewport: Left");
-                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.Y >= 0, "Element outside of viewport: Top");
-                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.X <= webDriver.Manage().Window.Size.Width, "Element outside of viewport: Right");
-                Debug.Assert(remoteWebElement.Coordinates.LocationInViewport.Y <= webDriver.Manage().Window.Size.Height, "Element outside of viewport: Bottom");
-                Debug.Assert(remoteWebElement.Size.Width > 0, "Element does not have width");
-                Debug.Assert(remoteWebElement.Size.Height > 0, "Element does not have height");
-
-                var remoteWebElementFromPoint = (RemoteWebElement)javaScriptExecutor.ExecuteScript(script);
-
-                return remoteWebElementFromPoint != null
-                    && ExtendedEquals(remoteWebElement, remoteWebElementFromPoint);
+                return (bool)javaScriptExecutor.ExecuteScript(
+                    IsElementInCoordinatesChildOfElementJavaScript,
+                    elementPositionalData.X + 1,
+                    elementPositionalData.Y + 1,
+                    remoteWebElement);
             }
             catch (StaleElementReferenceException)
             {

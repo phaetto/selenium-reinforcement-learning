@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Run_WhenAnActionableElementHasOtherNestedElements_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html" />
@@ -24,6 +25,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Run_WhenAnActionableElementHasOtherNestedElements_ThenItSuccessfullyFindsTheCorrectActions.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenTrainingASimpleTestCase_ThenItSuccessfullyFindsTheCorrectActions.html">
