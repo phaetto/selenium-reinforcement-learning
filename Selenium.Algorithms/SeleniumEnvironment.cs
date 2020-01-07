@@ -14,6 +14,7 @@
         private readonly string url;
         private readonly IReadOnlyDictionary<string, string> inputTextData;
         private readonly Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition;
+        private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
 
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
@@ -76,7 +77,8 @@
 
         public State<IReadOnlyCollection<ElementData>> GetCurrentState()
         {
-            var actionableElements = GetActionableElements();
+            var actionableElementQuerySelectors = GetActionableElementsQuerySelectors();
+            var actionableElements = actionableElementQuerySelectors.GetElementsFromQuerySelectors(webDriver);
             var elementList = new List<IWebElement>(actionableElements);
 
             var filteredActionableElements = elementList
@@ -99,9 +101,9 @@
             return new SeleniumState(filteredElementsData);
         }
 
-        protected virtual IReadOnlyCollection<IWebElement> GetActionableElements()
+        protected virtual IReadOnlyCollection<string> GetActionableElementsQuerySelectors()
         {
-            return webDriver.FindElementsByCssSelector("body *[data-automation-id]");
+            return DefaultCssSelectors;
         }
 
         protected virtual ElementTypeAction GetElementTypeAction(ElementData elementData, State<IReadOnlyCollection<ElementData>> state)

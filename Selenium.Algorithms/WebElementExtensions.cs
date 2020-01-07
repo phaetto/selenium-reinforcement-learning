@@ -245,7 +245,7 @@ return true;
             return (IJavaScriptExecutor)((IWrapsDriver)webElement).WrappedDriver;
         }
 
-        private static IReadOnlyCollection<string> ParseAutomationActions(string actions)
+        public static IReadOnlyCollection<string> ParseAutomationActions(string actions)
         {
             return actions?.Split(' ')
                 ?.Select(x => x.Trim())

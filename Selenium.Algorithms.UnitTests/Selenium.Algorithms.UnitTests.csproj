@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="InclusiveState_test.html" />
     <None Remove="Run_WhenAnActionableElementHasOtherNestedElements_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation.html" />
+    <None Remove="WaitTest_test.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +30,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenAnActionableElementHasOtherNestedElements_ThenItSuccessfullyFindsTheCorrectActions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WaitTest_test.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="InclusiveState_test.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenTrainingASimpleTestCase_ThenItSuccessfullyFindsTheCorrectActions.html">
