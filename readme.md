@@ -16,7 +16,9 @@ The goals of the project are:
 - Provide tooling that trains/replays Q-Matrices without breaking your UI tests
 - Provide ordering logic for tests
 - Be extremely reliable either when training or stepping forward from a matrix
-- Provide an error module that can reliably provide error reporting during training or execution
+- Provide an error module that can reliably provide error reporting during training
+- Performance: Training should be fast as possible
+- Be pipeline and DevOps process friendly
 
 ## Reinforcement Learning
 

@@ -8,14 +8,23 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
         // http://automationpractice.com/index.php
 
         // [Train]
-        public void FromAToB(IWebDriver webDriver) // : ITrainable
+        public void FromAToB() // : ITrainable
         {
-            // Page URL
-            // Actionable element query selectors
-            // Input data
+            // This should be more like a lower level spec
+            // It should be fed to the tooling that is using algorithms and that tooling should have the references to IDriver
+            // This frees us from having to lock the version of our IDriver to every test module
+            // Is this possible???
+
+            // ChromeOptions
+            // Page Size()
+            // SeleniumEnvironment (without inheritance)
+            //      Page URL
+            //      Actionable element query selectors
+            //      Input data
+            //      Goal validation
             // Prerequisites (other tests)
             // Initial state navigation
-            // Goal validation
+            // Initial epoch navigation
 
             // Trains from A -> B
             // return ITrainable

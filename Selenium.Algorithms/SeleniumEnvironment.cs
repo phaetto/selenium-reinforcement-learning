@@ -119,7 +119,7 @@
                 ? inputTextData[elementData.Name]
                 : "todo: random string to provide";
 
-            if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have and ElementData.Equals
+            if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have ElementData.Equals
             {
                 return null;
             }
