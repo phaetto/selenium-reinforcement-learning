@@ -25,6 +25,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
             // Prerequisites (other tests)
             // Initial state navigation
             // Initial epoch navigation
+            // Optional: Epochs, MaximumActions
 
             // Trains from A -> B
             // return ITrainable

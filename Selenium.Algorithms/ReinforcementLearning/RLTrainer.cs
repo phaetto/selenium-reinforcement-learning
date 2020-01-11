@@ -51,6 +51,12 @@
             }
         }
 
+        /// <summary>
+        /// Executes one step of the algorithm with a predetermined state and action.
+        /// </summary>
+        /// <param name="currentState">The state the algorithm will start from</param>
+        /// <param name="nextAction">The action that will try to apply</param>
+        /// <returns>The new state after the action has been resolved</returns>
         public async Task<State<TData>> Step(State<TData> currentState, AgentAction<TData> nextAction)
         {
             var nextState = await nextAction.ExecuteAction(environment, currentState);
@@ -75,73 +81,6 @@
                 + (learningRate * (await environment.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
 
             return nextState;
-        }
-
-        /// <summary>
-        /// Gets the best route from the starting state to the goal state making decisions using the maximum reward path.
-        /// </summary>
-        /// <param name="start">The starting state</param>
-        /// <param name="target">The target state</param>
-        /// <param name="maxSteps">Maximum steps that should be taken</param>
-        /// <returns></returns>
-        public async Task<WalkResult<TData>> Walk(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
-        {
-            // TODO: loop sense
-            var resultStates = new List<StateAndActionPairWithResultState<TData>>();
-
-            var currentState = start;
-            var iterationNumber = maxSteps;
-            while (iterationNumber-- > 0)
-            {
-                var actions = await environment.GetPossibleActions(currentState);
-                var stateAndActionPairs = actions.Select(x => {
-                        var pair = new StateAndActionPairWithResultState<TData>(currentState, x);
-                        return policy.QualityMatrix.ContainsKey(pair)
-                            ? (x, policy.QualityMatrix[pair])
-                            : (x, 0D);
-                    })
-                    .ToList();
-
-                if (stateAndActionPairs.Count < 1)
-                {   
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.Unreachable
-                    };
-                }
-
-                var maximumValue = 0D;
-                var maximumReturnAction = stateAndActionPairs.First().x;
-                foreach (var pair in stateAndActionPairs)
-                {
-                    if (pair.Item2 > maximumValue)
-                    {
-                        maximumReturnAction = pair.x;
-                        maximumValue = pair.Item2;
-                    }
-                }
-
-                var newState = await maximumReturnAction.ExecuteAction(environment, currentState);
-
-                resultStates.Add(new StateAndActionPairWithResultState<TData>(currentState, maximumReturnAction, newState));
-
-                currentState = newState;
-
-                if (await goalCondition(currentState, maximumReturnAction))
-                {
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.GoalReached,
-                        Steps = resultStates,
-                    };
-                }
-            }
-
-            return new WalkResult<TData>
-            {
-                State = WalkResultState.StepsExhausted,
-                Steps = resultStates,
-            };
         }
     }
 }

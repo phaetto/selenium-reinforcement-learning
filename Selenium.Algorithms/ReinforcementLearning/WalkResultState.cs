@@ -4,6 +4,7 @@
     {
         GoalReached,
         Unreachable,
-        StepsExhausted
+        StepsExhausted,
+        LoopDetected,
     }
 }

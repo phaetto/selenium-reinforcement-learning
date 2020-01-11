@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selenium.Algorithms", "Selenium.Algorithms\Selenium.Algorithms.csproj", "{8F8B8084-7516-4C72-B731-F5A95EA75DCE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selenium.Algorithms.UnitTests", "Selenium.Algorithms.UnitTests\Selenium.Algorithms.UnitTests.csproj", "{2D0657CD-4710-4086-A72C-E80041F0A6A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selenium.Algorithms.IntegrationTests", "Selenium.Algorithms.UnitTests\Selenium.Algorithms.IntegrationTests.csproj", "{2D0657CD-4710-4086-A72C-E80041F0A6A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomSolutions", "CustomSolutions", "{494EE502-589B-43B9-AF53-E970F9EEDE0C}"
 EndProject

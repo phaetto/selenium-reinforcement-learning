@@ -1,4 +1,4 @@
-﻿namespace Selenium.Algorithms.UnitTests.Runs
+﻿namespace Selenium.Algorithms.IntegrationTests.Runs
 {
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
@@ -44,13 +44,14 @@
                             var target = driver.FindElementByCssSelector(".third-panel");
                             return target.Displayed && target.Enabled;
                         });
-                    var seleniumRandomStepPolicy = new SeleniumQLearningStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
+                    var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
+                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
 
                     await rlTrainer.Run(epochs: 5, maximumActions: 20);
 
                     var initialState = await seleniumEnvironment.GetInitialState();
-                    var pathList = await rlTrainer.Walk(initialState, goalCondition: (s, a) => seleniumEnvironment.HasReachedAGoalCondition(s, a));
+                    var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
+                    var pathList = await pathFinder.Walk(initialState, goalCondition: (s, a) => seleniumEnvironment.HasReachedAGoalCondition(s, a));
 
                     pathList.State.ShouldBe(WalkResultState.GoalReached);
                     pathList.Steps.ShouldNotBeNull();

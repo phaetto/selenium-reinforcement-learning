@@ -1,4 +1,4 @@
-namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
+namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
 {
     using Selenium.Algorithms.ReinforcementLearning;
     using Shouldly;
@@ -25,7 +25,8 @@ namespace Selenium.Algorithms.UnitTests.Runs.RLDemoTestCase
             // Execute
             await rlTrainer.Run(epochs: 50, maximumActions: 100);
 
-            var result = await rlTrainer.Walk(new TestState(8), async (s, a) => Equals(s, new TestState(11)));
+            var pathFinder = new RLPathFinder<int>(testEnvironment, testPolicy);
+            var result = await pathFinder.Walk(new TestState(8), async (s, a) => Equals(s, new TestState(11)));
             result.State.ShouldBe(WalkResultState.GoalReached);
             result.Steps.ShouldNotBeNull();
             result.Steps.ShouldNotBeEmpty();

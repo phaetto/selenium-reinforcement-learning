@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <RootNamespace>Selenium.Algorithms.IntegrationTests</RootNamespace>
+
+    <AssemblyName>Selenium.Algorithms.IntegrationTests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

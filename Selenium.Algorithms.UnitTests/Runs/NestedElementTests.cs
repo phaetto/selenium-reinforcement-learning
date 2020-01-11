@@ -1,4 +1,4 @@
-﻿namespace Selenium.Algorithms.UnitTests.Runs
+﻿namespace Selenium.Algorithms.IntegrationTests.Runs
 {
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
@@ -42,7 +42,8 @@
                     await rlTrainer.Run(epochs: 2, maximumActions: 15);
 
                     var initialState = await seleniumEnvironment.GetInitialState();
-                    var pathList = await rlTrainer.Walk(initialState, goalCondition: (s, a) => seleniumEnvironment.HasReachedAGoalCondition(s, a));
+                    var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
+                    var pathList = await pathFinder.Walk(initialState, goalCondition: (s, a) => seleniumEnvironment.HasReachedAGoalCondition(s, a));
 
                     pathList.State.ShouldBe(WalkResultState.GoalReached);
                     pathList.Steps.ShouldNotBeNull();
