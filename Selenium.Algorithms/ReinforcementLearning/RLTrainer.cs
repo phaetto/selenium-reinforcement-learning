@@ -1,7 +1,5 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -13,17 +11,20 @@
     {
         private readonly Environment<TData> environment;
         private readonly Policy<TData> policy;
+        private readonly ITrainGoal<TData> trainGoal;
         private readonly double learningRate;
         private readonly double discountRate;
 
         public RLTrainer(
             in Environment<TData> environment,
             in Policy<TData> policy,
+            in ITrainGoal<TData> trainGoal,
             in double learningRate = 0.5D,
             in double discountRate = 0.5D)
         {
             this.environment = environment;
             this.policy = policy;
+            this.trainGoal = trainGoal;
             this.learningRate = learningRate;
             this.discountRate = discountRate;
         }
@@ -43,7 +44,7 @@
                     var nextAction = await policy.GetNextAction(environment, currentState);
 
                     currentState = await Step(currentState, nextAction);
-                    if (await environment.HasReachedAGoalCondition(currentState, nextAction))
+                    if (await trainGoal.HasReachedAGoalCondition(currentState, nextAction))
                     {
                         break;
                     }
@@ -78,7 +79,7 @@
             // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
             policy.QualityMatrix[selectedPair] =
                 ((1 - learningRate) * policy.QualityMatrix[selectedPair])
-                + (learningRate * (await environment.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
+                + (learningRate * (await trainGoal.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
 
             return nextState;
         }

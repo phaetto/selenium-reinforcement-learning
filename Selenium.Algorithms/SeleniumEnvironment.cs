@@ -13,20 +13,17 @@
         private readonly RemoteWebDriver webDriver;
         private readonly string url;
         private readonly IReadOnlyDictionary<string, string> inputTextData;
-        private readonly Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition;
         private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
 
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
             string url,
-            IReadOnlyDictionary<string, string> inputTextData = null,
-            Func<RemoteWebDriver, State<IReadOnlyCollection<ElementData>>, bool> hasReachedGoalCondition = null
+            IReadOnlyDictionary<string, string> inputTextData = null
         )
         {
             this.webDriver = webDriver;
             this.url = url;
             this.inputTextData = inputTextData;
-            this.hasReachedGoalCondition = hasReachedGoalCondition;
 
             // Setup webdriver training defaults
             this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
@@ -58,21 +55,6 @@
                     })
                 )
                 .Where(x => x != null);
-        }
-
-        public override async Task<double> RewardFunction(State<IReadOnlyCollection<ElementData>> stateFrom, AgentAction<IReadOnlyCollection<ElementData>> action)
-        {
-            if (await HasReachedAGoalCondition(stateFrom, action))
-            {
-                return 100;
-            }
-
-            return -1;
-        }
-
-        public override async Task<bool> HasReachedAGoalCondition(State<IReadOnlyCollection<ElementData>> state, AgentAction<IReadOnlyCollection<ElementData>> action)
-        {
-            return hasReachedGoalCondition(webDriver, state);
         }
 
         public State<IReadOnlyCollection<ElementData>> GetCurrentState()

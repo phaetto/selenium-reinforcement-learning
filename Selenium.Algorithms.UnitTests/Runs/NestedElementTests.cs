@@ -1,6 +1,5 @@
 ﻿namespace Selenium.Algorithms.IntegrationTests.Runs
 {
-    using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
@@ -28,22 +27,22 @@
                 {
                     var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenAnActionableElementHasOtherNestedElements_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
                     var random = new Random(1);
+                    var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
+                    {
+                        var target = driver.FindElementByCssSelector(".third");
+                        return target.Displayed && target.Enabled;
+                    });
                     var seleniumEnvironment = new SeleniumEnvironment(
                         driver,
-                        fileUri.AbsoluteUri,
-                        hasReachedGoalCondition: (driver, _) =>
-                        {
-                            var target = driver.FindElementByCssSelector(".third");
-                            return target.Displayed && target.Enabled;
-                        });
+                        fileUri.AbsoluteUri);
                     var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
+                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumTrainGoal);
 
                     await rlTrainer.Run(epochs: 2, maximumActions: 15);
 
                     var initialState = await seleniumEnvironment.GetInitialState();
                     var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
-                    var pathList = await pathFinder.Walk(initialState, goalCondition: (s, a) => seleniumEnvironment.HasReachedAGoalCondition(s, a));
+                    var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
 
                     pathList.State.ShouldBe(WalkResultState.GoalReached);
                     pathList.Steps.ShouldNotBeNull();

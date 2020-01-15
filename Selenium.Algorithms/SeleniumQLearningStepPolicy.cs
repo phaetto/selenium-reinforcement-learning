@@ -26,7 +26,6 @@
                 return new WaitAction(random.Next(100, 500));
             }
 
-            // TODO: analyse the existing Q-matrix data and find the best action
             // TODO: exploration mode?
             var stateAndActionPairs = actions
                 .Select(x =>

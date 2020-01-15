@@ -20,13 +20,14 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             // Prepare
             var testEnvironment = new TestEnvironment();
             var testPolicy = new TestPolicy();
-            var rlTrainer = new RLTrainer<int>(testEnvironment, testPolicy);
+            var trainGoal = new TrainGoal();
+            var rlTrainer = new RLTrainer<int>(testEnvironment, testPolicy, trainGoal);
 
             // Execute
             await rlTrainer.Run(epochs: 50, maximumActions: 100);
 
             var pathFinder = new RLPathFinder<int>(testEnvironment, testPolicy);
-            var result = await pathFinder.Walk(new TestState(8), async (s, a) => Equals(s, new TestState(11)));
+            var result = await pathFinder.Walk(new TestState(8), trainGoal.HasReachedAGoalCondition);
             result.State.ShouldBe(WalkResultState.GoalReached);
             result.Steps.ShouldNotBeNull();
             result.Steps.ShouldNotBeEmpty();
@@ -37,26 +38,16 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             result.Steps[4].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(7), new TestAction(new TestState(11))));
         }
 
-        class TestEnvironment : Environment<int>
+        class TrainGoal : ITrainGoal<int>
         {
-            private readonly Random rnd = new Random(1);
-            private readonly int[][] FT;
             private readonly double[][] R;
 
-            public TestEnvironment()
+            public TrainGoal()
             {
-                int ns = 12;
-                FT = CreateMaze(ns);
-                R = CreateReward(ns);
+                R = CreateReward(12);
             }
 
-            public override async Task<State<int>> GetInitialState()
-            {
-                var randomState = rnd.Next(0, R.Length);
-                return new TestState(randomState);
-            }
-
-            public override async Task<double> RewardFunction(State<int> state, AgentAction<int> action)
+            public async Task<double> RewardFunction(State<int> state, AgentAction<int> action)
             {
                 if (action is TestAction testAction)
                 {
@@ -64,6 +55,42 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 }
 
                 throw new InvalidCastException();
+            }
+
+            public async Task<bool> HasReachedAGoalCondition(State<int> state, AgentAction<int> action)
+            {
+                return new TestState(11).Equals(state);
+            }
+
+            private double[][] CreateReward(int ns)
+            {
+                double[][] R = new double[ns][];
+                for (int i = 0; i < ns; ++i)
+                    R[i] = new double[ns];
+                R[0][1] = R[0][4] = R[1][0] = R[1][5] = R[2][3] = -0.1;
+                R[2][6] = R[3][2] = R[3][7] = R[4][0] = R[4][8] = -0.1;
+                R[5][1] = R[5][6] = R[5][9] = R[6][2] = R[6][5] = -0.1;
+                R[6][7] = R[7][3] = R[7][6] = R[7][11] = R[8][4] = -0.1;
+                R[8][9] = R[9][5] = R[9][8] = R[9][10] = R[10][9] = -0.1;
+                R[7][11] = 10.0;  // goal
+                return R;
+            }
+        }
+
+        class TestEnvironment : Environment<int>
+        {
+            private readonly Random rnd = new Random(1);
+            private readonly int[][] FT;
+
+            public TestEnvironment()
+            {
+                FT = CreateMaze(12);
+            }
+
+            public override async Task<State<int>> GetInitialState()
+            {
+                var randomState = rnd.Next(0, 12);
+                return new TestState(randomState);
             }
 
             public override async Task<IEnumerable<AgentAction<int>>> GetPossibleActions(State<int> state)
@@ -89,11 +116,6 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 return possNextStates[idx];
             }
 
-            public override async Task<bool> HasReachedAGoalCondition(State<int> state, AgentAction<int> action)
-            {
-                return new TestState(11).Equals(state);
-            }
-
             private int[][] CreateMaze(int ns)
             {
                 int[][] FT = new int[ns][];
@@ -106,20 +128,6 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 FT[8][9] = FT[9][5] = FT[9][8] = FT[9][10] = FT[10][9] = 1;
                 FT[11][7] = 1;  // goal
                 return FT;
-            }
-
-            private double[][] CreateReward(int ns)
-            {
-                double[][] R = new double[ns][];
-                for (int i = 0; i < ns; ++i)
-                    R[i] = new double[ns];
-                R[0][1] = R[0][4] = R[1][0] = R[1][5] = R[2][3] = -0.1;
-                R[2][6] = R[3][2] = R[3][7] = R[4][0] = R[4][8] = -0.1;
-                R[5][1] = R[5][6] = R[5][9] = R[6][2] = R[6][5] = -0.1;
-                R[6][7] = R[7][3] = R[7][6] = R[7][11] = R[8][4] = -0.1;
-                R[8][9] = R[9][5] = R[9][8] = R[9][10] = R[10][9] = -0.1;
-                R[7][11] = 10.0;  // goal
-                return R;
             }
         }
 
