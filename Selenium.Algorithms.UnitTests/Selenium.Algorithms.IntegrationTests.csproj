@@ -8,6 +8,7 @@
     <RootNamespace>Selenium.Algorithms.IntegrationTests</RootNamespace>
 
     <AssemblyName>Selenium.Algorithms.IntegrationTests</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
