@@ -47,7 +47,9 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 R = CreateReward(12);
             }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             public async Task<double> RewardFunction(State<int> state, AgentAction<int> action)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 if (action is TestAction testAction)
                 {
@@ -57,7 +59,9 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 throw new InvalidCastException();
             }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             public async Task<bool> HasReachedAGoalCondition(State<int> state, AgentAction<int> action)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 return new TestState(11).Equals(state);
             }
@@ -87,13 +91,17 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 FT = CreateMaze(12);
             }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             public override async Task<State<int>> GetInitialState()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 var randomState = rnd.Next(0, 12);
                 return new TestState(randomState);
             }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             public override async Task<IEnumerable<AgentAction<int>>> GetPossibleActions(State<int> state)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 return GetPossNextStates(state.Data)
                     .Select(x => new TestAction(new TestState(x)));
@@ -142,8 +150,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
 
             public override bool Equals(object obj)
             {
-                var action = obj as TestAction;
-                return action != null && action.ToState.Data == ToState.Data;
+                return obj is TestAction action && action.ToState.Data == ToState.Data;
             }
 
             public override Task<State<int>> ExecuteAction(Environment<int> environment, State<int> state)
@@ -164,7 +171,9 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
 
         class TestPolicy : Policy<int>
         {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             public override async Task<AgentAction<int>> GetNextAction(Environment<int> environment, State<int> state)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 var randNextAction = (environment as TestEnvironment).GetRandNextState(state.Data);
                 return new TestAction(new TestState(randNextAction));
@@ -179,8 +188,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
 
             public override bool Equals(object obj)
             {
-                var state = obj as TestState;
-                return state != null && state.Data == Data;
+                return obj is TestState state && state.Data == Data;
             }
 
             public override int GetHashCode()

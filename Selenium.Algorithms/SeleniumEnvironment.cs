@@ -36,7 +36,9 @@
             return Task.FromResult(GetCurrentState());
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async Task<IEnumerable<AgentAction<IReadOnlyCollection<ElementData>>>> GetPossibleActions(State<IReadOnlyCollection<ElementData>> state)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // We need to get the fresh page's state instead of using the input
             var seleniumState = GetCurrentState();

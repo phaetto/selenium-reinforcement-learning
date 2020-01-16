@@ -215,7 +215,7 @@ return true;
                         // Recalculate the position
                         elementPositionalData = GetElementsInteractionData(new IWebElement[] { webElement }).First();
                     }
-                    catch (Exception ex)
+                    catch (Exception) // Should that be a specific excpetion type?
                     {
                         return false;
                     }

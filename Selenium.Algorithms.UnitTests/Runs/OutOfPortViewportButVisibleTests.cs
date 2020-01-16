@@ -19,43 +19,43 @@
             var chromeOptions = new ChromeOptions();
             chromeOptions.AddArgument("headless");
 
-            using (var driver = new ChromeDriver(@".\", chromeOptions))
+            using var driver = new ChromeDriver(@".\", chromeOptions);
+            driver.Manage().Window.Size = new Size(1000, 768);
+
+            try
             {
-                driver.Manage().Window.Size = new Size(1000, 768);
-
-                try
+                var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
+                var random = new Random(1);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
-                    var random = new Random(1);
-                    var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
-                    {
-                        var target = driver.FindElementByCssSelector(".third-panel");
-                        return target.Displayed && target.Enabled;
-                    });
-                    var seleniumEnvironment = new SeleniumEnvironment(
-                        driver,
-                        fileUri.AbsoluteUri);
-                    var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                    var target = driver.FindElementByCssSelector(".third-panel");
+                    return target.Displayed && target.Enabled;
+                });
+                var seleniumEnvironment = new SeleniumEnvironment(
+                    driver,
+                    fileUri.AbsoluteUri);
+                var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
 
-                    await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
-                    var initialState = await seleniumEnvironment.GetInitialState();
-                    var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
-                    var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
+                var initialState = await seleniumEnvironment.GetInitialState();
+                var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
+                var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
 
-                    pathList.State.ShouldBe(WalkResultState.GoalReached);
-                    pathList.Steps.ShouldNotBeNull();
-                    pathList.Steps.ShouldNotBeEmpty();
-                    pathList.Steps.Count.ShouldBe(2);
-                    pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
-                    pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
-                }
-                finally
-                {
-                    driver.Close();
-                    driver.Quit();
-                }
+                pathList.State.ShouldBe(WalkResultState.GoalReached);
+                pathList.Steps.ShouldNotBeNull();
+                pathList.Steps.ShouldNotBeEmpty();
+                pathList.Steps.Count.ShouldBe(2);
+                pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
+                pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
+            }
+            finally
+            {
+                driver.Close();
+                driver.Quit();
             }
         }
 
@@ -65,43 +65,43 @@
             var chromeOptions = new ChromeOptions();
             chromeOptions.AddArgument("headless");
 
-            using (var driver = new ChromeDriver(@".\", chromeOptions))
+            using var driver = new ChromeDriver(@".\", chromeOptions);
+            driver.Manage().Window.Size = new Size(500, 500);
+
+            try
             {
-                driver.Manage().Window.Size = new Size(500, 500);
-
-                try
+                var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
+                var random = new Random(1);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
-                    var random = new Random(1);
-                    var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
-                    {
-                        var target = driver.FindElementByCssSelector(".third-panel");
-                        return target.Displayed && target.Enabled;
-                    });
-                    var seleniumEnvironment = new SeleniumEnvironment(
-                        driver,
-                        fileUri.AbsoluteUri);
-                    var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                    var target = driver.FindElementByCssSelector(".third-panel");
+                    return target.Displayed && target.Enabled;
+                });
+                var seleniumEnvironment = new SeleniumEnvironment(
+                    driver,
+                    fileUri.AbsoluteUri);
+                var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
 
-                    await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
-                    var initialState = await seleniumEnvironment.GetInitialState();
-                    var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
-                    var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
+                var initialState = await seleniumEnvironment.GetInitialState();
+                var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
+                var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
 
-                    pathList.State.ShouldBe(WalkResultState.GoalReached);
-                    pathList.Steps.ShouldNotBeNull();
-                    pathList.Steps.ShouldNotBeEmpty();
-                    pathList.Steps.Count.ShouldBe(2);
-                    pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
-                    pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
-                }
-                finally
-                {
-                    driver.Close();
-                    driver.Quit();
-                }
+                pathList.State.ShouldBe(WalkResultState.GoalReached);
+                pathList.Steps.ShouldNotBeNull();
+                pathList.Steps.ShouldNotBeEmpty();
+                pathList.Steps.Count.ShouldBe(2);
+                pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
+                pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
+            }
+            finally
+            {
+                driver.Close();
+                driver.Quit();
             }
         }
 
@@ -111,43 +111,43 @@
             var chromeOptions = new ChromeOptions();
             chromeOptions.AddArgument("headless");
 
-            using (var driver = new ChromeDriver(@".\", chromeOptions))
+            using var driver = new ChromeDriver(@".\", chromeOptions);
+            driver.Manage().Window.Size = new Size(500, 500);
+
+            try
             {
-                driver.Manage().Window.Size = new Size(500, 500);
-
-                try
+                var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
+                var random = new Random(1);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
-                    var random = new Random(1);
-                    var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
-                    {
-                        var target = driver.FindElementByCssSelector(".third-panel");
-                        return target.Displayed && target.Enabled;
-                    });
-                    var seleniumEnvironment = new SeleniumEnvironment(
-                        driver,
-                        fileUri.AbsoluteUri);
-                    var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                    var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                    var target = driver.FindElementByCssSelector(".third-panel");
+                    return target.Displayed && target.Enabled;
+                });
+                var seleniumEnvironment = new SeleniumEnvironment(
+                    driver,
+                    fileUri.AbsoluteUri);
+                var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
 
-                    await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
-                    var initialState = await seleniumEnvironment.GetInitialState();
-                    var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
-                    var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
+                var initialState = await seleniumEnvironment.GetInitialState();
+                var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
+                var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
 
-                    pathList.State.ShouldBe(WalkResultState.GoalReached);
-                    pathList.Steps.ShouldNotBeNull();
-                    pathList.Steps.ShouldNotBeEmpty();
-                    pathList.Steps.Count.ShouldBe(2);
-                    pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
-                    pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
-                }
-                finally
-                {
-                    driver.Close();
-                    driver.Quit();
-                }
+                pathList.State.ShouldBe(WalkResultState.GoalReached);
+                pathList.Steps.ShouldNotBeNull();
+                pathList.Steps.ShouldNotBeEmpty();
+                pathList.Steps.Count.ShouldBe(2);
+                pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='first']");
+                pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='second']");
+            }
+            finally
+            {
+                driver.Close();
+                driver.Quit();
             }
         }
     }

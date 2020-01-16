@@ -9,20 +9,16 @@
         public static RandomState Save(this Random random)
         {
             var binaryFormatter = new BinaryFormatter();
-            using (var temp = new MemoryStream())
-            {
-                binaryFormatter.Serialize(temp, random);
-                return new RandomState(temp.ToArray());
-            }
+            using var temp = new MemoryStream();
+            binaryFormatter.Serialize(temp, random);
+            return new RandomState(temp.ToArray());
         }
 
         public static Random Restore(this RandomState state)
         {
             var binaryFormatter = new BinaryFormatter();
-            using (var temp = new MemoryStream(state.State))
-            {
-                return (Random)binaryFormatter.Deserialize(temp);
-            }
+            using var temp = new MemoryStream(state.State);
+            return (Random)binaryFormatter.Deserialize(temp);
         }
     }
 
