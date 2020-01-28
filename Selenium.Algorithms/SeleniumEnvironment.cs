@@ -49,7 +49,7 @@
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // We need to get the fresh page's state instead of using the input
-            var seleniumState = GetCurrentState();
+            var seleniumState = state; // GetCurrentState(); // TODO: Check if we need this
 
             if (seleniumState.Data.Count == 0)
             {
