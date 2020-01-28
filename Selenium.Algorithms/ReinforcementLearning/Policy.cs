@@ -5,7 +5,7 @@
 
     public abstract class Policy<TData>
     {
-        public readonly IDictionary<StateAndActionPairWithResultState<TData>, double> QualityMatrix = new Dictionary<StateAndActionPairWithResultState<TData>, double>();
+        public readonly IDictionary<StateAndActionPair<TData>, double> QualityMatrix = new Dictionary<StateAndActionPair<TData>, double>();
         public abstract Task<AgentAction<TData>> GetNextAction(Environment<TData> environment, State<TData> state);
     }
 }

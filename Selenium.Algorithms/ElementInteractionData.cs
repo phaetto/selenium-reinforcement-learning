@@ -2,14 +2,33 @@
 
 namespace Selenium.Algorithms
 {
-    public class ElementInteractionData
+    public readonly struct ElementInteractionData
     {
-        public bool IsInViewPort { get; set; }
-        public int Y { get; set; }
-        public int X { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public bool IsEnabled { get; set; }
-        public IWebElement WebElementReference { get; set; }
+        public bool IsInViewPort { get; }
+        public int Y { get; }
+        public int X { get; }
+        public int Width { get; }
+        public int Height { get; }
+        public bool IsEnabled { get; }
+        public IWebElement WebElementReference { get; }
+
+        public ElementInteractionData(
+            bool isInViewPort,
+            int y,
+            int x,
+            int width,
+            int height,
+            bool isEnabled,
+            IWebElement webElementReference
+            )
+        {
+            IsInViewPort = isInViewPort;
+            Y = y;
+            X = x;
+            Width = width;
+            Height = height;
+            IsEnabled = isEnabled;
+            WebElementReference = webElementReference;
+        }
     }
 }

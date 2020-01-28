@@ -26,7 +26,7 @@
             Console.Write($"\t- waiting for {milliseconds}ms");
             await Task.Delay(milliseconds);
             Console.WriteLine($" ... done!");
-            return (environment as SeleniumEnvironment).GetCurrentState();
+            return ((SeleniumEnvironment)environment).GetCurrentState();
         }
 
         public override int GetHashCode()

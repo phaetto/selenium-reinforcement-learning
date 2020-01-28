@@ -32,7 +32,7 @@
         /// <returns>A report data structure that describes what happened while attempting</returns>
         public async Task<WalkResult<TData>> Walk(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
         {
-            var resultStates = new List<StateAndActionPairWithResultState<TData>>();
+            var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
             var iterationNumber = maxSteps;
@@ -42,7 +42,7 @@
                 var stateAndActionPairs = actions
                     .Select(x =>
                     {
-                        var pair = new StateAndActionPairWithResultState<TData>(currentState, x);
+                        var pair = new StateAndActionPair<TData>(currentState, x);
                         return policy.QualityMatrix.ContainsKey(pair)
                             ? (x, policy.QualityMatrix[pair])
                             : (x, 0D);
@@ -51,10 +51,7 @@
 
                 if (stateAndActionPairs.Count < 1)
                 {
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.Unreachable
-                    };
+                    return new WalkResult<TData>(WalkResultState.Unreachable);
                 }
 
                 var maximumValue = 0D;
@@ -73,11 +70,7 @@
 
                 if (resultStates.Contains(newPair))
                 {
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.LoopDetected,
-                        Steps = resultStates,
-                    };
+                    return new WalkResult<TData>(WalkResultState.LoopDetected, resultStates);
                 }
 
                 resultStates.Add(newPair);
@@ -85,24 +78,16 @@
 
                 if (await goalCondition(currentState, maximumReturnAction))
                 {
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.GoalReached,
-                        Steps = resultStates,
-                    };
+                    return new WalkResult<TData>(WalkResultState.GoalReached, resultStates);
                 }
             }
 
-            return new WalkResult<TData>
-            {
-                State = WalkResultState.StepsExhausted,
-                Steps = resultStates,
-            };
+            return new WalkResult<TData>(WalkResultState.StepsExhausted, resultStates);
         }
 
         public async Task<WalkResult<TData>> FindRoute(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
         {
-            var resultStates = new List<StateAndActionPairWithResultState<TData>>();
+            var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
             var iterationNumber = maxSteps;
@@ -112,7 +97,7 @@
                 var stateAndActionPairs = actions
                     .Select(x =>
                     {
-                        var pair = new StateAndActionPairWithResultState<TData>(currentState, x);
+                        var pair = new StateAndActionPair<TData>(currentState, x);
                         return policy.QualityMatrix.ContainsKey(pair)
                             ? (x, policy.QualityMatrix[pair])
                             : (x, 0D);
@@ -121,10 +106,7 @@
 
                 if (stateAndActionPairs.Count < 1)
                 {
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.Unreachable
-                    };
+                    return new WalkResult<TData>(WalkResultState.Unreachable);
                 }
 
                 var maximumValue = 0D;
@@ -143,11 +125,7 @@
 
                 if (resultStates.Contains(newPair))
                 {
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.LoopDetected,
-                        Steps = resultStates,
-                    };
+                    return new WalkResult<TData>(WalkResultState.LoopDetected, resultStates);
                 }
 
                 resultStates.Add(newPair);
@@ -155,19 +133,11 @@
 
                 if (await goalCondition(currentState, maximumReturnAction))
                 {
-                    return new WalkResult<TData>
-                    {
-                        State = WalkResultState.GoalReached,
-                        Steps = resultStates,
-                    };
+                    return new WalkResult<TData>(WalkResultState.GoalReached, resultStates);
                 }
             }
 
-            return new WalkResult<TData>
-            {
-                State = WalkResultState.StepsExhausted,
-                Steps = resultStates,
-            };
+            return new WalkResult<TData>(WalkResultState.StepsExhausted, resultStates);
         }
     }
 }

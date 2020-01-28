@@ -30,7 +30,7 @@
             var stateAndActionPairs = actions
                 .Select(x =>
                 {
-                    var pair = new StateAndActionPairWithResultState<IReadOnlyCollection<ElementData>>(state, x);
+                    var pair = new StateAndActionPair<IReadOnlyCollection<ElementData>>(state, x);
                     return QualityMatrix.ContainsKey(pair)
                         ? (Action: x, Score: QualityMatrix[pair])
                         : (Action: x, Score: 0D);

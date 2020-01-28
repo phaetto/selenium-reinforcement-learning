@@ -1,9 +1,18 @@
 ﻿namespace Selenium.Algorithms
 {
-    public sealed class ElementDataQuery
+    public readonly struct ElementDataQuery
     {
-        public QueryType QueryType { get; set; }
-        public string Query { get; set; }
+        public QueryType QueryType { get; }
+        public string Query { get; }
+
+        public ElementDataQuery(
+            QueryType queryType,
+            string query
+        )
+        {
+            QueryType = queryType;
+            Query = query;
+        }
     }
 
     public enum QueryType

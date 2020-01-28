@@ -22,7 +22,7 @@
         public override bool Equals(object obj)
         {
             var otherState = obj as SeleniumState;
-            if (obj == null || Data.Count != otherState.Data.Count)
+            if (obj == null || otherState == null || Data.Count != otherState.Data.Count)
             {
                 return false;
             }

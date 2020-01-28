@@ -31,11 +31,11 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             result.State.ShouldBe(WalkResultState.GoalReached);
             result.Steps.ShouldNotBeNull();
             result.Steps.ShouldNotBeEmpty();
-            result.Steps[0].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(8), new TestAction(new TestState(9))));
-            result.Steps[1].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(9), new TestAction(new TestState(5))));
-            result.Steps[2].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(5), new TestAction(new TestState(6))));
-            result.Steps[3].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(6), new TestAction(new TestState(7))));
-            result.Steps[4].ShouldBe(new StateAndActionPairWithResultState<int>(new TestState(7), new TestAction(new TestState(11))));
+            result.Steps[0].ShouldBe(new StateAndActionPair<int>(new TestState(8), new TestAction(new TestState(9))));
+            result.Steps[1].ShouldBe(new StateAndActionPair<int>(new TestState(9), new TestAction(new TestState(5))));
+            result.Steps[2].ShouldBe(new StateAndActionPair<int>(new TestState(5), new TestAction(new TestState(6))));
+            result.Steps[3].ShouldBe(new StateAndActionPair<int>(new TestState(6), new TestAction(new TestState(7))));
+            result.Steps[4].ShouldBe(new StateAndActionPair<int>(new TestState(7), new TestAction(new TestState(11))));
         }
 
         class TrainGoal : ITrainGoal<int>
@@ -175,7 +175,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             public override async Task<AgentAction<int>> GetNextAction(Environment<int> environment, State<int> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
-                var randNextAction = (environment as TestEnvironment).GetRandNextState(state.Data);
+                var randNextAction = ((TestEnvironment)environment).GetRandNextState(state.Data);
                 return new TestAction(new TestState(randNextAction));
             }
         }

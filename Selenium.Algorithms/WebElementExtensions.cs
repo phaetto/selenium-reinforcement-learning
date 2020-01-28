@@ -21,15 +21,15 @@ for(var i = 0; i < arguments.length; ++i) {
         || (arguments[i].tagName.toLowerCase() === 'textarea');
     
     list.push({
-        'class': arguments[i].className || null,
-        'id': arguments[i].id || null,
-        'data-automation-id': arguments[i].getAttribute('data-automation-id') || null,
-        'data-automation-actions': arguments[i].getAttribute('data-automation-actions') || null,
-        'name': arguments[i].getAttribute('name') || null,
-        'tagName': arguments[i].tagName.toLowerCase() || null,
-        'text': arguments[i].innerText || null,
+        'class': arguments[i].className || '',
+        'id': arguments[i].id || '',
+        'data-automation-id': arguments[i].getAttribute('data-automation-id') || '',
+        'data-automation-actions': arguments[i].getAttribute('data-automation-actions') || [],
+        'name': arguments[i].getAttribute('name') || '',
+        'tagName': arguments[i].tagName.toLowerCase() || '',
+        'text': arguments[i].innerText || '',
         'isTypingElement': isTypingElement,
-        'extraState': isTypingElement ? arguments[i].value : null,
+        'extraState': isTypingElement ? arguments[i].value : '',
     });
 }
 return list;
@@ -90,20 +90,20 @@ return true;
             var result = (IReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(GetElementsInformationJavaScript, webElementCollection.Cast<object>().ToArray());
             return result.Select((x, index) =>
             {
-                var dictionary = x as IDictionary<string, object>;
-                return new ElementData
-                {
-                    Class = dictionary["class"] as string,
-                    Id = dictionary["id"] as string,
-                    DataAutomationId = dictionary["data-automation-id"] as string,
-                    DataAutomationActions = ParseAutomationActions(dictionary["data-automation-actions"] as string),
-                    TagName = dictionary["tagName"] as string,
-                    Text = dictionary["text"] as string,
-                    Name = dictionary["name"] as string,
-                    IsTypingElement = Convert.ToBoolean(dictionary["isTypingElement"]),
-                    ExtraState = dictionary["extraState"] as string,
-                    WebElementReference = webElementCollection.ElementAt(index),
-                };
+                var dictionary = (IDictionary<string, object>)x;
+
+                return new ElementData(
+                    Convert.ToString(dictionary["class"]),
+                    Convert.ToString(dictionary["id"]),
+                    Convert.ToString(dictionary["data-automation-id"]),
+                    ParseAutomationActions(Convert.ToString(dictionary["data-automation-actions"])),
+                    Convert.ToString(dictionary["tagName"]),
+                    Convert.ToString(dictionary["text"]),
+                    Convert.ToString(dictionary["name"]),
+                    Convert.ToBoolean(dictionary["isTypingElement"]),
+                    Convert.ToString(dictionary["extraState"]),
+                    webElementCollection.ElementAt(index)
+                );
             })
             .ToList()
             .AsReadOnly();
@@ -121,17 +121,17 @@ return true;
             var result = (IReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(GetElementsInteractionDataJavaScript, webElementCollection.Cast<object>().ToArray());
             return result.Select((x, index) =>
             {
-                var dictionary = x as IDictionary<string, object>;
-                return new ElementInteractionData
-                {
-                    IsInViewPort = Convert.ToBoolean(dictionary["isInViewPort"]),
-                    Y = Convert.ToInt32(dictionary["top"]),
-                    X = Convert.ToInt32(dictionary["left"]),
-                    Width = Convert.ToInt32(dictionary["width"]),
-                    Height = Convert.ToInt32(dictionary["height"]),
-                    IsEnabled = Convert.ToBoolean(dictionary["isEnabled"]),
-                    WebElementReference = webElementCollection.ElementAt(index),
-                };
+                var dictionary = (IDictionary<string, object>)x;
+
+                return new ElementInteractionData(
+                    Convert.ToBoolean(dictionary["isInViewPort"]),
+                    Convert.ToInt32(dictionary["top"]),
+                    Convert.ToInt32(dictionary["left"]),
+                    Convert.ToInt32(dictionary["width"]),
+                    Convert.ToInt32(dictionary["height"]),
+                    Convert.ToBoolean(dictionary["isEnabled"]),
+                    webElementCollection.ElementAt(index)
+                );
             })
             .ToList()
             .AsReadOnly();

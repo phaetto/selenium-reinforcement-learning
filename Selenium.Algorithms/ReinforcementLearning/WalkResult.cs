@@ -2,9 +2,24 @@
 {
     using System.Collections.Generic;
 
-    public sealed class WalkResult<TData>
+    public readonly struct WalkResult<TData>
     {
-        public WalkResultState State { get; set; }
-        public List<StateAndActionPairWithResultState<TData>> Steps { get; set; }
+        public WalkResultState State { get; }
+        public List<StateAndActionPair<TData>> Steps { get; }
+
+        public WalkResult(
+            WalkResultState state,
+            List<StateAndActionPair<TData>> steps
+        )
+        {
+            State = state;
+            Steps = steps;
+        }
+
+        public WalkResult(
+            WalkResultState state
+        ) :  this(state, new List<StateAndActionPair<TData>>())
+        {
+        }
     }
 }

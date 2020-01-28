@@ -64,7 +64,7 @@
 
             var nextNextActions = await environment.GetPossibleActions(nextState);
             var maxQ = nextNextActions.Max(x => {
-                var pair = new StateAndActionPairWithResultState<TData>(nextState, x);
+                var pair = new StateAndActionPair<TData>(nextState, x);
                 return policy.QualityMatrix.ContainsKey(pair)
                 ? policy.QualityMatrix[pair]
                 : 0D;

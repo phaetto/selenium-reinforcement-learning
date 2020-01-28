@@ -10,6 +10,7 @@
 
     public class SeleniumEnvironment : Environment<IReadOnlyCollection<ElementData>>
     {
+        public static readonly IReadOnlyDictionary<string, string> NoInputData = new Dictionary<string, string>();
         private readonly RemoteWebDriver webDriver;
         private readonly string url;
         private readonly IReadOnlyDictionary<string, string> inputTextData;
@@ -18,7 +19,7 @@
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
             string url,
-            IReadOnlyDictionary<string, string> inputTextData = null
+            IReadOnlyDictionary<string, string> inputTextData
         )
         {
             this.webDriver = webDriver;
@@ -28,6 +29,13 @@
             // Setup webdriver training defaults
             this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
             this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(300);
+        }
+
+        public SeleniumEnvironment(
+            RemoteWebDriver webDriver,
+            string url
+        ) : this(webDriver, url, new Dictionary<string, string>())
+        {
         }
 
         public override Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
@@ -56,7 +64,7 @@
                         _ => new ElementClickAction(x),
                     })
                 )
-                .Where(x => x != null);
+                .Where(x => !Equals(x, ElementTypeAction.NoTypeActionAction));
         }
 
         public State<IReadOnlyCollection<ElementData>> GetCurrentState()
@@ -92,7 +100,7 @@
 
         protected virtual ElementTypeAction GetElementTypeAction(ElementData elementData, State<IReadOnlyCollection<ElementData>> state)
         {
-            if (inputTextData == null)
+            if (inputTextData == NoInputData)
             {
                 throw new InvalidOperationException("No data has been provided for this environment");
             }
@@ -105,7 +113,7 @@
 
             if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have ElementData.Equals
             {
-                return null;
+                return ElementTypeAction.NoTypeActionAction;
             }
 
             return new ElementTypeAction(elementData, inputDataState);

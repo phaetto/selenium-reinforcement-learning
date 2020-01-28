@@ -69,39 +69,23 @@
             var dataAutomationId = elementData.DataAutomationId;
             if (!string.IsNullOrWhiteSpace(dataAutomationId))
             {
-                return new ElementDataQuery
-                {
-                    QueryType = QueryType.CssSelector,
-                    Query = $"{tagName}[data-automation-id='{dataAutomationId}']",
-                };
+                return new ElementDataQuery(QueryType.CssSelector, $"{tagName}[data-automation-id='{dataAutomationId}']");
             }
 
             var id = elementData.Id;
             if (!string.IsNullOrWhiteSpace(id))
             {
-                return new ElementDataQuery
-                {
-                    QueryType = QueryType.CssSelector,
-                    Query = $"{tagName}#{id}",
-                };
+                return new ElementDataQuery(QueryType.CssSelector, $"{tagName}#{id}");
             }
 
             var webElementText = elementData.Text;
             var webElementClass = elementData.Class;
             if (!string.IsNullOrWhiteSpace(webElementText))
             {
-                return new ElementDataQuery
-                {
-                    QueryType = QueryType.XPath,
-                    Query = $"//{tagName}[@class='{webElementClass}'][text()={EncodeXPathExpression(webElementText)}]",
-                };
+                return new ElementDataQuery(QueryType.XPath, $"//{tagName}[@class='{webElementClass}'][text()={EncodeXPathExpression(webElementText)}]");
             }
 
-            return new ElementDataQuery
-            {
-                QueryType = QueryType.CssSelector,
-                Query = $"{tagName}.{webElementClass.Trim().Replace(" ", ".")}",
-            };
+            return new ElementDataQuery(QueryType.CssSelector, $"{tagName}.{webElementClass.Trim().Replace(" ", ".")}");
         }
 
         public static int ExtendedGetHashCode(this IReadOnlyCollection<ElementData> elementsData)

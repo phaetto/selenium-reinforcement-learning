@@ -43,7 +43,7 @@
                 // Do not move at all if we cannot click, it should penalize it
             }
 
-            return (environment as SeleniumEnvironment).GetCurrentState();
+            return ((SeleniumEnvironment)environment).GetCurrentState();
         }
 
         public override bool Equals(object obj)

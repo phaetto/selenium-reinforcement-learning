@@ -3,17 +3,41 @@ using System.Collections.Generic;
 
 namespace Selenium.Algorithms
 {
-    public class ElementData
+    public readonly struct ElementData
     {
-        public string Class { get; set; }
-        public string Id { get; set; }
-        public string DataAutomationId { get; set; }
-        public IReadOnlyCollection<string> DataAutomationActions { get; set; }
-        public string TagName { get; set; }
-        public string Text { get; set; }
-        public string Name { get; set; }
-        public bool IsTypingElement { get; set; }
-        public string ExtraState { get; set; }
-        public IWebElement WebElementReference { get; set; }
+        public string Class { get; }
+        public string Id { get; }
+        public string DataAutomationId { get; }
+        public IReadOnlyCollection<string> DataAutomationActions { get; }
+        public string TagName { get; }
+        public string Text { get; }
+        public string Name { get; }
+        public bool IsTypingElement { get; }
+        public string ExtraState { get; }
+        public IWebElement WebElementReference { get; }
+
+        public ElementData(
+            string @class,
+            string id,
+            string dataAutomationId,
+            IReadOnlyCollection<string> dataAutomationActions,
+            string tagName,
+            string text,
+            string name,
+            bool isTypingElement,
+            string extraState,
+            IWebElement webElementReference)
+        {
+            Class = @class;
+            Id = id;
+            DataAutomationId = dataAutomationId;
+            DataAutomationActions = dataAutomationActions;
+            TagName = tagName;
+            Text = text;
+            Name = name;
+            IsTypingElement = isTypingElement;
+            ExtraState = extraState;
+            WebElementReference = webElementReference;
+        }
     }
 }

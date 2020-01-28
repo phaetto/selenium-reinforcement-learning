@@ -8,10 +8,19 @@
 
     public class ElementTypeAction : AgentAction<IReadOnlyCollection<ElementData>>
     {
+        public static readonly ElementTypeAction NoTypeActionAction = new ElementTypeAction();
+
         private readonly ElementData webElement;
         private readonly string text;
         public readonly string CachedName;
         public readonly int CachedHash;
+
+        private ElementTypeAction()
+        {
+            text = "No type action";
+            CachedName = string.Empty;
+            CachedHash = 0;
+        }
 
         public ElementTypeAction(in ElementData webElement, in string text)
         {
@@ -46,7 +55,7 @@
                 // Do not move at all if we cannot click, it should penalize it
             }
 
-            return (environment as SeleniumEnvironment).GetCurrentState();
+            return ((SeleniumEnvironment)environment).GetCurrentState();
         }
 
         public override bool Equals(object obj)
