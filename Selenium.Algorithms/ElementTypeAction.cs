@@ -8,19 +8,12 @@
 
     public class ElementTypeAction : AgentAction<IReadOnlyCollection<ElementData>>
     {
-        public static readonly ElementTypeAction NoTypeActionAction = new ElementTypeAction();
+        public static readonly ElementTypeAction NoTypeAction = new ElementTypeAction();
 
         private readonly ElementData webElement;
         private readonly string text;
         public readonly string CachedName;
         public readonly int CachedHash;
-
-        private ElementTypeAction()
-        {
-            text = "No type action";
-            CachedName = string.Empty;
-            CachedHash = 0;
-        }
 
         public ElementTypeAction(in ElementData webElement, in string text)
         {
@@ -31,6 +24,13 @@
             CachedHash = webElement.ExtendedGetHashCode();
             CachedHash = (CachedHash * 7) + text.GetHashCode();
             CachedName = $"Type '{text}' on {webElement.GetQuery().Query}";
+        }
+
+        private ElementTypeAction()
+        {
+            text = "No type action";
+            CachedName = string.Empty;
+            CachedHash = 0;
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously

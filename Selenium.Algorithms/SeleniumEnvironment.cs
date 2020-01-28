@@ -64,7 +64,7 @@
                         _ => new ElementClickAction(x),
                     })
                 )
-                .Where(x => !Equals(x, ElementTypeAction.NoTypeActionAction));
+                .Where(x => !Equals(x, ElementTypeAction.NoTypeAction));
         }
 
         public State<IReadOnlyCollection<ElementData>> GetCurrentState()
@@ -113,7 +113,7 @@
 
             if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have ElementData.Equals
             {
-                return ElementTypeAction.NoTypeActionAction;
+                return ElementTypeAction.NoTypeAction;
             }
 
             return new ElementTypeAction(elementData, inputDataState);

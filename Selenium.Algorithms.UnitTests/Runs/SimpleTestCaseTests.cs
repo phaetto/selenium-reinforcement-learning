@@ -43,9 +43,9 @@
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy);
-                var pathList = await pathFinder.Walk(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
+                var pathList = await pathFinder.FindRoute(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition);
 
-                pathList.State.ShouldBe(WalkResultState.GoalReached);
+                pathList.State.ShouldBe(PathFindResultState.GoalReached);
                 pathList.Steps.ShouldNotBeNull();
                 pathList.Steps.ShouldNotBeEmpty();
                 pathList.Steps.Count.ShouldBe(3);

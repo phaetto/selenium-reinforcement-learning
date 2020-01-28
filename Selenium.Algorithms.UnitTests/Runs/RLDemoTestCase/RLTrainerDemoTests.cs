@@ -27,8 +27,8 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             await rlTrainer.Run(epochs: 50, maximumActions: 100);
 
             var pathFinder = new RLPathFinder<int>(testEnvironment, testPolicy);
-            var result = await pathFinder.Walk(new TestState(8), trainGoal.HasReachedAGoalCondition);
-            result.State.ShouldBe(WalkResultState.GoalReached);
+            var result = await pathFinder.FindRoute(new TestState(8), trainGoal.HasReachedAGoalCondition);
+            result.State.ShouldBe(PathFindResultState.GoalReached);
             result.Steps.ShouldNotBeNull();
             result.Steps.ShouldNotBeEmpty();
             result.Steps[0].ShouldBe(new StateAndActionPair<int>(new TestState(8), new TestAction(new TestState(9))));

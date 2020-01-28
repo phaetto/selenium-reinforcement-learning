@@ -4,11 +4,11 @@
 
     public readonly struct WalkResult<TData>
     {
-        public WalkResultState State { get; }
+        public PathFindResultState State { get; }
         public List<StateAndActionPair<TData>> Steps { get; }
 
         public WalkResult(
-            WalkResultState state,
+            PathFindResultState state,
             List<StateAndActionPair<TData>> steps
         )
         {
@@ -17,7 +17,7 @@
         }
 
         public WalkResult(
-            WalkResultState state
+            PathFindResultState state
         ) :  this(state, new List<StateAndActionPair<TData>>())
         {
         }

@@ -30,61 +30,6 @@
         /// <param name="target">The target state</param>
         /// <param name="maxSteps">Maximum steps that should be taken</param>
         /// <returns>A report data structure that describes what happened while attempting</returns>
-        public async Task<WalkResult<TData>> Walk(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
-        {
-            var resultStates = new List<StateAndActionPair<TData>>();
-
-            var currentState = start;
-            var iterationNumber = maxSteps;
-            while (iterationNumber-- > 0)
-            {
-                var actions = await environment.GetPossibleActions(currentState);
-                var stateAndActionPairs = actions
-                    .Select(x =>
-                    {
-                        var pair = new StateAndActionPair<TData>(currentState, x);
-                        return policy.QualityMatrix.ContainsKey(pair)
-                            ? (x, policy.QualityMatrix[pair])
-                            : (x, 0D);
-                    })
-                    .ToList();
-
-                if (stateAndActionPairs.Count < 1)
-                {
-                    return new WalkResult<TData>(WalkResultState.Unreachable);
-                }
-
-                var maximumValue = 0D;
-                var maximumReturnAction = stateAndActionPairs.First().x;
-                foreach (var pair in stateAndActionPairs)
-                {
-                    if (pair.Item2 > maximumValue)
-                    {
-                        maximumReturnAction = pair.x;
-                        maximumValue = pair.Item2;
-                    }
-                }
-
-                var newState = await maximumReturnAction.ExecuteAction(environment, currentState);
-                var newPair = new StateAndActionPairWithResultState<TData>(currentState, maximumReturnAction, newState);
-
-                if (resultStates.Contains(newPair))
-                {
-                    return new WalkResult<TData>(WalkResultState.LoopDetected, resultStates);
-                }
-
-                resultStates.Add(newPair);
-                currentState = newState;
-
-                if (await goalCondition(currentState, maximumReturnAction))
-                {
-                    return new WalkResult<TData>(WalkResultState.GoalReached, resultStates);
-                }
-            }
-
-            return new WalkResult<TData>(WalkResultState.StepsExhausted, resultStates);
-        }
-
         public async Task<WalkResult<TData>> FindRoute(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
         {
             var resultStates = new List<StateAndActionPair<TData>>();
@@ -99,24 +44,24 @@
                     {
                         var pair = new StateAndActionPair<TData>(currentState, x);
                         return policy.QualityMatrix.ContainsKey(pair)
-                            ? (x, policy.QualityMatrix[pair])
-                            : (x, 0D);
+                            ? (action: x, score: policy.QualityMatrix[pair])
+                            : (action: x, score: 0D);
                     })
                     .ToList();
 
                 if (stateAndActionPairs.Count < 1)
                 {
-                    return new WalkResult<TData>(WalkResultState.Unreachable);
+                    return new WalkResult<TData>(PathFindResultState.Unreachable);
                 }
 
                 var maximumValue = 0D;
-                var maximumReturnAction = stateAndActionPairs.First().x;
+                var maximumReturnAction = stateAndActionPairs.First().action;
                 foreach (var pair in stateAndActionPairs)
                 {
-                    if (pair.Item2 > maximumValue)
+                    if (pair.score > maximumValue)
                     {
-                        maximumReturnAction = pair.x;
-                        maximumValue = pair.Item2;
+                        maximumReturnAction = pair.action;
+                        maximumValue = pair.score;
                     }
                 }
 
@@ -125,7 +70,7 @@
 
                 if (resultStates.Contains(newPair))
                 {
-                    return new WalkResult<TData>(WalkResultState.LoopDetected, resultStates);
+                    return new WalkResult<TData>(PathFindResultState.LoopDetected, resultStates);
                 }
 
                 resultStates.Add(newPair);
@@ -133,11 +78,72 @@
 
                 if (await goalCondition(currentState, maximumReturnAction))
                 {
-                    return new WalkResult<TData>(WalkResultState.GoalReached, resultStates);
+                    return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
                 }
             }
 
-            return new WalkResult<TData>(WalkResultState.StepsExhausted, resultStates);
+            return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
+        }
+
+        public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
+        {
+            var resultStates = new List<StateAndActionPair<TData>>();
+
+            var currentState = start;
+            var iterationNumber = maxSteps;
+            while (iterationNumber-- > 0)
+            {
+                var actions = await environment.GetPossibleActions(currentState);
+                var stateAndActionPairs = actions
+                   .Select(x =>
+                   {
+                       var pair = new StateAndActionPair<TData>(currentState, x);
+                       return policy.QualityMatrix.ContainsKey(pair)
+                           ? (pair, score: policy.QualityMatrix[pair])
+                           : (pair, score: 0D);
+                   })
+                   .ToList();
+
+                if (stateAndActionPairs.Count < 1)
+                {
+                    return new WalkResult<TData>(PathFindResultState.Unreachable);
+                }
+
+                var maximumValue = 0D;
+                var maximumReturnPair = stateAndActionPairs.First().pair;
+                foreach (var pairAndScore in stateAndActionPairs)
+                {
+                    if (pairAndScore.score > maximumValue)
+                    {
+                        maximumReturnPair = pairAndScore.pair;
+                        maximumValue = pairAndScore.score;
+                    }
+                }
+
+                if (maximumReturnPair is StateAndActionPairWithResultState<TData> stateAndActionPairWithResultState)
+                {
+                    var newState = stateAndActionPairWithResultState.ResultState;
+
+                    if (resultStates.Contains(stateAndActionPairWithResultState))
+                    {
+                        return new WalkResult<TData>(PathFindResultState.LoopDetected, resultStates);
+                    }
+
+                    resultStates.Add(stateAndActionPairWithResultState);
+                    currentState = newState;
+
+                    if (await goalCondition(currentState, stateAndActionPairWithResultState.Action))
+                    {
+                        return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
+                    }
+                }
+                else
+                {
+                    return new WalkResult<TData>(PathFindResultState.DataNotIncluded);
+                }
+            }
+
+            return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
         }
     }
 }
