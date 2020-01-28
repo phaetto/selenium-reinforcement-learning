@@ -9,11 +9,6 @@
             Data = data;
         }
 
-        private State()
-        {
-            Data = default;
-        }
-
         public abstract override bool Equals(object obj);
         public abstract override int GetHashCode();
         public abstract override string ToString();

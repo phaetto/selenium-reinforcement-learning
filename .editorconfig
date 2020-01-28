@@ -23,3 +23,6 @@ dotnet_diagnostic.CS8604.severity = error
 
 # CS1717: Assignment made to same variable
 dotnet_diagnostic.CS1717.severity = error
+
+# CS8653: A default expression introduces a null value for a type parameter.
+dotnet_diagnostic.CS8653.severity = error
