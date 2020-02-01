@@ -5,6 +5,7 @@
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -38,10 +39,10 @@
         {
         }
 
-        public override Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
+        public override async Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
             webDriver.Navigate().GoToUrl(url);
-            return Task.FromResult(GetCurrentState());
+            return await GetCurrentState();
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -51,10 +52,7 @@
             // We need to get the fresh page's state instead of using the input
             var seleniumState = state; // GetCurrentState(); // TODO: Check if we need this
 
-            if (seleniumState.Data.Count == 0)
-            {
-                return new[] { new WaitAction(300) };
-            }
+            Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumEnvironment)} that has no data");
 
             return seleniumState.Data.Select(x =>
                     (AgentAction<IReadOnlyCollection<ElementData>>)
@@ -67,7 +65,9 @@
                 .Where(x => !Equals(x, ElementTypeAction.NoTypeAction));
         }
 
-        public State<IReadOnlyCollection<ElementData>> GetCurrentState()
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task<State<IReadOnlyCollection<ElementData>>> GetCurrentState()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var actionableElementQuerySelectors = GetActionableElementsQuerySelectors();
             var actionableElements = actionableElementQuerySelectors.GetElementsFromQuerySelectors(webDriver);
@@ -91,6 +91,25 @@
             var filteredElementsData = filteredActionableElements.GetElementsInformation();
 
             return new SeleniumState(filteredElementsData);
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task<bool> IsIntermediateState(State<IReadOnlyCollection<ElementData>> state)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            return state.Data.Count == 0;
+        }
+
+        public override async Task WaitForPostActionIntermediateStabilization()
+        {
+            // TODO: Wait should sync with the algorithm steps + maximum steps
+            State<IReadOnlyCollection<ElementData>> state;
+            do
+            {
+                await Task.Delay(300);
+                state = await GetCurrentState();
+            }
+            while (state.Data.Count == 0);
         }
 
         protected virtual IReadOnlyCollection<string> GetActionableElementsQuerySelectors()

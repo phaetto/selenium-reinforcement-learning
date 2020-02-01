@@ -32,7 +32,7 @@
         }
     }
 
-    [DebuggerDisplay("State: {State.ToString()} --- Action: {Action.ToString()}")]
+    [DebuggerDisplay("State: {State.ToString()} --- Action: {Action.ToString()} --- Plus result")]
     public class StateAndActionPairWithResultState<TData> : StateAndActionPair<TData>
     {
         public StateAndActionPairWithResultState(

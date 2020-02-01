@@ -3,6 +3,7 @@
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -18,12 +19,8 @@
         public override async Task<AgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
         {
             var actions = await environment.GetPossibleActions(state);
-            
-            // Intermediate states (e.g. loading): when you have a state with no elements, create a wait-for-time-action
-            if (actions.Count() == 0)
-            {
-                return new WaitAction(random.Next(100, 500));
-            }
+
+            Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumQLearningStepPolicy)} that has no data");
 
             // TODO: exploration mode?
             var stateAndActionPairs = actions

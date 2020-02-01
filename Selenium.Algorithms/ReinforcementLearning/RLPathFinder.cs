@@ -66,6 +66,13 @@
                 }
 
                 var newState = await maximumReturnAction.ExecuteAction(environment, currentState);
+
+                if (await environment.IsIntermediateState(newState))
+                {
+                    await environment.WaitForPostActionIntermediateStabilization();
+                    newState = await environment.GetCurrentState();
+                }
+
                 var newPair = new StateAndActionPairWithResultState<TData>(currentState, maximumReturnAction, newState);
 
                 if (resultStates.Contains(newPair))

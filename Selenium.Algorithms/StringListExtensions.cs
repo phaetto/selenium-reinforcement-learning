@@ -6,7 +6,7 @@
 
     public static class StringListExtensions
     {
-        private const string GetElementsInformationJavaScript = @"
+        private const string GetElementsFromJavaScript = @"
 var list = [];
 for(var i = 0; i < arguments.length; ++i) {
     var elements = document.querySelectorAll(arguments[i]);
@@ -23,7 +23,7 @@ return list;
                 return new List<IWebElement>().AsReadOnly();
             }
 
-            var result = (IReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(GetElementsInformationJavaScript, webElementQuerySelectorCollection.Cast<object>().ToArray());
+            var result = (IReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(GetElementsFromJavaScript, webElementQuerySelectorCollection.Cast<object>().ToArray());
             return result.Cast<IWebElement>()
                 .ToList()
                 .AsReadOnly();

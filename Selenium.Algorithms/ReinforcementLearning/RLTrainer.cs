@@ -62,6 +62,12 @@
         {
             var nextState = await nextAction.ExecuteAction(environment, currentState);
 
+            if (await environment.IsIntermediateState(nextState))
+            {
+                await environment.WaitForPostActionIntermediateStabilization();
+                nextState = await environment.GetCurrentState();
+            }
+
             var nextNextActions = await environment.GetPossibleActions(nextState);
             var maxQ = nextNextActions.Max(x => {
                 var pair = new StateAndActionPair<TData>(nextState, x);

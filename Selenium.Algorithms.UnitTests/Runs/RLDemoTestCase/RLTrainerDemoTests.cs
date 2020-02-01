@@ -91,6 +91,11 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 FT = CreateMaze(12);
             }
 
+            public override Task<State<int>> GetCurrentState()
+            {
+                throw new NotSupportedException();
+            }
+
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             public override async Task<State<int>> GetInitialState()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -122,6 +127,18 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 int ct = possNextStates.Count;
                 int idx = rnd.Next(0, ct);
                 return possNextStates[idx];
+            }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+            public override async Task<bool> IsIntermediateState(State<int> state)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+            {
+                return false;
+            }
+
+            public override Task WaitForPostActionIntermediateStabilization()
+            {
+                throw new NotSupportedException();
             }
 
             private int[][] CreateMaze(int ns)
