@@ -32,7 +32,7 @@
         /// <summary>
         /// Runs a training session for the number of prespecified epochs
         /// </summary>
-        /// <param name="epochs">The amount of iterations that the algorithm will make</param>
+        /// <param name="epochs">The amount of iterations that the algorithm will make (each epoch starts from the initial state)</param>
         /// <param name="maximumActions">The max actions to apply in an epoch</param>
         public async Task Run(int epochs = 1000, int maximumActions = 1000)
         {
