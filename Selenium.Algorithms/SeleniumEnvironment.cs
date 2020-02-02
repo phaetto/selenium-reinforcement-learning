@@ -100,16 +100,15 @@
             return state.Data.Count == 0;
         }
 
-        public override async Task WaitForPostActionIntermediateStabilization()
+        public override async Task WaitForPostActionIntermediateStabilization(RepetitionContext repetitionContext)
         {
-            // TODO: Wait should sync with the algorithm steps + maximum steps
             State<IReadOnlyCollection<ElementData>> state;
             do
             {
                 await Task.Delay(300);
                 state = await GetCurrentState();
             }
-            while (state.Data.Count == 0);
+            while (state.Data.Count == 0 && repetitionContext.Step());
         }
 
         protected virtual IReadOnlyCollection<string> GetActionableElementsQuerySelectors()

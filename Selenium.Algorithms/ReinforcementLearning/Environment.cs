@@ -1,5 +1,6 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
+    using Selenium.Algorithms.ReinforcementLearning.Repetitions;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
@@ -34,7 +35,8 @@
         /// When the state is considered intermediate (exactly after an action has been applied) the algorithm
         /// is going to call this method to wait for the environment stabilization
         /// </summary>
-        /// <returns>Should return only if the environment is stable after an action</returns>
-        public abstract Task WaitForPostActionIntermediateStabilization();
+        /// <param name="repetitionContext">The repetition context that the method can use to count if needed (like in a while loop)</param>
+        /// <returns>Returns when either there are no more allowed actions, or the task has finished waiting</returns>
+        public abstract Task WaitForPostActionIntermediateStabilization(RepetitionContext repetitionContext);
     }
 }

@@ -1,5 +1,7 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
+    using Selenium.Algorithms.ReinforcementLearning.Repetitions;
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -39,16 +41,34 @@
             for (int epoch = 0; epoch < epochs; ++epoch)
             {
                 var currentState = await environment.GetInitialState();
-                for (int actionNumber = 0; actionNumber < maximumActions; ++actionNumber)
+                var actionRepetitionContext = new RepetitionContext(maximumActions);
+
+                do
                 {
                     var nextAction = await policy.GetNextAction(environment, currentState);
+                    var nextState = await nextAction.ExecuteAction(environment, currentState);
 
-                    currentState = await Step(currentState, nextAction);
+                    if (await environment.IsIntermediateState(nextState))
+                    {
+                        await environment.WaitForPostActionIntermediateStabilization(actionRepetitionContext);
+
+                        if (!actionRepetitionContext.CanContinue())
+                        {
+                            break;
+                        }
+
+                        nextState = await environment.GetCurrentState();
+                    }
+
+                    await ApplyQMatrixLogic(currentState, nextAction, nextState);
+                    currentState = nextState;
+
                     if (await trainGoal.HasReachedAGoalCondition(currentState, nextAction))
                     {
                         break;
                     }
                 }
+                while (actionRepetitionContext.Step());
             }
         }
 
@@ -58,18 +78,33 @@
         /// <param name="currentState">The state the algorithm will start from</param>
         /// <param name="nextAction">The action that will try to apply</param>
         /// <returns>The new state after the action has been resolved</returns>
-        public async Task<State<TData>> Step(State<TData> currentState, AgentAction<TData> nextAction)
+        public async Task<State<TData>> Step(State<TData> currentState, AgentAction<TData> nextAction, int maximumActions = 10)
         {
             var nextState = await nextAction.ExecuteAction(environment, currentState);
 
+            var actionRepetitionContext = new RepetitionContext(maximumActions);
             if (await environment.IsIntermediateState(nextState))
             {
-                await environment.WaitForPostActionIntermediateStabilization();
+                await environment.WaitForPostActionIntermediateStabilization(actionRepetitionContext);
+
+                if (!actionRepetitionContext.CanContinue())
+                {
+                    throw new TimeoutException($"Repetitions reached maximum value (maximumActions = {maximumActions}) when waiting for stabilization");
+                }
+
                 nextState = await environment.GetCurrentState();
             }
 
+            await ApplyQMatrixLogic(currentState, nextAction, nextState);
+
+            return nextState;
+        }
+
+        private async Task ApplyQMatrixLogic(State<TData> currentState, AgentAction<TData> nextAction, State<TData> nextState)
+        {
             var nextNextActions = await environment.GetPossibleActions(nextState);
-            var maxQ = nextNextActions.Max(x => {
+            var maxQ = nextNextActions.Max(x =>
+            {
                 var pair = new StateAndActionPair<TData>(nextState, x);
                 return policy.QualityMatrix.ContainsKey(pair)
                 ? policy.QualityMatrix[pair]
@@ -86,8 +121,6 @@
             policy.QualityMatrix[selectedPair] =
                 ((1 - learningRate) * policy.QualityMatrix[selectedPair])
                 + (learningRate * (await trainGoal.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
-
-            return nextState;
         }
     }
 }

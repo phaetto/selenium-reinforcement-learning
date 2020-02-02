@@ -1,5 +1,6 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
+    using Selenium.Algorithms.ReinforcementLearning.Repetitions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -35,8 +36,8 @@
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
-            var iterationNumber = maxSteps;
-            while (iterationNumber-- > 0)
+            var stepsRepetitionContext = new RepetitionContext(maxSteps);
+            while (stepsRepetitionContext.Step())
             {
                 var actions = await environment.GetPossibleActions(currentState);
                 var stateAndActionPairs = actions
@@ -69,7 +70,13 @@
 
                 if (await environment.IsIntermediateState(newState))
                 {
-                    await environment.WaitForPostActionIntermediateStabilization();
+                    await environment.WaitForPostActionIntermediateStabilization(stepsRepetitionContext);
+
+                    if (!stepsRepetitionContext.CanContinue())
+                    {
+                        return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
+                    }
+
                     newState = await environment.GetCurrentState();
                 }
 
@@ -97,8 +104,8 @@
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
-            var iterationNumber = maxSteps;
-            while (iterationNumber-- > 0)
+            var stepsRepetitionContext = new RepetitionContext(maxSteps);
+            while (stepsRepetitionContext.Step())
             {
                 var actions = await environment.GetPossibleActions(currentState);
                 var stateAndActionPairs = actions
