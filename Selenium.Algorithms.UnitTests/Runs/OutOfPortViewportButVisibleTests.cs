@@ -35,7 +35,10 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
-                    fileUri.AbsoluteUri);
+                    new SeleniumEnvironmentOptions
+                    {
+                        Url = fileUri.AbsoluteUri,
+                    });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
 
@@ -81,7 +84,10 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
-                    fileUri.AbsoluteUri);
+                    new SeleniumEnvironmentOptions
+                    {
+                        Url = fileUri.AbsoluteUri,
+                    });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
 
@@ -127,7 +133,10 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
-                    fileUri.AbsoluteUri);
+                    new SeleniumEnvironmentOptions
+                    {
+                        Url = fileUri.AbsoluteUri,
+                    });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
 

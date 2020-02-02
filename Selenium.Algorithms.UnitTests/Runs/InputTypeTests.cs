@@ -42,8 +42,11 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
-                    fileUri.AbsoluteUri,
-                    inputTextData: inputData);
+                    new SeleniumEnvironmentOptions
+                    {
+                        Url = fileUri.AbsoluteUri,
+                        InputTextData = inputData,
+                    });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
 

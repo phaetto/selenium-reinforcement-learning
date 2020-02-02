@@ -35,7 +35,10 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
-                    fileUri.AbsoluteUri);
+                    new SeleniumEnvironmentOptions
+                    {
+                        Url = fileUri.AbsoluteUri,
+                    });
                 var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumTrainGoal);
 

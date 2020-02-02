@@ -3,6 +3,7 @@
     using OpenQA.Selenium;
     using OpenQA.Selenium.Remote;
     using Selenium.Algorithms.ReinforcementLearning;
+    using Selenium.Algorithms.ReinforcementLearning.Repetitions;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -11,37 +12,27 @@
 
     public class SeleniumEnvironment : Environment<IReadOnlyCollection<ElementData>>
     {
-        public static readonly IReadOnlyDictionary<string, string> NoInputData = new Dictionary<string, string>();
         private readonly RemoteWebDriver webDriver;
-        private readonly string url;
-        private readonly IReadOnlyDictionary<string, string> inputTextData;
         private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
+
+        public SeleniumEnvironmentOptions SeleniumEnvironmentOptions { get; }
 
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
-            string url,
-            IReadOnlyDictionary<string, string> inputTextData
+            SeleniumEnvironmentOptions seleniumEnvironmentOptions
         )
         {
             this.webDriver = webDriver;
-            this.url = url;
-            this.inputTextData = inputTextData;
+            SeleniumEnvironmentOptions = seleniumEnvironmentOptions;
 
             // Setup webdriver training defaults
             this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
             this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(300);
         }
 
-        public SeleniumEnvironment(
-            RemoteWebDriver webDriver,
-            string url
-        ) : this(webDriver, url, new Dictionary<string, string>())
-        {
-        }
-
         public override async Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
-            webDriver.Navigate().GoToUrl(url);
+            webDriver.Navigate().GoToUrl(SeleniumEnvironmentOptions.Url);
             return await GetCurrentState();
         }
 
@@ -118,15 +109,15 @@
 
         protected virtual ElementTypeAction GetElementTypeAction(ElementData elementData, State<IReadOnlyCollection<ElementData>> state)
         {
-            if (inputTextData == NoInputData)
+            if (!SeleniumEnvironmentOptions.InputTextData.Any())
             {
                 throw new InvalidOperationException("No data has been provided for this environment");
             }
 
             // TODO: make a more sofisticated 'the closest value to name'
             // Question: What happens if we have more that 1 good matches?
-            var inputDataState = inputTextData.ContainsKey(elementData.Name)
-                ? inputTextData[elementData.Name]
+            var inputDataState = SeleniumEnvironmentOptions.InputTextData.ContainsKey(elementData.Name)
+                ? SeleniumEnvironmentOptions.InputTextData[elementData.Name]
                 : "todo: random string to provide";
 
             if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have ElementData.Equals
