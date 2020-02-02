@@ -26,20 +26,21 @@
         public override async Task<State<IReadOnlyCollection<ElementData>>> ExecuteAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            var seleniumEnvironment = (SeleniumEnvironment)environment;
             try
             {
-                Console.Write($"\t- clicking on {CachedName}");
+                seleniumEnvironment.Options.WriteLine($"\t- clicking on {CachedName}");
                 webElement.WebElementReference.Click();
-                Console.WriteLine($" ... done!");
+                seleniumEnvironment.Options.WriteLine($"\t\t... done!");
             }
             catch (ElementNotInteractableException)
             {
-                Console.WriteLine($"... failed: non-interactable");
+                seleniumEnvironment.Options.WriteLine($"\t\t... failed: non-interactable");
                 // Do not move at all if we cannot click, it should penalize it
             }
             catch (StaleElementReferenceException)
             {
-                Console.WriteLine($"... failed: stale");
+                seleniumEnvironment.Options.WriteLine($"\t\t... failed: stale");
                 // Do not move at all if we cannot click, it should penalize it
             }
 

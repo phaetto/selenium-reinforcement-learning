@@ -15,7 +15,7 @@
         private readonly RemoteWebDriver webDriver;
         private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
 
-        public SeleniumEnvironmentOptions SeleniumEnvironmentOptions { get; }
+        public SeleniumEnvironmentOptions Options { get; }
 
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
@@ -23,16 +23,16 @@
         )
         {
             this.webDriver = webDriver;
-            SeleniumEnvironmentOptions = seleniumEnvironmentOptions;
+            Options = seleniumEnvironmentOptions;
 
             // Setup webdriver training defaults
             this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
-            this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(300);
+            this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
         }
 
         public override async Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
-            webDriver.Navigate().GoToUrl(SeleniumEnvironmentOptions.Url);
+            webDriver.Navigate().GoToUrl(Options.Url);
             return await GetCurrentState();
         }
 
@@ -62,25 +62,8 @@
         {
             var actionableElementQuerySelectors = GetActionableElementsQuerySelectors();
             var actionableElements = actionableElementQuerySelectors.GetElementsFromQuerySelectors(webDriver);
-            var elementList = new List<IWebElement>(actionableElements);
-
-            var filteredActionableElements = elementList
-                .Where(x =>
-                {
-                    try
-                    {
-                        return x.CanBeInteracted();
-                    }
-                    catch (StaleElementReferenceException)
-                    {
-                        return false;
-                    }
-                })
-                .ToList()
-                .AsReadOnly();
-
+            var filteredActionableElements = actionableElements.ToInteractibleElements();
             var filteredElementsData = filteredActionableElements.GetElementsInformation();
-
             return new SeleniumState(filteredElementsData);
         }
 
@@ -88,7 +71,20 @@
         public override async Task<bool> IsIntermediateState(State<IReadOnlyCollection<ElementData>> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            return state.Data.Count == 0;
+            if (state.Data.Count == 0)
+            {
+                return true;
+            }
+
+            if (Options.LoadingElementsCssSelectors.Count == 0)
+            {
+                return false;
+            }
+
+            var actionableElements = Options.LoadingElementsCssSelectors.GetElementsFromQuerySelectors(webDriver);
+            var areLoadingElementsVisible = actionableElements.IsAnyInteractibleElement();
+
+            return areLoadingElementsVisible;
         }
 
         public override async Task WaitForPostActionIntermediateStabilization(RepetitionContext repetitionContext)
@@ -98,8 +94,24 @@
             {
                 await Task.Delay(300);
                 state = await GetCurrentState();
+
+                if (state.Data.Count > 0)
+                {
+                    if (Options.LoadingElementsCssSelectors.Count == 0)
+                    {
+                        break;
+                    }
+
+                    var actionableElements = Options.LoadingElementsCssSelectors.GetElementsFromQuerySelectors(webDriver);
+                    var areLoadingElementsVisible = actionableElements.IsAnyInteractibleElement();
+
+                    if (!areLoadingElementsVisible)
+                    {
+                        break;
+                    }
+                }
             }
-            while (state.Data.Count == 0 && repetitionContext.Step());
+            while (repetitionContext.Step());
         }
 
         protected virtual IReadOnlyCollection<string> GetActionableElementsQuerySelectors()
@@ -109,15 +121,15 @@
 
         protected virtual ElementTypeAction GetElementTypeAction(ElementData elementData, State<IReadOnlyCollection<ElementData>> state)
         {
-            if (!SeleniumEnvironmentOptions.InputTextData.Any())
+            if (!Options.InputTextData.Any())
             {
                 throw new InvalidOperationException("No data has been provided for this environment");
             }
 
             // TODO: make a more sofisticated 'the closest value to name'
             // Question: What happens if we have more that 1 good matches?
-            var inputDataState = SeleniumEnvironmentOptions.InputTextData.ContainsKey(elementData.Name)
-                ? SeleniumEnvironmentOptions.InputTextData[elementData.Name]
+            var inputDataState = Options.InputTextData.ContainsKey(elementData.Name)
+                ? Options.InputTextData[elementData.Name]
                 : "todo: random string to provide";
 
             if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have ElementData.Equals

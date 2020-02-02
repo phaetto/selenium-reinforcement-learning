@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        .second-panel, .third-panel {
+            display: none;
+        }
+
+        .loader {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selenium test</h1>
+
+    <div>
+        <label>
+            Open UI
+            <input type="checkbox" class="first" data-automation-id="first" />
+        </label>
+    </div>
+
+    <div class="second-panel">
+        <label>
+            Open UI
+            <input type="checkbox" class="second" data-automation-id="second" />
+        </label>
+    </div>
+
+    <div class="third-panel">
+        Done!
+    </div>
+
+    <div class="loader">
+        Loading...
+    </div>
+
+    <script type="text/javascript">
+        document.querySelector('.first').addEventListener('click', (e) => {
+            setTimeout(function () {
+                if (e.target.checked) {
+                    document.querySelector('.second-panel').style.display = 'block';
+                } else {
+                    document.querySelector('.second-panel').style.display = 'none';
+                }
+
+                document.querySelector('.loader').style.display = 'none';
+            }, 1000);
+
+            document.querySelector('.loader').style.display = 'block';
+        });
+
+        document.querySelector('.second').addEventListener('click', (e) => {
+            setTimeout(function () {
+                if (e.target.checked) {
+                    document.querySelector('.third-panel').style.display = 'block';
+                } else {
+                    document.querySelector('.third-panel').style.display = 'none';
+                }
+
+                document.querySelector('.loader').style.display = 'none';
+
+            }, 700);
+
+            document.querySelector('.loader').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

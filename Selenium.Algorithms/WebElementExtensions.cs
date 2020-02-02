@@ -67,7 +67,7 @@ var element = arguments[2];
 var elementAtCoordinates = document.elementFromPoint(coordX, coordY);
 
 var checkForElement = elementAtCoordinates;
-while(!checkForElement.isSameNode(element)) {
+while(checkForElement && !checkForElement.isSameNode(element)) {
     checkForElement = checkForElement.parentNode;
 
     if (checkForElement === document.body) {
@@ -75,7 +75,7 @@ while(!checkForElement.isSameNode(element)) {
     }
 }
 
-return true;
+return !!checkForElement;
 ";
 
         public static IReadOnlyList<ElementData> GetElementsInformation(this IReadOnlyCollection<IWebElement> webElementCollection)
@@ -135,6 +135,40 @@ return true;
             })
             .ToList()
             .AsReadOnly();
+        }
+
+        public static IReadOnlyCollection<IWebElement> ToInteractibleElements(this IReadOnlyCollection<IWebElement> webElementCollection)
+        {
+            return webElementCollection
+                .Where(x =>
+                {
+                    try
+                    {
+                        return x.CanBeInteracted();
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        return false;
+                    }
+                })
+                .ToList()
+                .AsReadOnly();
+        }
+
+        public static bool IsAnyInteractibleElement(this IReadOnlyCollection<IWebElement> webElementCollection)
+        {
+            return webElementCollection
+                .Any(x =>
+                {
+                    try
+                    {
+                        return x.CanBeInteracted();
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        return false;
+                    }
+                });
         }
 
         public static bool ExtendedEquals(this IWebElement webElement, in IWebElement otherWebElement)
@@ -215,10 +249,15 @@ return true;
                         // Recalculate the position
                         elementPositionalData = GetElementsInteractionData(new IWebElement[] { webElement }).First();
                     }
-                    catch (Exception) // Should that be a specific excpetion type?
+                    catch (Exception) // Should that be a specific exception type?
                     {
                         return false;
                     }
+                }
+
+                if (elementPositionalData.Width == 0 || elementPositionalData.Height == 0)
+                {
+                    return false;
                 }
 
                 Debug.Assert(elementPositionalData.X >= 0, "Element outside of viewport: Left");
