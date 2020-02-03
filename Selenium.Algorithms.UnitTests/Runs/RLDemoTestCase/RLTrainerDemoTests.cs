@@ -28,7 +28,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             await rlTrainer.Run(epochs: 50, maximumActions: 100);
 
             var pathFinder = new RLPathFinder<int>(testEnvironment, testPolicy);
-            var result = await pathFinder.FindRoute(new TestState(8), trainGoal.HasReachedAGoalCondition);
+            var result = await pathFinder.FindRoute(new TestState(8), trainGoal);
             result.State.ShouldBe(PathFindResultState.GoalReached);
             result.Steps.ShouldNotBeNull();
             result.Steps.ShouldNotBeEmpty();
@@ -42,6 +42,8 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
         class TrainGoal : ITrainGoal<int>
         {
             private readonly double[][] R;
+
+            public int TimesReachedGoal { get; set; }
 
             public TrainGoal()
             {

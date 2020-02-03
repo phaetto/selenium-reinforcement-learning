@@ -31,8 +31,13 @@
         /// <param name="target">The target state</param>
         /// <param name="maxSteps">Maximum steps that should be taken</param>
         /// <returns>A report data structure that describes what happened while attempting</returns>
-        public async Task<WalkResult<TData>> FindRoute(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
+        public async Task<WalkResult<TData>> FindRoute(State<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
+            if (trainGoal.TimesReachedGoal == 0)
+            {
+                return new WalkResult<TData>(PathFindResultState.GoalNeverReached);
+            }
+
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
@@ -90,7 +95,7 @@
                 resultStates.Add(newPair);
                 currentState = newState;
 
-                if (await goalCondition(currentState, maximumReturnAction))
+                if (await trainGoal.HasReachedAGoalCondition(currentState, maximumReturnAction))
                 {
                     return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
                 }
@@ -99,8 +104,13 @@
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
         }
 
-        public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(State<TData> start, Func<State<TData>, AgentAction<TData>, Task<bool>> goalCondition, int maxSteps = 10)
+        public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(State<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
+            if (trainGoal.TimesReachedGoal == 0)
+            {
+                return new WalkResult<TData>(PathFindResultState.GoalNeverReached);
+            }
+
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
@@ -146,7 +156,7 @@
                     resultStates.Add(stateAndActionPairWithResultState);
                     currentState = newState;
 
-                    if (await goalCondition(currentState, stateAndActionPairWithResultState.Action))
+                    if (await trainGoal.HasReachedAGoalCondition(currentState, stateAndActionPairWithResultState.Action))
                     {
                         return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
                     }

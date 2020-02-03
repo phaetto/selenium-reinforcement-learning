@@ -46,7 +46,7 @@
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
-                var pathList = await pathFinder.FindRoute(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition, maxSteps: 50);
+                var pathList = await pathFinder.FindRoute(initialState, seleniumTrainGoal, maxSteps: 50);
 
                 pathList.State.ShouldBe(PathFindResultState.GoalReached);
                 pathList.Steps.ShouldNotBeNull();
@@ -96,7 +96,7 @@
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy);
-                var pathList = await pathFinder.FindRoute(initialState, goalCondition: seleniumTrainGoal.HasReachedAGoalCondition, maxSteps: 50);
+                var pathList = await pathFinder.FindRoute(initialState, seleniumTrainGoal, maxSteps: 50);
 
                 pathList.State.ShouldBe(PathFindResultState.GoalReached);
                 pathList.Steps.ShouldNotBeNull();

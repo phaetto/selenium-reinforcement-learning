@@ -65,6 +65,7 @@
 
                     if (await trainGoal.HasReachedAGoalCondition(currentState, nextAction))
                     {
+                        ++trainGoal.TimesReachedGoal;
                         break;
                     }
                 }

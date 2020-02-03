@@ -9,6 +9,8 @@ namespace Selenium.Algorithms
     {
         private readonly Func<State<TData>, AgentAction<TData>, Task<bool>> hasReachedAGoalConditionPredicate;
 
+        public int TimesReachedGoal { get; set; }
+
         public SeleniumTrainGoal(Func<State<TData>, AgentAction<TData>, Task<bool>> hasReachedAGoalConditionPredicate)
         {
             this.hasReachedAGoalConditionPredicate = hasReachedAGoalConditionPredicate;

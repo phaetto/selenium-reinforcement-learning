@@ -25,6 +25,8 @@
             this.webDriver = webDriver;
             Options = seleniumEnvironmentOptions;
 
+            // if (string.IsNullOrWhiteSpace(seleniumEnvironmentOptions.Url))  // TODO: guard?
+
             // Setup webdriver training defaults
             this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
             this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);

@@ -6,6 +6,10 @@
     public enum PathFindResultState
     {
         /// <summary>
+        /// The goal condition was never reached by this policy and using the Q-matrix is not suggested
+        /// </summary>
+        GoalNeverReached,
+        /// <summary>
         /// The goal condition has been reached and the result contains the successful steps
         /// </summary>
         GoalReached,
