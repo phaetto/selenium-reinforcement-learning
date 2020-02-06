@@ -1,6 +1,5 @@
 ﻿namespace Selenium.Algorithms.IntegrationTests.Runs
 {
-    using OpenQA.Selenium.Chrome;
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
     using System.Collections.Generic;
@@ -9,18 +8,21 @@
     using System.IO;
     using System.Threading.Tasks;
     using Selenium.Algorithms;
-    using System.Drawing;
+    using Selenium.Algorithms.IntegrationTests.Framework;
 
-    public sealed class InputTypeTests
+    public sealed class InputTypeTests : IClassFixture<TestFixture>
     {
+        private readonly TestFixture testFixture;
+
+        public InputTypeTests(TestFixture testFixture)
+        {
+            this.testFixture = testFixture;
+        }
+
         [Fact]
         public async Task Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation()
         {
-            var chromeOptions = new ChromeOptions();
-            chromeOptions.AddArgument("headless");
-
-            using var driver = new ChromeDriver(@".\", chromeOptions);
-            driver.Manage().Window.Size = new Size(1000, 768);
+            using var driver = testFixture.GetWebDriver();
 
             var inputData = new Dictionary<string, string>
                 {

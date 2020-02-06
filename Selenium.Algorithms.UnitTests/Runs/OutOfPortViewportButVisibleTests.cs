@@ -1,6 +1,5 @@
 ﻿namespace Selenium.Algorithms.IntegrationTests.Runs
 {
-    using OpenQA.Selenium.Chrome;
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
     using System.Collections.Generic;
@@ -9,18 +8,21 @@
     using System.IO;
     using System.Threading.Tasks;
     using Selenium.Algorithms;
-    using System.Drawing;
+    using Selenium.Algorithms.IntegrationTests.Framework;
 
-    public sealed class OutOfPortViewportButVisibleTests
+    public sealed class OutOfPortViewportButVisibleTests : IClassFixture<TestFixture>
     {
+        private readonly TestFixture testFixture;
+
+        public OutOfPortViewportButVisibleTests(TestFixture testFixture)
+        {
+            this.testFixture = testFixture;
+        }
+
         [Fact]
         public async Task Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions()
         {
-            var chromeOptions = new ChromeOptions();
-            chromeOptions.AddArgument("headless");
-
-            using var driver = new ChromeDriver(@".\", chromeOptions);
-            driver.Manage().Window.Size = new Size(1000, 768);
+            using var driver = testFixture.GetWebDriver();
 
             try
             {
@@ -65,11 +67,7 @@
         [Fact]
         public async Task Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions()
         {
-            var chromeOptions = new ChromeOptions();
-            chromeOptions.AddArgument("headless");
-
-            using var driver = new ChromeDriver(@".\", chromeOptions);
-            driver.Manage().Window.Size = new Size(500, 500);
+            using var driver = testFixture.GetWebDriver();
 
             try
             {
@@ -114,11 +112,7 @@
         [Fact]
         public async Task Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions()
         {
-            var chromeOptions = new ChromeOptions();
-            chromeOptions.AddArgument("headless");
-
-            using var driver = new ChromeDriver(@".\", chromeOptions);
-            driver.Manage().Window.Size = new Size(500, 500);
+            using var driver = testFixture.GetWebDriver();
 
             try
             {
