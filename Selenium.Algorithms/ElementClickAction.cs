@@ -2,7 +2,6 @@
 {
     using OpenQA.Selenium;
     using Selenium.Algorithms.ReinforcementLearning;
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
