@@ -40,7 +40,7 @@
             var seleniumEnvironment = (SeleniumEnvironment)environment;
             try
             {
-                seleniumEnvironment.Options.WriteLine($"\t- typing on {CachedName}");
+                seleniumEnvironment.Options.WriteLine($"\t{CachedName}");
                 webElement.WebElementReference.Clear();
                 webElement.WebElementReference.SendKeys(text);
                 seleniumEnvironment.Options.WriteLine($"\t\t... done!");

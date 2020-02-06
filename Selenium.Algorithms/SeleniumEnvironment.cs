@@ -34,6 +34,7 @@
 
         public override async Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
+            Options.WriteLine("SeleniumEnvironment: Getting the initial state...");
             webDriver.Navigate().GoToUrl(Options.Url);
             return await GetCurrentState();
         }

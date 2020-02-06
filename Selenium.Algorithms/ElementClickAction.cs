@@ -29,7 +29,7 @@
             var seleniumEnvironment = (SeleniumEnvironment)environment;
             try
             {
-                seleniumEnvironment.Options.WriteLine($"\t- clicking on {CachedName}");
+                seleniumEnvironment.Options.WriteLine($"\t{CachedName}");
                 webElement.WebElementReference.Click();
                 seleniumEnvironment.Options.WriteLine($"\t\t... done!");
             }
