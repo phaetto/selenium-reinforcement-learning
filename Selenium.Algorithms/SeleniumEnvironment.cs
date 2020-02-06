@@ -1,9 +1,7 @@
 ﻿namespace Selenium.Algorithms
 {
-    using OpenQA.Selenium;
     using OpenQA.Selenium.Remote;
     using Selenium.Algorithms.ReinforcementLearning;
-    using Selenium.Algorithms.ReinforcementLearning.Repetitions;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -90,31 +88,9 @@
             return areLoadingElementsVisible;
         }
 
-        public override async Task WaitForPostActionIntermediateStabilization(RepetitionContext repetitionContext)
+        public override async Task WaitForPostActionIntermediateStabilization()
         {
-            State<IReadOnlyCollection<ElementData>> state;
-            do
-            {
-                await Task.Delay(300);
-                state = await GetCurrentState();
-
-                if (state.Data.Count > 0)
-                {
-                    if (Options.LoadingElementsCssSelectors.Count == 0)
-                    {
-                        break;
-                    }
-
-                    var actionableElements = Options.LoadingElementsCssSelectors.GetElementsFromQuerySelectors(webDriver);
-                    var areLoadingElementsVisible = actionableElements.IsAnyInteractibleElement();
-
-                    if (!areLoadingElementsVisible)
-                    {
-                        break;
-                    }
-                }
-            }
-            while (repetitionContext.Step());
+            await Task.Delay(300);
         }
 
         protected virtual IReadOnlyCollection<string> GetActionableElementsQuerySelectors()

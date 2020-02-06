@@ -1,7 +1,5 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
-    using Selenium.Algorithms.ReinforcementLearning.Repetitions;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -41,8 +39,8 @@
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
-            var stepsRepetitionContext = new RepetitionContext(maxSteps);
-            while (stepsRepetitionContext.Step())
+            var currentStep = 0;
+            while (currentStep < maxSteps)
             {
                 var actions = await environment.GetPossibleActions(currentState);
                 var stateAndActionPairs = actions
@@ -73,16 +71,16 @@
 
                 var newState = await maximumReturnAction.ExecuteAction(environment, currentState);
 
-                if (await environment.IsIntermediateState(newState))
+                while (await environment.IsIntermediateState(newState) && currentStep < maxSteps)
                 {
-                    await environment.WaitForPostActionIntermediateStabilization(stepsRepetitionContext);
-
-                    if (!stepsRepetitionContext.CanContinue())
-                    {
-                        return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
-                    }
-
+                    await environment.WaitForPostActionIntermediateStabilization();
                     newState = await environment.GetCurrentState();
+                    ++currentStep;
+                }
+
+                if (currentStep >= maxSteps)
+                {
+                    return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
                 }
 
                 var newPair = new StateAndActionPairWithResultState<TData>(currentState, maximumReturnAction, newState);
@@ -99,6 +97,8 @@
                 {
                     return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
                 }
+
+                ++currentStep;
             }
 
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
@@ -114,8 +114,8 @@
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
-            var stepsRepetitionContext = new RepetitionContext(maxSteps);
-            while (stepsRepetitionContext.Step())
+            var currentStep = 0;
+            while (currentStep < maxSteps)
             {
                 var actions = await environment.GetPossibleActions(currentState);
                 var stateAndActionPairs = actions
@@ -165,6 +165,8 @@
                 {
                     return new WalkResult<TData>(PathFindResultState.DataNotIncluded);
                 }
+
+                ++currentStep;
             }
 
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);

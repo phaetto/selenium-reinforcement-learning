@@ -1,7 +1,6 @@
 namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
 {
     using Selenium.Algorithms.ReinforcementLearning;
-    using Selenium.Algorithms.ReinforcementLearning.Repetitions;
     using Shouldly;
     using System;
     using System.Collections.Generic;
@@ -139,7 +138,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 return false;
             }
 
-            public override Task WaitForPostActionIntermediateStabilization(RepetitionContext repetitionContext)
+            public override Task WaitForPostActionIntermediateStabilization()
             {
                 throw new NotSupportedException();
             }
