@@ -82,7 +82,12 @@
                 ++currentStabilizationCounter;
             }
 
-            await ApplyQMatrixLogic(currentState, nextAction, nextState);
+            if (currentStabilizationCounter >= maximumWaitForStabilization)
+            {
+                return (nextState, currentStabilizationCounter);
+            }
+
+            await ApplyQMatrixLogic(nextState, nextAction, nextState);
 
             return (nextState, currentStabilizationCounter);
         }
