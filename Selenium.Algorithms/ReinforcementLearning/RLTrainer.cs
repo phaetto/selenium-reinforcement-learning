@@ -87,7 +87,7 @@
                 return (nextState, currentStabilizationCounter);
             }
 
-            await ApplyQMatrixLogic(nextState, nextAction, nextState);
+            await ApplyQMatrixLogic(currentState, nextAction, nextState);
 
             return (nextState, currentStabilizationCounter);
         }
