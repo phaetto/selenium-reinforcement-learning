@@ -9,24 +9,11 @@
     /// <typeparam name="TData">The prime data for state - exposed for convienience</typeparam>
     public sealed class RLTrainer<TData>
     {
-        private readonly Environment<TData> environment;
-        private readonly Policy<TData> policy;
-        private readonly ITrainGoal<TData> trainGoal;
-        private readonly double learningRate;
-        private readonly double discountRate;
+        private readonly IRLTrainerOptions<TData> options;
 
-        public RLTrainer(
-            in Environment<TData> environment,
-            in Policy<TData> policy,
-            in ITrainGoal<TData> trainGoal,
-            in double learningRate = 0.5D,
-            in double discountRate = 0.5D)
+        public RLTrainer(IRLTrainerOptions<TData> options)
         {
-            this.environment = environment;
-            this.policy = policy;
-            this.trainGoal = trainGoal;
-            this.learningRate = learningRate;
-            this.discountRate = discountRate;
+            this.options = options;
         }
 
         /// <summary>
@@ -38,12 +25,12 @@
         {
             for (int epoch = 0; epoch < epochs; ++epoch)
             {
-                var currentState = await environment.GetInitialState();
+                var currentState = await options.Environment.GetInitialState();
                 var currentActionCounter = 0;
 
                 do
                 {
-                    var nextAction = await policy.GetNextAction(environment, currentState);
+                    var nextAction = await options.Policy.GetNextAction(options.Environment, currentState);
                     var (nextState, currentStabilizationCounter) = await Step(currentState, nextAction, maximumActions - currentActionCounter);
                     currentActionCounter += currentStabilizationCounter;
 
@@ -54,9 +41,9 @@
 
                     currentState = nextState;
 
-                    if (await trainGoal.HasReachedAGoalCondition(currentState, nextAction))
+                    if (await options.TrainGoal.HasReachedAGoalCondition(currentState, nextAction))
                     {
-                        ++trainGoal.TimesReachedGoal;
+                        ++options.TrainGoal.TimesReachedGoal;
                         break;
                     }
                 }
@@ -72,13 +59,13 @@
         /// <returns>The new state after the action has been resolved</returns>
         public async Task<(State<TData>, int)> Step(State<TData> currentState, AgentAction<TData> nextAction, int maximumWaitForStabilization = 1000)
         {
-            var nextState = await nextAction.ExecuteAction(environment, currentState);
+            var nextState = await nextAction.ExecuteAction(options.Environment, currentState);
 
             var currentStabilizationCounter = 0;
-            while (await environment.IsIntermediateState(nextState) && currentStabilizationCounter < maximumWaitForStabilization)
+            while (await options.Environment.IsIntermediateState(nextState) && currentStabilizationCounter < maximumWaitForStabilization)
             {
-                await environment.WaitForPostActionIntermediateStabilization();
-                nextState = await environment.GetCurrentState();
+                await options.Environment.WaitForPostActionIntermediateStabilization();
+                nextState = await options.Environment.GetCurrentState();
                 ++currentStabilizationCounter;
             }
 
@@ -94,25 +81,25 @@
 
         private async Task ApplyQMatrixLogic(State<TData> currentState, AgentAction<TData> nextAction, State<TData> nextState)
         {
-            var nextNextActions = await environment.GetPossibleActions(nextState);
+            var nextNextActions = await options.Environment.GetPossibleActions(nextState);
             var maxQ = nextNextActions.Max(x =>
             {
                 var pair = new StateAndActionPair<TData>(nextState, x);
-                return policy.QualityMatrix.ContainsKey(pair)
-                ? policy.QualityMatrix[pair]
+                return options.Policy.QualityMatrix.ContainsKey(pair)
+                ? options.Policy.QualityMatrix[pair]
                 : 0D;
             });
 
             var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, nextState);
-            if (!policy.QualityMatrix.ContainsKey(selectedPair))
+            if (!options.Policy.QualityMatrix.ContainsKey(selectedPair))
             {
-                policy.QualityMatrix.Add(selectedPair, 0D);
+                options.Policy.QualityMatrix.Add(selectedPair, 0D);
             }
 
             // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
-            policy.QualityMatrix[selectedPair] =
-                ((1 - learningRate) * policy.QualityMatrix[selectedPair])
-                + (learningRate * (await trainGoal.RewardFunction(currentState, nextAction) + (discountRate * maxQ)));
+            options.Policy.QualityMatrix[selectedPair] =
+                ((1 - options.LearningRate) * options.Policy.QualityMatrix[selectedPair])
+                + (options.LearningRate * (await options.TrainGoal.RewardFunction(currentState, nextAction) + (options.DiscountRate * maxQ)));
         }
     }
 }

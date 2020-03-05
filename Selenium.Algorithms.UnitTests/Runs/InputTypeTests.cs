@@ -50,7 +50,7 @@
                         InputTextData = inputData,
                     });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal));
 
                 await rlTrainer.Run(epochs: 5, maximumActions: 20);
 

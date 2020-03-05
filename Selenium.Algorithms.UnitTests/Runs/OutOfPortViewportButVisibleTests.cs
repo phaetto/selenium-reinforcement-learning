@@ -42,7 +42,7 @@
                         Url = fileUri.AbsoluteUri,
                     });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal));
 
                 await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
@@ -87,7 +87,7 @@
                         Url = fileUri.AbsoluteUri,
                     });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal));
 
                 await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
@@ -132,7 +132,7 @@
                         Url = fileUri.AbsoluteUri,
                     });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal));
 
                 await rlTrainer.Run(epochs: 2, maximumActions: 20);
 

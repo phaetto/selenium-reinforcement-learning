@@ -41,7 +41,7 @@
                         Url = fileUri.AbsoluteUri,
                     });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal));
 
                 await rlTrainer.Run(epochs: 4, maximumActions: 50);
 
@@ -86,7 +86,7 @@
                         LoadingElementsCssSelectors = new string[] { ".loader" },
                     });
                 var seleniumQLearningStepPolicy = new SeleniumQLearningStepPolicy(random);
-                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumTrainGoal));
 
                 await rlTrainer.Run(epochs: 4, maximumActions: 50);
 

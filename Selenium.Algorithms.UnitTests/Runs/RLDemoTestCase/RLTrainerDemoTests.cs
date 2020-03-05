@@ -21,7 +21,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             var testEnvironment = new TestEnvironment();
             var testPolicy = new TestPolicy();
             var trainGoal = new TrainGoal();
-            var rlTrainer = new RLTrainer<int>(testEnvironment, testPolicy, trainGoal);
+            var rlTrainer = new RLTrainer<int>(new RLTrainerOptions<int>(testEnvironment, testPolicy, trainGoal));
 
             // Execute
             await rlTrainer.Run(epochs: 50, maximumActions: 100);

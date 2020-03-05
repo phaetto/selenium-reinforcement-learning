@@ -42,7 +42,7 @@
                         Url = fileUri.AbsoluteUri,
                     });
                 var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
-                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumTrainGoal);
+                var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumTrainGoal));
 
                 await rlTrainer.Run(epochs: 2, maximumActions: 15);
 
