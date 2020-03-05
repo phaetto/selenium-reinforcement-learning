@@ -57,7 +57,7 @@
         /// <param name="currentState">The state the algorithm will start from</param>
         /// <param name="nextAction">The action that will try to apply</param>
         /// <returns>The new state after the action has been resolved</returns>
-        public async Task<(State<TData>, int)> Step(State<TData> currentState, AgentAction<TData> nextAction, int maximumWaitForStabilization = 1000)
+        public async Task<(IState<TData>, int)> Step(IState<TData> currentState, IAgentAction<TData> nextAction, int maximumWaitForStabilization = 1000)
         {
             var nextState = await nextAction.ExecuteAction(options.Environment, currentState);
 
@@ -79,7 +79,7 @@
             return (nextState, currentStabilizationCounter);
         }
 
-        private async Task ApplyQMatrixLogic(State<TData> currentState, AgentAction<TData> nextAction, State<TData> nextState)
+        private async Task ApplyQMatrixLogic(IState<TData> currentState, IAgentAction<TData> nextAction, IState<TData> nextState)
         {
             var nextNextActions = await options.Environment.GetPossibleActions(nextState);
             var maxQ = nextNextActions.Max(x =>

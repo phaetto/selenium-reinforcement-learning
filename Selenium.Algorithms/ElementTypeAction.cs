@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class ElementTypeAction : AgentAction<IReadOnlyCollection<ElementData>>
+    public class ElementTypeAction : IAgentAction<IReadOnlyCollection<ElementData>>
     {
         public static readonly ElementTypeAction NoTypeAction = new ElementTypeAction();
 
@@ -33,7 +33,7 @@
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public override async Task<State<IReadOnlyCollection<ElementData>>> ExecuteAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
+        public async Task<IState<IReadOnlyCollection<ElementData>>> ExecuteAction(IEnvironment<IReadOnlyCollection<ElementData>> environment, IState<IReadOnlyCollection<ElementData>> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var seleniumEnvironment = (SeleniumEnvironment)environment;

@@ -6,18 +6,22 @@
     /// <summary>
     /// State is defined as the actionable elements state
     /// </summary>
-    public class SeleniumState : State<IReadOnlyCollection<ElementData>>
+    public class SeleniumState : IState<IReadOnlyCollection<ElementData>>
     {
         public readonly string CachedName;
         public readonly int CachedHash;
 
         public SeleniumState(
-            in IReadOnlyCollection<ElementData> actionableElementsData) : base(actionableElementsData)
+            in IReadOnlyCollection<ElementData> actionableElementsData)
         {
+            Data = actionableElementsData;
+
             // We have to cache those values because the elements will get out of the DOM eventually
             CachedHash = actionableElementsData.ExtendedGetHashCode();
             CachedName = actionableElementsData.ExtendedToString();
         }
+
+        public IReadOnlyCollection<ElementData> Data { get; }
 
         public override bool Equals(object obj)
         {

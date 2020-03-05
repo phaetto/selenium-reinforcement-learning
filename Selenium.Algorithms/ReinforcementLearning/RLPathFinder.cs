@@ -10,12 +10,12 @@
     /// <typeparam name="TData">The prime data for state - exposed for convienience</typeparam>
     public sealed class RLPathFinder<TData> : IRLPathFinder<TData>
     {
-        private readonly Environment<TData> environment;
-        private readonly Policy<TData> policy;
+        private readonly IEnvironment<TData> environment;
+        private readonly IPolicy<TData> policy;
 
         public RLPathFinder(
-            in Environment<TData> environment,
-            in Policy<TData> policy)
+            in IEnvironment<TData> environment,
+            in IPolicy<TData> policy)
         {
             this.environment = environment;
             this.policy = policy;
@@ -29,7 +29,7 @@
         /// <param name="target">The target state</param>
         /// <param name="maxSteps">Maximum steps that should be taken</param>
         /// <returns>A report data structure that describes what happened while attempting</returns>
-        public async Task<WalkResult<TData>> FindRoute(State<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
+        public async Task<WalkResult<TData>> FindRoute(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
             if (trainGoal.TimesReachedGoal == 0)
             {
@@ -104,7 +104,7 @@
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
         }
 
-        public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(State<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
+        public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
             if (trainGoal.TimesReachedGoal == 0)
             {

@@ -7,16 +7,16 @@ namespace Selenium.Algorithms
 {
     public class SeleniumTrainGoal<TData> : ITrainGoal<TData>
     {
-        private readonly Func<State<TData>, AgentAction<TData>, Task<bool>> hasReachedAGoalConditionPredicate;
+        private readonly Func<IState<TData>, IAgentAction<TData>, Task<bool>> hasReachedAGoalConditionPredicate;
 
         public int TimesReachedGoal { get; set; }
 
-        public SeleniumTrainGoal(Func<State<TData>, AgentAction<TData>, Task<bool>> hasReachedAGoalConditionPredicate)
+        public SeleniumTrainGoal(Func<IState<TData>, IAgentAction<TData>, Task<bool>> hasReachedAGoalConditionPredicate)
         {
             this.hasReachedAGoalConditionPredicate = hasReachedAGoalConditionPredicate;
         }
 
-        public async Task<double> RewardFunction(State<TData> stateFrom, AgentAction<TData> action)
+        public async Task<double> RewardFunction(IState<TData> stateFrom, IAgentAction<TData> action)
         {
             if (await HasReachedAGoalCondition(stateFrom, action))
             {
@@ -26,7 +26,7 @@ namespace Selenium.Algorithms
             return -1;
         }
 
-        public async Task<bool> HasReachedAGoalCondition(State<TData> state, AgentAction<TData> action)
+        public async Task<bool> HasReachedAGoalCondition(IState<TData> state, IAgentAction<TData> action)
         {
             return await hasReachedAGoalConditionPredicate.Invoke(state, action);
         }

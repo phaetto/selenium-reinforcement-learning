@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class SeleniumQLearningStepPolicy : Policy<IReadOnlyCollection<ElementData>>
+    public class SeleniumQLearningStepPolicy : IPolicy<IReadOnlyCollection<ElementData>>
     {
         private readonly Random random;
 
@@ -16,7 +16,9 @@
             this.random = random;
         }
 
-        public override async Task<AgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(Environment<IReadOnlyCollection<ElementData>> environment, State<IReadOnlyCollection<ElementData>> state)
+        public IDictionary<StateAndActionPair<IReadOnlyCollection<ElementData>>, double> QualityMatrix { get; } = new Dictionary<StateAndActionPair<IReadOnlyCollection<ElementData>>, double>();
+       
+        public async Task<IAgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(IEnvironment<IReadOnlyCollection<ElementData>> environment, IState<IReadOnlyCollection<ElementData>> state)
         {
             var actions = await environment.GetPossibleActions(state);
 

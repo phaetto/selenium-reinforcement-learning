@@ -29,61 +29,63 @@
         public void SeleniumEnvironment_WhenUsedWithDI_ThenIsDIFriendly()
         {
             var services = new ServiceCollection();
-            services.AddTransient<SeleniumEnvironment>();
+            services.AddTransient<IEnvironment<IReadOnlyCollection<ElementData>>, SeleniumEnvironment>();
             services.AddSingleton(new Mock<ISeleniumEnvironmentOptions>().Object);
             services.AddSingleton(new Mock<RemoteWebDriver>().Object);
 
             var serviceProvider = services.BuildServiceProvider();
 
-            serviceProvider.GetRequiredService<SeleniumEnvironment>(); // TODO: Use interface
+            serviceProvider.GetRequiredService<IEnvironment<IReadOnlyCollection<ElementData>>>();
         }
 
         class TrainGoal : ITrainGoal<int>
         {
             public int TimesReachedGoal { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
-            public Task<bool> HasReachedAGoalCondition(State<int> state, AgentAction<int> action)
+            public Task<bool> HasReachedAGoalCondition(IState<int> state, IAgentAction<int> action)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<double> RewardFunction(State<int> stateFrom, AgentAction<int> action)
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-
-        class TestEnvironment : Environment<int>
-        {
-            public override Task<State<int>> GetCurrentState()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override Task<State<int>> GetInitialState()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override Task<IEnumerable<AgentAction<int>>> GetPossibleActions(State<int> state)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override Task<bool> IsIntermediateState(State<int> state)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override Task WaitForPostActionIntermediateStabilization()
+            public Task<double> RewardFunction(IState<int> stateFrom, IAgentAction<int> action)
             {
                 throw new System.NotImplementedException();
             }
         }
 
-        class TestPolicy : Policy<int>
+        class TestEnvironment : IEnvironment<int>
         {
-            public override Task<AgentAction<int>> GetNextAction(Environment<int> environment, State<int> state)
+            public Task<IState<int>> GetCurrentState()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public Task<IState<int>> GetInitialState()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public Task<IEnumerable<IAgentAction<int>>> GetPossibleActions(IState<int> state)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public Task<bool> IsIntermediateState(IState<int> state)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public Task WaitForPostActionIntermediateStabilization()
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        class TestPolicy : IPolicy<int>
+        {
+            public IDictionary<StateAndActionPair<int>, double> QualityMatrix { get; } = new Dictionary<StateAndActionPair<int>, double>();
+
+            public Task<IAgentAction<int>> GetNextAction(IEnvironment<int> environment, IState<int> state)
             {
                 throw new System.NotImplementedException();
             }

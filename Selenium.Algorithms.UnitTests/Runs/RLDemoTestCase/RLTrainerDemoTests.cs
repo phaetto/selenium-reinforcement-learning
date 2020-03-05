@@ -50,7 +50,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public async Task<double> RewardFunction(State<int> state, AgentAction<int> action)
+            public async Task<double> RewardFunction(IState<int> state, IAgentAction<int> action)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 if (action is TestAction testAction)
@@ -62,7 +62,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public async Task<bool> HasReachedAGoalCondition(State<int> state, AgentAction<int> action)
+            public async Task<bool> HasReachedAGoalCondition(IState<int> state, IAgentAction<int> action)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 return new TestState(11).Equals(state);
@@ -83,7 +83,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
         }
 
-        class TestEnvironment : Environment<int>
+        class TestEnvironment : IEnvironment<int>
         {
             private readonly Random rnd = new Random(1);
             private readonly int[][] FT;
@@ -93,13 +93,13 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
                 FT = CreateMaze(12);
             }
 
-            public override Task<State<int>> GetCurrentState()
+            public Task<IState<int>> GetCurrentState()
             {
                 throw new NotSupportedException();
             }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public override async Task<State<int>> GetInitialState()
+            public async Task<IState<int>> GetInitialState()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 var randomState = rnd.Next(0, 12);
@@ -107,7 +107,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public override async Task<IEnumerable<AgentAction<int>>> GetPossibleActions(State<int> state)
+            public async Task<IEnumerable<IAgentAction<int>>> GetPossibleActions(IState<int> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 return GetPossNextStates(state.Data)
@@ -132,13 +132,13 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public override async Task<bool> IsIntermediateState(State<int> state)
+            public async Task<bool> IsIntermediateState(IState<int> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 return false;
             }
 
-            public override Task WaitForPostActionIntermediateStabilization()
+            public Task WaitForPostActionIntermediateStabilization()
             {
                 throw new NotSupportedException();
             }
@@ -158,21 +158,21 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
         }
 
-        class TestAction : AgentAction<int>
+        class TestAction : IAgentAction<int>
         {
-            public TestAction(State<int> toState)
+            public TestAction(IState<int> toState)
             {
                 ToState = toState;
             }
 
-            public State<int> ToState { get; }
+            public IState<int> ToState { get; }
 
             public override bool Equals(object obj)
             {
                 return obj is TestAction action && action.ToState.Data == ToState.Data;
             }
 
-            public override Task<State<int>> ExecuteAction(Environment<int> environment, State<int> state)
+            public Task<IState<int>> ExecuteAction(IEnvironment<int> environment, IState<int> state)
             {
                 return Task.FromResult(ToState);
             }
@@ -188,10 +188,12 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
         }
 
-        class TestPolicy : Policy<int>
+        class TestPolicy : IPolicy<int>
         {
+            public IDictionary<StateAndActionPair<int>, double> QualityMatrix { get; } = new Dictionary<StateAndActionPair<int>, double>();
+
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public override async Task<AgentAction<int>> GetNextAction(Environment<int> environment, State<int> state)
+            public async Task<IAgentAction<int>> GetNextAction(IEnvironment<int> environment, IState<int> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 var randNextAction = ((TestEnvironment)environment).GetRandNextState(state.Data);
@@ -199,11 +201,14 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
         }
 
-        class TestState : State<int>
+        class TestState : IState<int>
         {
-            public TestState(int data) : base(data)
+            public TestState(int data)
             {
+                Data = data;
             }
+
+            public int Data { get; }
 
             public override bool Equals(object obj)
             {

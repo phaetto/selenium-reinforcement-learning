@@ -8,7 +8,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class SeleniumEnvironment : Environment<IReadOnlyCollection<ElementData>>
+    public class SeleniumEnvironment : IEnvironment<IReadOnlyCollection<ElementData>>
     {
         private readonly RemoteWebDriver webDriver;
         private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
@@ -23,6 +23,9 @@
             this.webDriver = webDriver;
             Options = seleniumEnvironmentOptions;
 
+            // TODO: Add options: GetActionableElementsQuerySelectors / DefaultCssSelectors
+            // TODO: Add options: GetInitialState
+
             // if (string.IsNullOrWhiteSpace(seleniumEnvironmentOptions.Url))  // TODO: guard?
 
             // Setup webdriver training defaults
@@ -30,7 +33,7 @@
             this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
         }
 
-        public override async Task<State<IReadOnlyCollection<ElementData>>> GetInitialState()
+        public async Task<IState<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
             Options.WriteLine("SeleniumEnvironment: Getting the initial state...");
             webDriver.Navigate().GoToUrl(Options.Url);
@@ -38,7 +41,7 @@
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public override async Task<IEnumerable<AgentAction<IReadOnlyCollection<ElementData>>>> GetPossibleActions(State<IReadOnlyCollection<ElementData>> state)
+        public async Task<IEnumerable<IAgentAction<IReadOnlyCollection<ElementData>>>> GetPossibleActions(IState<IReadOnlyCollection<ElementData>> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // We need to get the fresh page's state instead of using the input
@@ -47,7 +50,7 @@
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumEnvironment)} that has no data");
 
             return seleniumState.Data.Select(x =>
-                    (AgentAction<IReadOnlyCollection<ElementData>>)
+                    (IAgentAction<IReadOnlyCollection<ElementData>>)
                     (x.IsTypingElement switch
                     {
                         true => GetElementTypeAction(x, seleniumState),
@@ -58,7 +61,7 @@
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public override async Task<State<IReadOnlyCollection<ElementData>>> GetCurrentState()
+        public async Task<IState<IReadOnlyCollection<ElementData>>> GetCurrentState()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var actionableElementQuerySelectors = GetActionableElementsQuerySelectors();
@@ -69,7 +72,7 @@
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public override async Task<bool> IsIntermediateState(State<IReadOnlyCollection<ElementData>> state)
+        public async Task<bool> IsIntermediateState(IState<IReadOnlyCollection<ElementData>> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (state.Data.Count == 0)
@@ -88,7 +91,7 @@
             return areLoadingElementsVisible;
         }
 
-        public override async Task WaitForPostActionIntermediateStabilization()
+        public async Task WaitForPostActionIntermediateStabilization()
         {
             await Task.Delay(300);
         }
@@ -98,7 +101,7 @@
             return DefaultCssSelectors;
         }
 
-        protected virtual ElementTypeAction GetElementTypeAction(ElementData elementData, State<IReadOnlyCollection<ElementData>> state)
+        private ElementTypeAction GetElementTypeAction(ElementData elementData, IState<IReadOnlyCollection<ElementData>> state)
         {
             if (!Options.InputTextData.Any())
             {

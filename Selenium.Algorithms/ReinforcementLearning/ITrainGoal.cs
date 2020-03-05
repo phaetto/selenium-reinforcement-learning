@@ -5,7 +5,7 @@
     public interface ITrainGoal<TData>
     {
         public int TimesReachedGoal { get; set; }
-        Task<double> RewardFunction(State<TData> stateFrom, AgentAction<TData> action);
-        Task<bool> HasReachedAGoalCondition(State<TData> state, AgentAction<TData> action);
+        Task<double> RewardFunction(IState<TData> stateFrom, IAgentAction<TData> action);
+        Task<bool> HasReachedAGoalCondition(IState<TData> state, IAgentAction<TData> action);
     }
 }

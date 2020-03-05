@@ -6,15 +6,15 @@
     public class StateAndActionPair<TData>
     {
         public StateAndActionPair(
-            in State<TData> state,
-            in AgentAction<TData> action)
+            in IState<TData> state,
+            in IAgentAction<TData> action)
         {
             State = state;
             Action = action;
         }
 
-        public State<TData> State { get; }
-        public AgentAction<TData> Action { get; }
+        public IState<TData> State { get; }
+        public IAgentAction<TData> Action { get; }
 
         public override bool Equals(object obj)
         {
@@ -36,13 +36,13 @@
     public class StateAndActionPairWithResultState<TData> : StateAndActionPair<TData>
     {
         public StateAndActionPairWithResultState(
-            in State<TData> state,
-            in AgentAction<TData> action,
-            in State<TData> resultState)
+            in IState<TData> state,
+            in IAgentAction<TData> action,
+            in IState<TData> resultState)
             : base(state, action)
         {
             ResultState = resultState;
         }
-        public State<TData> ResultState { get; }
+        public IState<TData> ResultState { get; }
     }
 }
