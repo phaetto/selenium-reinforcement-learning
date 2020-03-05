@@ -13,11 +13,11 @@
         private readonly RemoteWebDriver webDriver;
         private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
 
-        public SeleniumEnvironmentOptions Options { get; }
+        public ISeleniumEnvironmentOptions Options { get; }
 
         public SeleniumEnvironment(
             RemoteWebDriver webDriver,
-            SeleniumEnvironmentOptions seleniumEnvironmentOptions
+            ISeleniumEnvironmentOptions seleniumEnvironmentOptions
         )
         {
             this.webDriver = webDriver;

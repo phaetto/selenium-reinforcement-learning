@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Selenium.Algorithms
 {
-    public sealed class SeleniumEnvironmentOptions
+    public sealed class SeleniumEnvironmentOptions : ISeleniumEnvironmentOptions
     {
         public IReadOnlyDictionary<string, string> InputTextData { get; set; } = new Dictionary<string, string>();
         public Action<string> WriteLine { get; set; } = x => Debug.WriteLine(x);

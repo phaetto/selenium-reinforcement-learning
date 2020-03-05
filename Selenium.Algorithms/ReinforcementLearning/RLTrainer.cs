@@ -7,7 +7,7 @@
     /// Reinforcement learning trainer
     /// </summary>
     /// <typeparam name="TData">The prime data for state - exposed for convienience</typeparam>
-    public sealed class RLTrainer<TData>
+    public sealed class RLTrainer<TData> : IRLTrainer<TData>
     {
         private readonly IRLTrainerOptions<TData> options;
 

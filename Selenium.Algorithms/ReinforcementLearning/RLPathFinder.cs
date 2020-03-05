@@ -8,7 +8,7 @@
     /// Uses the policy's data to find routes to goals
     /// </summary>
     /// <typeparam name="TData">The prime data for state - exposed for convienience</typeparam>
-    public sealed class RLPathFinder<TData>
+    public sealed class RLPathFinder<TData> : IRLPathFinder<TData>
     {
         private readonly Environment<TData> environment;
         private readonly Policy<TData> policy;
