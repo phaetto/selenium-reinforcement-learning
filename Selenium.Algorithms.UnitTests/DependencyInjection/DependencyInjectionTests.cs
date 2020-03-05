@@ -2,6 +2,7 @@
 {
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
+    using OpenQA.Selenium;
     using OpenQA.Selenium.Remote;
     using Selenium.Algorithms.ReinforcementLearning;
     using System.Collections.Generic;
@@ -31,7 +32,8 @@
             var services = new ServiceCollection();
             services.AddTransient<IEnvironment<IReadOnlyCollection<ElementData>>, SeleniumEnvironment>();
             services.AddSingleton(new Mock<ISeleniumEnvironmentOptions>().Object);
-            services.AddSingleton(new Mock<RemoteWebDriver>().Object);
+            services.AddSingleton(new Mock<IWebDriver>().Object);
+            services.AddSingleton(new Mock<IJavaScriptExecutor>().Object);
 
             var serviceProvider = services.BuildServiceProvider();
 

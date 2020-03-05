@@ -1,6 +1,6 @@
 ﻿namespace Selenium.Algorithms
 {
-    using OpenQA.Selenium.Remote;
+    using OpenQA.Selenium;
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
     using System.Collections.Generic;
@@ -10,31 +10,34 @@
 
     public class SeleniumEnvironment : IEnvironment<IReadOnlyCollection<ElementData>>
     {
-        private readonly RemoteWebDriver webDriver;
+        private readonly IWebDriver webDriver;
+        private readonly IJavaScriptExecutor javaScriptExecutor;
         private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
 
         public ISeleniumEnvironmentOptions Options { get; }
 
         public SeleniumEnvironment(
-            RemoteWebDriver webDriver,
+            IWebDriver webDriver,
+            IJavaScriptExecutor javaScriptExecutor,
             ISeleniumEnvironmentOptions seleniumEnvironmentOptions
         )
         {
             this.webDriver = webDriver;
+            this.javaScriptExecutor = javaScriptExecutor;
             Options = seleniumEnvironmentOptions;
 
             // TODO: Add options: GetActionableElementsQuerySelectors / DefaultCssSelectors
             // TODO: Add options: GetInitialState
 
             // if (string.IsNullOrWhiteSpace(seleniumEnvironmentOptions.Url))  // TODO: guard?
-
-            // Setup webdriver training defaults
-            this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
-            this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
         }
 
         public async Task<IState<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
+            // Setup webdriver training defaults
+            this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
+            this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
+
             Options.WriteLine("SeleniumEnvironment: Getting the initial state...");
             webDriver.Navigate().GoToUrl(Options.Url);
             return await GetCurrentState();
@@ -65,7 +68,7 @@
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var actionableElementQuerySelectors = GetActionableElementsQuerySelectors();
-            var actionableElements = actionableElementQuerySelectors.GetElementsFromQuerySelectors(webDriver);
+            var actionableElements = actionableElementQuerySelectors.GetElementsFromQuerySelectors(javaScriptExecutor);
             var filteredActionableElements = actionableElements.ToInteractibleElements();
             var filteredElementsData = filteredActionableElements.GetElementsInformation();
             return new SeleniumState(filteredElementsData);
@@ -85,7 +88,7 @@
                 return false;
             }
 
-            var actionableElements = Options.LoadingElementsCssSelectors.GetElementsFromQuerySelectors(webDriver);
+            var actionableElements = Options.LoadingElementsCssSelectors.GetElementsFromQuerySelectors(javaScriptExecutor);
             var areLoadingElementsVisible = actionableElements.IsAnyInteractibleElement();
 
             return areLoadingElementsVisible;

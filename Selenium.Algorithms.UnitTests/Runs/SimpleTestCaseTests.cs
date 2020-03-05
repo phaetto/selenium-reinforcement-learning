@@ -37,6 +37,7 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
+                    driver,
                     new SeleniumEnvironmentOptions
                     {
                         Url = fileUri.AbsoluteUri,

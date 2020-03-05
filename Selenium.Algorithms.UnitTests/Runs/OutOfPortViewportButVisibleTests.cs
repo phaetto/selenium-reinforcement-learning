@@ -37,6 +37,7 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
+                    driver,
                     new SeleniumEnvironmentOptions
                     {
                         Url = fileUri.AbsoluteUri,
@@ -82,6 +83,7 @@
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
+                    driver,
                     new SeleniumEnvironmentOptions
                     {
                         Url = fileUri.AbsoluteUri,
@@ -126,6 +128,7 @@
                     return target.Displayed && target.Enabled;
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
+                    driver,
                     driver,
                     new SeleniumEnvironmentOptions
                     {
