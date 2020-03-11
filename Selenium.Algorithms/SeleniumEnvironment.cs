@@ -8,7 +8,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class SeleniumEnvironment : IEnvironment<IReadOnlyCollection<ElementData>>
+    public sealed class SeleniumEnvironment : IEnvironment<IReadOnlyCollection<ElementData>>
     {
         private readonly IWebDriver webDriver;
         private readonly IJavaScriptExecutor javaScriptExecutor;
@@ -48,7 +48,7 @@
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // We need to get the fresh page's state instead of using the input
-            var seleniumState = state; // GetCurrentState(); // TODO: Check if we need this
+            var seleniumState = state;
 
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumEnvironment)} that has no data");
 
@@ -99,9 +99,9 @@
             await Task.Delay(300);
         }
 
-        protected virtual IReadOnlyCollection<string> GetActionableElementsQuerySelectors()
+        private IReadOnlyCollection<string> GetActionableElementsQuerySelectors()
         {
-            return DefaultCssSelectors;
+            return Options.ActionableElementsCssSelectors;
         }
 
         private ElementTypeAction GetElementTypeAction(ElementData elementData, IState<IReadOnlyCollection<ElementData>> state)

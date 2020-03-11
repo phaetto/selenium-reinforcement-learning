@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class ElementTypeAction : IAgentAction<IReadOnlyCollection<ElementData>>
+    public sealed class ElementTypeAction : IAgentAction<IReadOnlyCollection<ElementData>>
     {
         public static readonly ElementTypeAction NoTypeAction = new ElementTypeAction();
 

@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class SeleniumQLearningStepPolicy : IPolicy<IReadOnlyCollection<ElementData>>
+    public sealed class SeleniumQLearningStepPolicy : IPolicy<IReadOnlyCollection<ElementData>>
     {
         private readonly Random random;
 

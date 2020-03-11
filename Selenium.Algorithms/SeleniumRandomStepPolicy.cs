@@ -8,7 +8,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class SeleniumRandomStepPolicy : IPolicy<IReadOnlyCollection<ElementData>>
+    public sealed class SeleniumRandomStepPolicy : IPolicy<IReadOnlyCollection<ElementData>>
     {
         private readonly Random random;
 

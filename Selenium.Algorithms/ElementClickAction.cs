@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class ElementClickAction : IAgentAction<IReadOnlyCollection<ElementData>>
+    public sealed class ElementClickAction : IAgentAction<IReadOnlyCollection<ElementData>>
     {
         private readonly ElementData webElement;
 

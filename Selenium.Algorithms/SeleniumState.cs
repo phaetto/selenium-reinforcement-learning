@@ -6,7 +6,7 @@
     /// <summary>
     /// State is defined as the actionable elements state
     /// </summary>
-    public class SeleniumState : IState<IReadOnlyCollection<ElementData>>
+    public sealed class SeleniumState : IState<IReadOnlyCollection<ElementData>>
     {
         public readonly string CachedName;
         public readonly int CachedHash;

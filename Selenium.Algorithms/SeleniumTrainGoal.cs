@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Selenium.Algorithms
 {
-    public class SeleniumTrainGoal<TData> : ITrainGoal<TData>
+    public sealed class SeleniumTrainGoal<TData> : ITrainGoal<TData>
     {
         private readonly Func<IState<TData>, IAgentAction<TData>, Task<bool>> hasReachedAGoalConditionPredicate;
 
