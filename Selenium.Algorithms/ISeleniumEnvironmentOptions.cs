@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Collections.Generic;
 
 namespace Selenium.Algorithms
@@ -10,5 +11,6 @@ namespace Selenium.Algorithms
         IReadOnlyCollection<string> LoadingElementsCssSelectors { get; set; }
         string Url { get; set; }
         Action<string> WriteLine { get; set; }
+        Action<IWebDriver, ISeleniumEnvironmentOptions> SetupInitialState { get; set; }
     }
 }

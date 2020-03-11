@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -11,5 +12,7 @@ namespace Selenium.Algorithms
         public IReadOnlyCollection<string> ActionableElementsCssSelectors { get; set; } = new string[] { "body *[data-automation-id]" };
         public IReadOnlyCollection<string> LoadingElementsCssSelectors { get; set; } = new string[0];
         public string Url { get; set; } = string.Empty;
+        public Action<IWebDriver, ISeleniumEnvironmentOptions> SetupInitialState { get; set; } = (webDriver, options) => webDriver.Navigate().GoToUrl(options.Url);
+
     }
 }

@@ -12,7 +12,6 @@
     {
         private readonly IWebDriver webDriver;
         private readonly IJavaScriptExecutor javaScriptExecutor;
-        private readonly IReadOnlyCollection<string> DefaultCssSelectors = new string[] { "body *[data-automation-id]" };
 
         public ISeleniumEnvironmentOptions Options { get; }
 
@@ -26,20 +25,13 @@
             this.javaScriptExecutor = javaScriptExecutor;
             Options = seleniumEnvironmentOptions;
 
-            // TODO: Add options: GetActionableElementsQuerySelectors / DefaultCssSelectors
-            // TODO: Add options: GetInitialState
-
             // if (string.IsNullOrWhiteSpace(seleniumEnvironmentOptions.Url))  // TODO: guard?
         }
 
         public async Task<IState<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
-            // Setup webdriver training defaults
-            this.webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
-            this.webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
-
             Options.WriteLine("SeleniumEnvironment: Getting the initial state...");
-            webDriver.Navigate().GoToUrl(Options.Url);
+            Options.SetupInitialState(webDriver, Options);
             return await GetCurrentState();
         }
 

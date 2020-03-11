@@ -23,6 +23,8 @@
         public async Task Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions()
         {
             using var driver = testFixture.GetWebDriver();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
 
             try
             {
@@ -69,6 +71,8 @@
         public async Task Run_WhenOutOfViewPortElementsExistOnTheRight_ThenItSuccessfullyFindsTheCorrectActions()
         {
             using var driver = testFixture.GetWebDriver();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
 
             try
             {
@@ -115,6 +119,8 @@
         public async Task Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions()
         {
             using var driver = testFixture.GetWebDriver();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
 
             try
             {
