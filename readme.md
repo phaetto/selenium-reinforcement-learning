@@ -46,7 +46,7 @@ In detail, the goals of the project are:
 
 ## Reinforcement Learning
 
-The algorith used for training is Q-Learning. It creates a discreet Q Matrix using a
+The algorithm used for training is Q-Learning. It creates a discreet Q Matrix using a
     set of predefined actions and rules to achieve a goal as fast as possible.
 
 You can learn more about the actual algorithm at
