@@ -23,8 +23,6 @@
         public async Task Run_WhenThereIsADelayedAction_ThenItSuccessfullyWaits()
         {
             using var driver = testFixture.GetWebDriver();
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
 
             try
             {
@@ -71,8 +69,6 @@
         public async Task Run_WhenThereIsADelayedActionWithLoader_ThenItSuccessfullyWaits()
         {
             using var driver = testFixture.GetWebDriver();
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
 
             try
             {
