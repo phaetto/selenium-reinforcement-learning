@@ -64,8 +64,6 @@
             var filteredActionableElements = actionableElements.ToInteractibleElements();
             var filteredElementsData = filteredActionableElements.GetElementsInformation();
 
-            Debug.Assert(filteredElementsData.Count > 0, $"Initial state of {nameof(SeleniumEnvironment)} seems to have no actionable elements.");
-
             return new SeleniumState(filteredElementsData);
         }
 
