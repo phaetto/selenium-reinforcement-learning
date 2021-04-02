@@ -1,6 +1,5 @@
 ﻿namespace Selenium.Algorithms
 {
-    using OpenQA.Selenium.Remote;
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
     using System.Collections.Generic;

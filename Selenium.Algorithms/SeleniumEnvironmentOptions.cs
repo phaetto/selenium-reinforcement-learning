@@ -1,10 +1,10 @@
-﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace Selenium.Algorithms
+﻿namespace Selenium.Algorithms
 {
+    using OpenQA.Selenium;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     public sealed class SeleniumEnvironmentOptions : ISeleniumEnvironmentOptions
     {
         public IReadOnlyDictionary<string, string> InputTextData { get; set; } = new Dictionary<string, string>();

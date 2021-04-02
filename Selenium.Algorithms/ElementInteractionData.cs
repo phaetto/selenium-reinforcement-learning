@@ -1,7 +1,7 @@
-﻿using OpenQA.Selenium;
-
-namespace Selenium.Algorithms
+﻿namespace Selenium.Algorithms
 {
+    using OpenQA.Selenium;
+
     public readonly struct ElementInteractionData
     {
         public bool IsInViewPort { get; }

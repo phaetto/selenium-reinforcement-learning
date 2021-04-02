@@ -1,9 +1,9 @@
-﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-
-namespace Selenium.Algorithms
+﻿namespace Selenium.Algorithms
 {
+    using OpenQA.Selenium;
+    using System;
+    using System.Collections.Generic;
+
     public interface ISeleniumEnvironmentOptions
     {
         IReadOnlyCollection<string> ActionableElementsCssSelectors { get; set; }

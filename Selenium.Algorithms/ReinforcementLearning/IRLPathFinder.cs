@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace Selenium.Algorithms.ReinforcementLearning
+﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
+    using System.Threading.Tasks;
+
     public interface IRLPathFinder<TData>
     {
         Task<WalkResult<TData>> FindRoute(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10);

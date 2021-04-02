@@ -1,8 +1,8 @@
-﻿using OpenQA.Selenium;
-using System.Collections.Generic;
-
-namespace Selenium.Algorithms
+﻿namespace Selenium.Algorithms
 {
+    using OpenQA.Selenium;
+    using System.Collections.Generic;
+
     public readonly struct ElementData
     {
         public string Class { get; }
