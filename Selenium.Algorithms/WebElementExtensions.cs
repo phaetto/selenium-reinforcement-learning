@@ -235,14 +235,13 @@ return !!checkForElement;
                 }
                     
                 var javaScriptExecutor = webElement.GetJavascriptExecutor();
-                var remoteWebElement = (RemoteWebElement)webElement;
-                var webDriver = remoteWebElement.WrappedDriver;
+                var webDriver = (IWebDriver)javaScriptExecutor;
                 var windowSize = webDriver.Manage().Window.Size;
 
                 if (!elementPositionalData.IsInViewPort)
                 {
                     var actions = new Actions(javaScriptExecutor as IWebDriver);
-                    actions.MoveToElement(remoteWebElement);
+                    actions.MoveToElement(webElement);
                     try
                     {
                         actions.Perform();
@@ -271,7 +270,7 @@ return !!checkForElement;
                     IsElementInCoordinatesChildOfElementJavaScript,
                     elementPositionalData.X + 1,
                     elementPositionalData.Y + 1,
-                    remoteWebElement);
+                    webElement);
             }
             catch (StaleElementReferenceException)
             {

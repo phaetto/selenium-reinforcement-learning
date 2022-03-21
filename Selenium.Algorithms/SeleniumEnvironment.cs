@@ -49,7 +49,7 @@
                     (x.IsTypingElement switch
                     {
                         true => GetElementTypeAction(x, seleniumState),
-                        _ => new ElementClickAction(x),
+                        _ => new ElementClickAction(x), // TODO: Should be able to choose the available actions and types
                     })
                 )
                 .Where(x => !Equals(x, ElementTypeAction.NoTypeAction));

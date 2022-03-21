@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using Selenium.Algorithms;
     using Selenium.Algorithms.IntegrationTests.Framework;
+    using OpenQA.Selenium;
 
     public sealed class WaitTests : IClassFixture<TestFixture>
     {
@@ -32,7 +33,7 @@
                 var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var target = driver.FindElementByCssSelector(".third-panel");
+                    var target = driver.FindElement(By.CssSelector(".third-panel"));
                     return target.Displayed && target.Enabled;
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
@@ -78,7 +79,7 @@
                 var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var target = driver.FindElementByCssSelector(".third-panel");
+                    var target = driver.FindElement(By.CssSelector(".third-panel"));
                     return target.Displayed && target.Enabled;
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(

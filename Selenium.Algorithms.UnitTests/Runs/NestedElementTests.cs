@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using Selenium.Algorithms;
     using Selenium.Algorithms.IntegrationTests.Framework;
+    using OpenQA.Selenium;
 
     public sealed class NestedElementTests : IClassFixture<TestFixture>
     {
@@ -32,7 +33,7 @@
                 var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var target = driver.FindElementByCssSelector(".third");
+                    var target = driver.FindElement(By.CssSelector(".third"));
                     return target.Displayed && target.Enabled;
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
