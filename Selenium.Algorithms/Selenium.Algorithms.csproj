@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Selenium.WebDriver" Version="4.0.0-alpha03" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.1.0" />
   </ItemGroup>
 
 </Project>
