@@ -16,10 +16,11 @@
             this.random = random;
         }
 
-        public IDictionary<StateAndActionPair<IReadOnlyCollection<ElementData>>, double> QualityMatrix { get; } = new Dictionary<StateAndActionPair<IReadOnlyCollection<ElementData>>, double>();
-
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<IAgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(IEnvironment<IReadOnlyCollection<ElementData>> environment, IState<IReadOnlyCollection<ElementData>> state)
+        public async Task<IAgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(
+            IEnvironment<IReadOnlyCollection<ElementData>> environment,
+            IState<IReadOnlyCollection<ElementData>> state,
+            IExperimentState<IReadOnlyCollection<ElementData>> experimentState)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // TODO: typing: when element is an input, type instead of click (remember it has to be able to be traced from the goal/reward)

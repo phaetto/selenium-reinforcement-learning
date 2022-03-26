@@ -30,7 +30,7 @@
 
                 do
                 {
-                    var nextAction = await options.Policy.GetNextAction(options.Environment, currentState);
+                    var nextAction = await options.Policy.GetNextAction(options.Environment, currentState, options.ExperimentState);
                     var (nextState, currentStabilizationCounter) = await Step(currentState, nextAction, maximumActions - currentActionCounter);
                     currentActionCounter += currentStabilizationCounter;
 
@@ -85,20 +85,20 @@
             var maxQ = nextNextActions.Max(x =>
             {
                 var pair = new StateAndActionPair<TData>(nextState, x);
-                return options.Policy.QualityMatrix.ContainsKey(pair)
-                ? options.Policy.QualityMatrix[pair]
+                return options.ExperimentState.QualityMatrix.ContainsKey(pair)
+                ? options.ExperimentState.QualityMatrix[pair]
                 : 0D;
             });
 
             var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, nextState);
-            if (!options.Policy.QualityMatrix.ContainsKey(selectedPair))
+            if (!options.ExperimentState.QualityMatrix.ContainsKey(selectedPair))
             {
-                options.Policy.QualityMatrix.Add(selectedPair, 0D);
+                options.ExperimentState.QualityMatrix.Add(selectedPair, 0D);
             }
 
             // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
-            options.Policy.QualityMatrix[selectedPair] =
-                ((1 - options.LearningRate) * options.Policy.QualityMatrix[selectedPair])
+            options.ExperimentState.QualityMatrix[selectedPair] =
+                ((1 - options.LearningRate) * options.ExperimentState.QualityMatrix[selectedPair])
                 + (options.LearningRate * (await options.TrainGoal.RewardFunction(currentState, nextAction) + (options.DiscountRate * maxQ)));
         }
     }

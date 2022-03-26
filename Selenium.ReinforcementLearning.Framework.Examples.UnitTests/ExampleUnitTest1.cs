@@ -23,15 +23,16 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
             //      Input data
             //      Goal validation
             // Prerequisites (other tests)
-            // Initial state navigation
+            // Initial state navigation - is that needed?
             // Initial epoch navigation
+            // Warmup
             // Optional: Epochs, MaximumActions
 
             // Trains from A -> B
             // return ITrainable
         }
 
-        [Fact]
+        // [Fact]
         public void Test1()
         {
             // Use ChromeDriver to initialize
@@ -41,6 +42,23 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
             // trainedTest.Do(FromBToC)
 
             // Check driver for page verification
+        }
+
+        public void Index_AddToCart(int popularItemIndex)
+        {
+            // Navigate to: http://automationpractice.com/index.php
+            // Wait for: .ajax_block_product to get loaded
+            // Actionable: buttons
+            
+            // Click button.exclusive[type=submit]
+
+            // Goal: #layer_cart #layer_cart_product_title:last-child
+        }
+
+        // [Dependency(Index_AddToCart)]
+        public void Index_CheckOut()
+        {
+            // Needs Index_AddToCart to set up the state
         }
     }
 }
