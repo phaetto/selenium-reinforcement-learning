@@ -15,10 +15,11 @@
         {
             this.random = random;
         }
-
-        public IDictionary<StateAndActionPair<IReadOnlyCollection<ElementData>>, double> QualityMatrix { get; } = new Dictionary<StateAndActionPair<IReadOnlyCollection<ElementData>>, double>();
        
-        public async Task<IAgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(IEnvironment<IReadOnlyCollection<ElementData>> environment, IState<IReadOnlyCollection<ElementData>> state)
+        public async Task<IAgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(
+            IEnvironment<IReadOnlyCollection<ElementData>> environment,
+            IState<IReadOnlyCollection<ElementData>> state,
+            IExperimentState<IReadOnlyCollection<ElementData>> experimentState)
         {
             var actions = await environment.GetPossibleActions(state);
 
@@ -29,8 +30,8 @@
                 .Select(x =>
                 {
                     var pair = new StateAndActionPair<IReadOnlyCollection<ElementData>>(state, x);
-                    return QualityMatrix.ContainsKey(pair)
-                        ? (Action: x, Score: QualityMatrix[pair])
+                    return experimentState.QualityMatrix.ContainsKey(pair)
+                        ? (Action: x, Score: experimentState.QualityMatrix[pair])
                         : (Action: x, Score: 0D);
                 })
                 .OrderByDescending(x => x.Score)

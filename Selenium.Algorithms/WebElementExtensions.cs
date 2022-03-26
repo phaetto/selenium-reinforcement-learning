@@ -2,7 +2,6 @@
 {
     using OpenQA.Selenium;
     using OpenQA.Selenium.Interactions;
-    using OpenQA.Selenium.Remote;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -96,7 +95,7 @@ return !!checkForElement;
                     Convert.ToString(dictionary["class"]),
                     Convert.ToString(dictionary["id"]),
                     Convert.ToString(dictionary["data-automation-id"]),
-                    ParseAutomationActions(Convert.ToString(dictionary["data-automation-actions"])),
+                    ParseAutomationActions(Convert.ToString(dictionary["data-automation-actions"])), // TODO: remove it?
                     Convert.ToString(dictionary["tagName"]),
                     Convert.ToString(dictionary["text"]),
                     Convert.ToString(dictionary["name"]),

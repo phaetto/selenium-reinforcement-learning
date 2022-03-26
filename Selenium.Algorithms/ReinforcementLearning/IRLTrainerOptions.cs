@@ -7,5 +7,6 @@
         double LearningRate { get; }
         IPolicy<TData> Policy { get; }
         ITrainGoal<TData> TrainGoal { get; }
+        IExperimentState<TData> ExperimentState { get; }
     }
 }

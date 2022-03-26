@@ -21,12 +21,13 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             var testEnvironment = new TestEnvironment();
             var testPolicy = new TestPolicy();
             var trainGoal = new TrainGoal();
-            var rlTrainer = new RLTrainer<int>(new RLTrainerOptions<int>(testEnvironment, testPolicy, trainGoal));
+            var trainExperimentState = new TestExperimentState();
+            var rlTrainer = new RLTrainer<int>(new RLTrainerOptions<int>(testEnvironment, testPolicy, trainExperimentState, trainGoal));
 
             // Execute
             await rlTrainer.Run(epochs: 50, maximumActions: 100);
 
-            var pathFinder = new RLPathFinder<int>(testEnvironment, testPolicy);
+            var pathFinder = new RLPathFinder<int>(testEnvironment, testPolicy, trainExperimentState);
             var result = await pathFinder.FindRoute(new TestState(8), trainGoal);
             result.State.ShouldBe(PathFindResultState.GoalReached);
             result.Steps.ShouldNotBeNull();
@@ -158,6 +159,11 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
         }
 
+        class TestExperimentState : IExperimentState<int>
+        {
+            public IDictionary<StateAndActionPair<int>, double> QualityMatrix { get; } = new Dictionary<StateAndActionPair<int>, double>();
+        }
+
         class TestAction : IAgentAction<int>
         {
             public TestAction(IState<int> toState)
@@ -167,7 +173,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
 
             public IState<int> ToState { get; }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 return obj is TestAction action && action.ToState.Data == ToState.Data;
             }
@@ -193,7 +199,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             public IDictionary<StateAndActionPair<int>, double> QualityMatrix { get; } = new Dictionary<StateAndActionPair<int>, double>();
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public async Task<IAgentAction<int>> GetNextAction(IEnvironment<int> environment, IState<int> state)
+            public async Task<IAgentAction<int>> GetNextAction(IEnvironment<int> environment, IState<int> state, IExperimentState<int> experimentState)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 var randNextAction = ((TestEnvironment)environment).GetRandNextState(state.Data);
@@ -210,7 +216,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
 
             public int Data { get; }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 return obj is TestState state && state.Data == Data;
             }

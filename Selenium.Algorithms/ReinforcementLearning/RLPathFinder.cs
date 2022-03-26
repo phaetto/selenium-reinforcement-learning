@@ -12,13 +12,16 @@
     {
         private readonly IEnvironment<TData> environment;
         private readonly IPolicy<TData> policy;
+        private readonly IExperimentState<TData> experimentState;
 
         public RLPathFinder(
             in IEnvironment<TData> environment,
-            in IPolicy<TData> policy)
+            in IPolicy<TData> policy,
+            in IExperimentState<TData> experimentState)
         {
             this.environment = environment;
             this.policy = policy;
+            this.experimentState = experimentState;
         }
 
         /// <summary>
@@ -47,8 +50,8 @@
                     .Select(x =>
                     {
                         var pair = new StateAndActionPair<TData>(currentState, x);
-                        return policy.QualityMatrix.ContainsKey(pair)
-                            ? (action: x, score: policy.QualityMatrix[pair])
+                        return experimentState.QualityMatrix.ContainsKey(pair)
+                            ? (action: x, score: experimentState.QualityMatrix[pair])
                             : (action: x, score: 0D);
                     })
                     .ToList();
@@ -122,8 +125,8 @@
                    .Select(x =>
                    {
                        var pair = new StateAndActionPair<TData>(currentState, x);
-                       return policy.QualityMatrix.ContainsKey(pair)
-                           ? (pair, score: policy.QualityMatrix[pair])
+                       return experimentState.QualityMatrix.ContainsKey(pair)
+                           ? (pair, score: experimentState.QualityMatrix[pair])
                            : (pair, score: 0D);
                    })
                    .ToList();
