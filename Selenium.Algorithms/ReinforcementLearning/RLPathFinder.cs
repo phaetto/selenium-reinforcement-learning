@@ -11,16 +11,13 @@
     public sealed class RLPathFinder<TData> : IRLPathFinder<TData>
     {
         private readonly IEnvironment<TData> environment;
-        private readonly IPolicy<TData> policy;
         private readonly IExperimentState<TData> experimentState;
 
         public RLPathFinder(
             in IEnvironment<TData> environment,
-            in IPolicy<TData> policy,
             in IExperimentState<TData> experimentState)
         {
             this.environment = environment;
-            this.policy = policy;
             this.experimentState = experimentState;
         }
 

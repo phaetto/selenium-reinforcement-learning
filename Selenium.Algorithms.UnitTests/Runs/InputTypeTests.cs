@@ -58,7 +58,7 @@
                 await rlTrainer.Run(epochs: 5, maximumActions: 20);
 
                 var initialState = await seleniumEnvironment.GetInitialState();
-                var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumExperimentState);
+                var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);
                 var pathList = await pathFinder.FindRoute(initialState, seleniumTrainGoal);
 
                 pathList.State.ShouldBe(PathFindResultState.GoalReached);
