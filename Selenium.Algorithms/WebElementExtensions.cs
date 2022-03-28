@@ -95,7 +95,10 @@ return !!checkForElement;
                     Convert.ToString(dictionary["class"]),
                     Convert.ToString(dictionary["id"]),
                     Convert.ToString(dictionary["data-automation-id"]),
-                    ParseAutomationActions(Convert.ToString(dictionary["data-automation-actions"])), // TODO: remove it?
+                    ((IReadOnlyCollection<object>)dictionary["data-automation-actions"])
+                        .Select(x => Convert.ToString(x))
+                        .ToList()
+                        .AsReadOnly(), // TODO: remove it?
                     Convert.ToString(dictionary["tagName"]),
                     Convert.ToString(dictionary["text"]),
                     Convert.ToString(dictionary["name"]),
@@ -280,16 +283,6 @@ return !!checkForElement;
         public static IJavaScriptExecutor GetJavascriptExecutor(this IWebElement webElement)
         {
             return (IJavaScriptExecutor)((IWrapsDriver)webElement).WrappedDriver;
-        }
-
-        public static IReadOnlyCollection<string> ParseAutomationActions(string actions)
-        {
-            return actions?.Split(' ')
-                ?.Select(x => x.Trim())
-                ?.Where(x => !string.IsNullOrWhiteSpace(x))
-                ?.ToList()
-                ?.AsReadOnly()
-                ?? new List<string>().AsReadOnly();
         }
     }
 }

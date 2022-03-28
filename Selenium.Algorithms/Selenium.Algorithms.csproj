@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Selenium.WebDriver" Version="4.1.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.2" />
   </ItemGroup>
 
 </Project>

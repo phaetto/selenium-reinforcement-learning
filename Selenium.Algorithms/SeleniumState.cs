@@ -1,11 +1,14 @@
 ﻿namespace Selenium.Algorithms
 {
     using Selenium.Algorithms.ReinforcementLearning;
+    using Selenium.Algorithms.Serialization;
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// State is defined as the actionable elements state
     /// </summary>
+    [JsonConverter(typeof(SeleniumStateConverter))]
     public sealed class SeleniumState : IState<IReadOnlyCollection<ElementData>>
     {
         public readonly string CachedName;
