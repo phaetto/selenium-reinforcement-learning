@@ -126,7 +126,7 @@
                    {
                        var pair = new StateAndActionPair<TData>(currentState, x);
                        return experimentState.QualityMatrix.ContainsKey(pair)
-                           ? (pair, score: experimentState.QualityMatrix[pair])
+                           ? (pair: experimentState.QualityMatrix.Keys.First(y => y.Equals(pair)), score: experimentState.QualityMatrix[pair])
                            : (pair, score: 0D);
                    })
                    .ToList();
@@ -159,6 +159,10 @@
                     resultStates.Add(stateAndActionPairWithResultState);
                     currentState = newState;
 
+                    /* 
+                     * Note: The goals cannot be reached if the code uses the browser to find elements.
+                     * Maybe some how we can signal that this is not possible?
+                     * */
                     if (await trainGoal.HasReachedAGoalCondition(currentState, stateAndActionPairWithResultState.Action))
                     {
                         return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
