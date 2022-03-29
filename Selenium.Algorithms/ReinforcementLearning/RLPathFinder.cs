@@ -31,11 +31,6 @@
         /// <returns>A report data structure that describes what happened while attempting</returns>
         public async Task<WalkResult<TData>> FindRoute(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
-            if (trainGoal.TimesReachedGoal == 0)
-            {
-                return new WalkResult<TData>(PathFindResultState.GoalNeverReached);
-            }
-
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
@@ -110,11 +105,6 @@
         // - Goal that is only supported through state/action pair
         public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
-            if (trainGoal.TimesReachedGoal == 0)
-            {
-                return new WalkResult<TData>(PathFindResultState.GoalNeverReached);
-            }
-
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;

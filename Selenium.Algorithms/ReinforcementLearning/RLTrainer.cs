@@ -21,8 +21,10 @@
         /// </summary>
         /// <param name="epochs">The amount of iterations that the algorithm will make (each epoch starts from the initial state)</param>
         /// <param name="maximumActions">The max actions to apply in an epoch</param>
-        public async Task Run(int epochs = 1000, int maximumActions = 1000)
+        public async Task<TrainerReport> Run(int epochs = 1000, int maximumActions = 1000)
         {
+            var timesReachedGoal = 0;
+            var totalActionsRun = 0;
             for (int epoch = 0; epoch < epochs; ++epoch)
             {
                 var currentState = await options.Environment.GetInitialState();
@@ -33,6 +35,7 @@
                     var nextAction = await options.Policy.GetNextAction(options.Environment, currentState, options.ExperimentState);
                     var (nextState, currentStabilizationCounter) = await Step(currentState, nextAction, maximumActions - currentActionCounter);
                     currentActionCounter += currentStabilizationCounter;
+                    totalActionsRun += currentStabilizationCounter;
 
                     if (currentActionCounter >= maximumActions)
                     {
@@ -43,12 +46,14 @@
 
                     if (await options.TrainGoal.HasReachedAGoalCondition(currentState, nextAction))
                     {
-                        ++options.TrainGoal.TimesReachedGoal;
+                        ++timesReachedGoal;
                         break;
                     }
                 }
                 while (++currentActionCounter < maximumActions);
             }
+
+            return new TrainerReport(timesReachedGoal, totalActionsRun / (float)epochs);
         }
 
         /// <summary>

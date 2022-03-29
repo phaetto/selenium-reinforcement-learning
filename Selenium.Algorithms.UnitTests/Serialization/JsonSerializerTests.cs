@@ -47,7 +47,8 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                var trainerReport = await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                trainerReport.TimesReachedGoal.ShouldBePositive();
 
                 var seleniumExperimentStateJsonData = JsonSerializer.Serialize(seleniumExperimentState);
                 var seleniumExperimentStateDeserialized = JsonSerializer.Deserialize<SeleniumExperimentState>(seleniumExperimentStateJsonData);
@@ -86,9 +87,9 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                await rlTrainer.Run(epochs: 1, maximumActions: 2);
+                var trainerReport = await rlTrainer.Run(epochs: 1, maximumActions: 2);
 
-                seleniumTrainGoal.TimesReachedGoal.ShouldBe(0);
+                trainerReport.TimesReachedGoal.ShouldBe(0);
 
                 var seleniumExperimentStateJsonData = JsonSerializer.Serialize(seleniumExperimentState);
                 var seleniumExperimentStateDeserialized = JsonSerializer.Deserialize<SeleniumExperimentState>(seleniumExperimentStateJsonData);
@@ -100,9 +101,9 @@
 
                 await seleniumEnvironment.GetInitialState();
                 var rlTrainer2 = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumExperimentStateDeserialized, seleniumTrainGoal));
-                await rlTrainer2.Run(epochs: 2, maximumActions: 20);
+                var trainerReport2 = await rlTrainer2.Run(epochs: 2, maximumActions: 20);
 
-                seleniumTrainGoal.TimesReachedGoal.ShouldBePositive();
+                trainerReport2.TimesReachedGoal.ShouldBePositive();
             }
             finally
             {

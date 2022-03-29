@@ -47,7 +47,8 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                var trainerReport = await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                trainerReport.TimesReachedGoal.ShouldBePositive();
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);
@@ -94,7 +95,8 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                var trainerReport = await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                trainerReport.TimesReachedGoal.ShouldBePositive();
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);
@@ -141,7 +143,8 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                var trainerReport = await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                trainerReport.TimesReachedGoal.ShouldBePositive();
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);
