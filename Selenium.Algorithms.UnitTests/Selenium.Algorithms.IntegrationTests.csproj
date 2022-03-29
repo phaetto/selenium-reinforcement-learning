@@ -20,6 +20,7 @@
     <None Remove="Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation.html" />
     <None Remove="Run_WhenThereIsADelayedActionWithLoader_ThenItSuccessfullyWaits.html" />
     <None Remove="Run_WhenThereIsADelayedAction_ThenItSuccessfullyWaits.html" />
+    <None Remove="Serialization\Serialize_WhenTrainingASimpleTestCase_ThenItSuccessfullySerializesAndDeserializesState.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +53,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenTrainingASimpleTestCase_ThenItSuccessfullyFindsTheCorrectActions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Serialization\Serialize_WhenTrainingASimpleTestCase_ThenItSuccessfullySerializesAndDeserializesState.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
