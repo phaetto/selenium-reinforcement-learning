@@ -249,6 +249,13 @@ return !!checkForElement;
                         actions.Perform();
                         // Recalculate the position
                         elementPositionalData = GetElementsInteractionData(new IWebElement[] { webElement }).First();
+
+                        if (elementPositionalData.X < 0 || elementPositionalData.Y < 0
+                            || elementPositionalData.X > windowSize.Width || elementPositionalData.Y > windowSize.Height)
+                        {
+                            // If we tried to move to it, but still out of view, that means it is not interactible (e.g fixed elements)
+                            return false;
+                        }
                     }
                     catch (Exception) // Should that be a specific exception type?
                     {
