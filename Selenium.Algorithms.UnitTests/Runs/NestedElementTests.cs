@@ -43,11 +43,11 @@
                     {
                         Url = fileUri.AbsoluteUri,
                     });
-                var seleniumRandomStepPolicy = new SeleniumRandomStepPolicy(random);
+                var seleniumRandomStepPolicy = new SeleniumQLearningStepPolicy(random);
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                await rlTrainer.Run(epochs: 2, maximumActions: 15);
+                await rlTrainer.Run(epochs: 2, maximumActions: 20);
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);

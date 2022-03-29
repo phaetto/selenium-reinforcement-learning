@@ -98,7 +98,7 @@ return !!checkForElement;
                     ((IReadOnlyCollection<object>)dictionary["data-automation-actions"])
                         .Select(x => Convert.ToString(x))
                         .ToList()
-                        .AsReadOnly(), // TODO: remove it?
+                        .AsReadOnly(),
                     Convert.ToString(dictionary["tagName"]),
                     Convert.ToString(dictionary["text"]),
                     Convert.ToString(dictionary["name"]),

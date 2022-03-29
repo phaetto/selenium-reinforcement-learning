@@ -104,6 +104,10 @@
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
         }
 
+        // TODO: Revisit method FindRouteWithoutApplyingActions
+        // In order for this to work truly offline it needs to be decoupled from browser:
+        // - No environment usage
+        // - Goal that is only supported through state/action pair
         public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
             if (trainGoal.TimesReachedGoal == 0)

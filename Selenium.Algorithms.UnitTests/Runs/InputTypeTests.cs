@@ -66,8 +66,8 @@
                 pathList.Steps.ShouldNotBeEmpty();
                 pathList.Steps.Count.ShouldBe(5);
                 pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='name']");
-                pathList.Steps[1].Action.ToString().ShouldEndWith("textarea[data-automation-id='text']");
-                pathList.Steps[2].Action.ToString().ShouldEndWith("input[data-automation-id='description']");
+                pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='description']");
+                pathList.Steps[2].Action.ToString().ShouldEndWith("textarea[data-automation-id='text']");
                 pathList.Steps[3].Action.ToString().ShouldEndWith("input[data-automation-id='done']");
                 pathList.Steps[4].Action.ToString().ShouldEndWith("input[data-automation-id='accept']");
             }

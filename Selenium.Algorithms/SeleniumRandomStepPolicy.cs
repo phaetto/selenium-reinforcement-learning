@@ -23,11 +23,13 @@
             IExperimentState<IReadOnlyCollection<ElementData>> experimentState)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            // TODO: typing: when element is an input, type instead of click (remember it has to be able to be traced from the goal/reward)
-
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumRandomStepPolicy)} that has no data");
 
-            return new ElementClickAction(state.Data.ElementAt(random.Next(0, state.Data.Count)));
+            var possibleActions = (await environment.GetPossibleActions(state)).ToList();
+
+            return possibleActions.Count > 1
+                ? possibleActions.ElementAt(random.Next(0, possibleActions.Count))
+                : possibleActions.First();
         }
     }
 }

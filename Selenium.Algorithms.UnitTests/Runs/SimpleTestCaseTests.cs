@@ -47,7 +47,7 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                await rlTrainer.Run(epochs: 4, maximumActions: 20);
 
                 var initialState = await seleniumEnvironment.GetInitialState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);

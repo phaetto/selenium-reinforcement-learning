@@ -24,8 +24,6 @@
             this.webDriver = webDriver;
             this.javaScriptExecutor = javaScriptExecutor;
             Options = seleniumEnvironmentOptions;
-
-            // if (string.IsNullOrWhiteSpace(seleniumEnvironmentOptions.Url))  // TODO: guard?
         }
 
         public async Task<IState<IReadOnlyCollection<ElementData>>> GetInitialState()
@@ -39,7 +37,6 @@
         public async Task<IEnumerable<IAgentAction<IReadOnlyCollection<ElementData>>>> GetPossibleActions(IState<IReadOnlyCollection<ElementData>> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            // We need to get the fresh page's state instead of using the input
             var seleniumState = state;
 
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumEnvironment)} that has no data");
@@ -49,7 +46,7 @@
                     (x.IsTypingElement switch
                     {
                         true => GetElementTypeAction(x, seleniumState),
-                        _ => new ElementClickAction(x), // TODO: Should be able to choose the available actions and types
+                        _ => new ElementClickAction(x), // TODO: Should be able to choose the available actions and types [uses data-automation-actions]
                     })
                 )
                 .Where(x => !Equals(x, ElementTypeAction.NoTypeAction));
@@ -110,7 +107,7 @@
                 ? Options.InputTextData[elementData.Name]
                 : "todo: random string to provide";
 
-            if (state.Data.Any(x => x.ExtraState == inputDataState)) // Should have ElementData.Equals
+            if (state.Data.Any(x => x.ExtraState == inputDataState))
             {
                 return ElementTypeAction.NoTypeAction;
             }
