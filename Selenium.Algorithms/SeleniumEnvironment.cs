@@ -29,7 +29,7 @@
         public async Task<IState<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
             Options.WriteLine("SeleniumEnvironment: Getting the initial state...");
-            Options.SetupInitialState(webDriver, Options);
+            await Options.SetupInitialState(webDriver, Options);
             return await GetCurrentState();
         }
 
@@ -39,6 +39,7 @@
         {
             var seleniumState = state;
 
+            // TODO: maybe throw here, it could be that the use does not have all the action points enabled
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumEnvironment)} that has no data");
 
             return seleniumState.Data.Select(x =>

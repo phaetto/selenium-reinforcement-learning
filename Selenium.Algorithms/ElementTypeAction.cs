@@ -2,9 +2,12 @@
 {
     using OpenQA.Selenium;
     using Selenium.Algorithms.ReinforcementLearning;
+    using Selenium.Algorithms.Serialization;
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
 
+    [JsonConverter(typeof(ElementTypeActionConverter))]
     public sealed class ElementTypeAction : IAgentAction<IReadOnlyCollection<ElementData>>
     {
         public static readonly ElementTypeAction NoTypeAction = new ElementTypeAction();

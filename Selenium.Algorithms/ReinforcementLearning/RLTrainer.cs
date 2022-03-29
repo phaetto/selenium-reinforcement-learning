@@ -30,6 +30,18 @@
                 var currentState = await options.Environment.GetInitialState();
                 var currentActionCounter = 0;
 
+                while (await options.Environment.IsIntermediateState(currentState) && currentActionCounter < maximumActions)
+                {
+                    await options.Environment.WaitForPostActionIntermediateStabilization();
+                    currentState = await options.Environment.GetCurrentState();
+                    ++currentActionCounter;
+                }
+
+                if (currentActionCounter >= maximumActions)
+                {
+                    continue;
+                }
+
                 do
                 {
                     var nextAction = await options.Policy.GetNextAction(options.Environment, currentState, options.ExperimentState);
@@ -37,18 +49,18 @@
                     currentActionCounter += currentStabilizationCounter;
                     totalActionsRun += currentStabilizationCounter;
 
+                    if (await options.TrainGoal.HasReachedAGoalCondition(nextState, nextAction))
+                    {
+                        ++timesReachedGoal;
+                        break;
+                    }
+
                     if (currentActionCounter >= maximumActions)
                     {
                         break;
                     }
 
                     currentState = nextState;
-
-                    if (await options.TrainGoal.HasReachedAGoalCondition(currentState, nextAction))
-                    {
-                        ++timesReachedGoal;
-                        break;
-                    }
                 }
                 while (++currentActionCounter < maximumActions);
             }

@@ -3,6 +3,7 @@
     using OpenQA.Selenium;
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public interface ISeleniumEnvironmentOptions
     {
@@ -11,6 +12,6 @@
         IReadOnlyCollection<string> LoadingElementsCssSelectors { get; set; }
         string Url { get; set; }
         Action<string> WriteLine { get; set; }
-        Action<IWebDriver, ISeleniumEnvironmentOptions> SetupInitialState { get; set; }
+        Func<IWebDriver, ISeleniumEnvironmentOptions, Task> SetupInitialState { get; set; }
     }
 }

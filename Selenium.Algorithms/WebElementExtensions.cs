@@ -16,7 +16,7 @@
         private const string GetElementsInformationJavaScript = @"
 var list = [];
 for(var i = 0; i < arguments.length; ++i) {
-    var isTypingElement = (arguments[i].tagName.toLowerCase() === 'input' && arguments[i].getAttribute('type').toLowerCase() === 'text')
+    var isTypingElement = (arguments[i].tagName.toLowerCase() === 'input' && (arguments[i].getAttribute('type').toLowerCase() === 'text' || arguments[i].getAttribute('type').toLowerCase() === 'password'))
         || (arguments[i].tagName.toLowerCase() === 'textarea');
     
     list.push({

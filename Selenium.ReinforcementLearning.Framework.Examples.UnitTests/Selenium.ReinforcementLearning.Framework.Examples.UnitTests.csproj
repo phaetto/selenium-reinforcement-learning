@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
@@ -24,7 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Selenium.Algorithms\Selenium.Algorithms.csproj" />
     <ProjectReference Include="..\Selenium.ReinforcementLearning.Framework\Selenium.ReinforcementLearning.Framework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(ProjectDir)binaries\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

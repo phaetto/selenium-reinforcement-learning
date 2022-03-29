@@ -1,2 +1,4 @@
 Selenium.Algorithms.UnitTests/binaries/ungoogled-chromium_96.0.4664.45_1.vaapi_linux/chrome filter=lfs diff=lfs merge=lfs -text
 Selenium.Algorithms.UnitTests/binaries/ungoogled-chromium-96.0.4664.45-1_Win64/chrome.dll filter=lfs diff=lfs merge=lfs -text
+Selenium.ReinforcementLearning.Framework.Examples.UnitTests/binaries/ungoogled-chromium_96.0.4664.45_1.vaapi_linux/chrome filter=lfs diff=lfs merge=lfs -text
+Selenium.ReinforcementLearning.Framework.Examples.UnitTests/binaries/ungoogled-chromium-96.0.4664.45-1_Win64/chrome.dll filter=lfs diff=lfs merge=lfs -text

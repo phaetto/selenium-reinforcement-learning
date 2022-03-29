@@ -73,8 +73,7 @@
 
                     StateAndActionPair<TData>? stateAndActionPair = null;
                     double entryValue = 0D;
-
-                    string? propertyName = reader.GetString(); // This is the hash number
+                    _ = reader.GetString(); // This is the hash number
 
                     reader.Read();
 
