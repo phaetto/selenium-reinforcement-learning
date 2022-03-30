@@ -22,7 +22,7 @@
             });
         }
 
-        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> IsInInventoryPage(WebDriver driver)
+        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> IsInInventory(WebDriver driver)
         {
             return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) => {
                 try

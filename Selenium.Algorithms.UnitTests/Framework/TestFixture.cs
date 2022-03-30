@@ -33,7 +33,7 @@
             var driver = new ChromeDriver(Path.Combine(AssemblyDirectory, "binaries", binaryFolder), chromeOptions);
             driver.Manage().Window.Size = new Size(1000, 768);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(10);
 
             return driver;
         }

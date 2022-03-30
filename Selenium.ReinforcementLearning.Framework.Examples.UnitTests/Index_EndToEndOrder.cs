@@ -10,6 +10,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
     using Shouldly;
     using System.IO;
     using System.Text.Json;
+    using OpenQA.Selenium;
 
     /// <summary>
     /// Simulates an order done in https://www.saucedemo.com/.
@@ -33,17 +34,14 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
             this.testFixture = testFixture;
         }
 
-        /*
-         * Some TODOs for me:
-         * SetupInitialState must move to something else since a trained session had connection to its environment
-         * Maybe: Make API for traits
-         * Maybe: Make API for reloading seamlesly the trained matrix and replaying
-         */
-
         [Fact]
         // [Train] // Note: The API is not there yet
-        public async Task Index_LoginAndAddItemToCart()
+        public async Task _1_Index_LoginAndAddItemToCart()
         {
+            /*
+             * Common usage of the trainer. We want the system to find and navigate automatically throught the UI
+             * and return that result as a state which we then save as json.
+             */
             using var driver = testFixture.GetWebDriver();
 
             try
@@ -61,7 +59,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                 var trainerReport = await rlTrainer.Run(epochs: 5, maximumActions: 40);
                 trainerReport.TimesReachedGoal.ShouldBePositive();
 
-                File.WriteAllText($"{nameof(Index_LoginAndAddItemToCart)}.trained.json", JsonSerializer.Serialize(seleniumExperimentState, jsonSerializerOptions));
+                File.WriteAllText($"{nameof(_1_Index_LoginAndAddItemToCart)}.trained.json", JsonSerializer.Serialize(seleniumExperimentState, jsonSerializerOptions));
             }
             finally
             {
@@ -73,11 +71,14 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
         [Fact]
         // [Train]
         // [Dependency(Index_AddToCart)]
-        public async Task Cart_CheckOut()
+        public async Task _2_Cart_CheckOut()
         {
-            // Simulates the dependency on another trainer
-            // Needs Index_AddToCart to set up the state
-            var Index_AddAnyItemToCartJson = File.ReadAllText($"{nameof(Index_LoginAndAddItemToCart)}.trained.json");
+            /*
+             * This test simulates the dependency on another trainer.
+             * Uses the output from #1 to login and add to cart before checking out.
+             * */
+
+            var Index_AddAnyItemToCartJson = File.ReadAllText($"{nameof(_1_Index_LoginAndAddItemToCart)}.trained.json");
             var Index_AddAnyItemToCartSeleniumExperimentState = JsonSerializer.Deserialize<SeleniumExperimentState>(Index_AddAnyItemToCartJson);
 
             if (Index_AddAnyItemToCartSeleniumExperimentState == null)
@@ -102,7 +103,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                 var trainerReport = await rlTrainer.Run(epochs: 10, maximumActions: 50);
                 trainerReport.TimesReachedGoal.ShouldBePositive();
 
-                File.WriteAllText($"{nameof(Cart_CheckOut)}.trained.json", JsonSerializer.Serialize(seleniumExperimentState, jsonSerializerOptions));
+                File.WriteAllText($"{nameof(_2_Cart_CheckOut)}.trained.json", JsonSerializer.Serialize(seleniumExperimentState, jsonSerializerOptions));
             }
             finally
             {
@@ -111,6 +112,72 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
             }
         }
 
-        // Add last end to end test here
+        [Fact]
+        public async Task _3_EndToEndTest_BuyAnItemAndCheckout()
+        {
+            /* 
+             * This is a test that uses the trained data to navigate without explicitly specifying the steps.
+             * We load those data from the json output of the previous tests.
+             * */
+            var Index_AddAnyItemToCartJson = File.ReadAllText($"{nameof(_1_Index_LoginAndAddItemToCart)}.trained.json");
+            var Index_AddAnyItemToCartSeleniumExperimentState = JsonSerializer.Deserialize<SeleniumExperimentState>(Index_AddAnyItemToCartJson);
+
+            if (Index_AddAnyItemToCartSeleniumExperimentState == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var Cart_CheckOutJson = File.ReadAllText($"{nameof(_2_Cart_CheckOut)}.trained.json");
+            var Cart_CheckOutSeleniumExperimentState = JsonSerializer.Deserialize<SeleniumExperimentState>(Cart_CheckOutJson);
+
+            if (Cart_CheckOutSeleniumExperimentState == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            using var driver = testFixture.GetWebDriver();
+
+            try
+            {
+                // Go to homepage
+                driver.Navigate().GoToUrl(Data.HomePage);
+
+                // Run the trained output from #1
+                // (This will be abstracted hopefully in the framework)
+                var Index_AddAnyItemToCartEnvironment = Environments.Index_LoginAndAddItemToCart(driver);
+                var indexState = await Index_AddAnyItemToCartEnvironment.GetCurrentState();
+                var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(Index_AddAnyItemToCartEnvironment, Index_AddAnyItemToCartSeleniumExperimentState);
+                var pathList = await pathFinder.FindRoute(indexState, Goals.DoesCartHasOneItem(driver));
+                if (pathList.State != PathFindResultState.GoalReached)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                // We should have an item in the cart now
+
+                // Got to cart
+                driver.Navigate().GoToUrl(Data.CartPage);
+
+                // Run the trained output from #2
+                var Cart_CheckoutEnvironment = Environments.Cart_CheckOut(driver, Index_AddAnyItemToCartSeleniumExperimentState);
+                var cartState = await Cart_CheckoutEnvironment.GetCurrentState();
+                pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(Cart_CheckoutEnvironment, Cart_CheckOutSeleniumExperimentState);
+                pathList = await pathFinder.FindRoute(cartState, Goals.HasOrderBeenPosted(driver));
+                if (pathList.State != PathFindResultState.GoalReached)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                // We should be on the checkout page now
+
+                var target = driver.FindElement(By.CssSelector("h2.complete-header"));
+                target.Text.ShouldBe("THANK YOU FOR YOUR ORDER");
+            }
+            finally
+            {
+                driver.Close();
+                driver.Quit();
+            }
+        }
     }
 }

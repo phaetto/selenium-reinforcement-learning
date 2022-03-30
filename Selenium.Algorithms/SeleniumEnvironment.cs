@@ -1,6 +1,7 @@
 ﻿namespace Selenium.Algorithms
 {
     using OpenQA.Selenium;
+    using Selenium.Algorithms.Exceptions;
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
     using System.Collections.Generic;
@@ -39,7 +40,14 @@
         {
             var seleniumState = state;
 
-            // TODO: maybe throw here, it could be that the use does not have all the action points enabled
+            if (state.Data.Count == 0)
+            {
+                throw new InvalidStateException("State cannot be empty. Make sure you are using the correct environment." +
+                    "\n(This probably means that either options.LoadingElementsCssSelectors" +
+                    " need to be provided or you missed elements in options.ActionableElementsCssSelectors)" +
+                    $"\nUrl: {webDriver.Url}");
+            }
+
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumEnvironment)} that has no data");
 
             return seleniumState.Data.Select(x =>

@@ -75,6 +75,11 @@
 
                 if (currentStep >= maxSteps)
                 {
+                    if (await trainGoal.HasReachedAGoalCondition(newState, maximumReturnAction))
+                    {
+                        return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
+                    }
+
                     return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
                 }
 

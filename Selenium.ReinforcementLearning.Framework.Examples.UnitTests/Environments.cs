@@ -59,7 +59,7 @@
                             var Index_AddAnyItemToCartEnvironment = Index_LoginAndAddItemToCart(driver);
                             var initialState = await Index_AddAnyItemToCartEnvironment.GetInitialState();
                             var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(Index_AddAnyItemToCartEnvironment, seleniumExperimentState);
-                            var pathList = await pathFinder.FindRoute(initialState, Goals.IsInInventoryPage(driver));
+                            var pathList = await pathFinder.FindRoute(initialState, Goals.IsInInventory(driver));
                             if (pathList.State != PathFindResultState.GoalReached)
                             {
                                 throw new InvalidOperationException();
