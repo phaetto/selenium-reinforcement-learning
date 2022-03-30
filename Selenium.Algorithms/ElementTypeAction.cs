@@ -2,22 +2,24 @@
 {
     using OpenQA.Selenium;
     using Selenium.Algorithms.ReinforcementLearning;
+    using Selenium.Algorithms.Serialization;
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
 
+    [JsonConverter(typeof(ElementTypeActionConverter))]
     public sealed class ElementTypeAction : IAgentAction<IReadOnlyCollection<ElementData>>
     {
         public static readonly ElementTypeAction NoTypeAction = new ElementTypeAction();
-
-        private readonly ElementData webElement;
-        private readonly string text;
+        public readonly ElementData WebElement;
+        public readonly string Text;
         public readonly string CachedName;
         public readonly int CachedHash;
 
         public ElementTypeAction(in ElementData webElement, in string text)
         {
-            this.webElement = webElement;
-            this.text = text;
+            this.WebElement = webElement;
+            this.Text = text;
 
             // We have to cache those values because the element will get out of the DOM eventually
             CachedHash = webElement.ExtendedGetHashCode();
@@ -27,7 +29,7 @@
 
         private ElementTypeAction()
         {
-            text = "No type action";
+            Text = "No type action";
             CachedName = string.Empty;
             CachedHash = 0;
         }
@@ -40,8 +42,8 @@
             try
             {
                 seleniumEnvironment.Options.WriteLine($"\t{CachedName}");
-                webElement.WebElementReference.Clear();
-                webElement.WebElementReference.SendKeys(text);
+                WebElement.WebElementReference.Clear();
+                WebElement.WebElementReference.SendKeys(Text);
                 seleniumEnvironment.Options.WriteLine($"\t\t... done!");
             }
             catch (ElementNotInteractableException)

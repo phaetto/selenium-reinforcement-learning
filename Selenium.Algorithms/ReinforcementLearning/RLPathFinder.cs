@@ -11,16 +11,13 @@
     public sealed class RLPathFinder<TData> : IRLPathFinder<TData>
     {
         private readonly IEnvironment<TData> environment;
-        private readonly IPolicy<TData> policy;
         private readonly IExperimentState<TData> experimentState;
 
         public RLPathFinder(
             in IEnvironment<TData> environment,
-            in IPolicy<TData> policy,
             in IExperimentState<TData> experimentState)
         {
             this.environment = environment;
-            this.policy = policy;
             this.experimentState = experimentState;
         }
 
@@ -34,11 +31,6 @@
         /// <returns>A report data structure that describes what happened while attempting</returns>
         public async Task<WalkResult<TData>> FindRoute(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
-            if (trainGoal.TimesReachedGoal == 0)
-            {
-                return new WalkResult<TData>(PathFindResultState.GoalNeverReached);
-            }
-
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
@@ -83,6 +75,11 @@
 
                 if (currentStep >= maxSteps)
                 {
+                    if (await trainGoal.HasReachedAGoalCondition(newState, maximumReturnAction))
+                    {
+                        return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
+                    }
+
                     return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
                 }
 
@@ -107,13 +104,12 @@
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
         }
 
+        // TODO: Revisit method FindRouteWithoutApplyingActions
+        // In order for this to work truly offline it needs to be decoupled from browser:
+        // - No environment usage
+        // - Goal that is only supported through state/action pair
         public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
-            if (trainGoal.TimesReachedGoal == 0)
-            {
-                return new WalkResult<TData>(PathFindResultState.GoalNeverReached);
-            }
-
             var resultStates = new List<StateAndActionPair<TData>>();
 
             var currentState = start;
@@ -126,7 +122,7 @@
                    {
                        var pair = new StateAndActionPair<TData>(currentState, x);
                        return experimentState.QualityMatrix.ContainsKey(pair)
-                           ? (pair, score: experimentState.QualityMatrix[pair])
+                           ? (pair: experimentState.QualityMatrix.Keys.First(y => y.Equals(pair)), score: experimentState.QualityMatrix[pair])
                            : (pair, score: 0D);
                    })
                    .ToList();
@@ -159,6 +155,10 @@
                     resultStates.Add(stateAndActionPairWithResultState);
                     currentState = newState;
 
+                    /* 
+                     * Note: The goals cannot be reached if the code uses the browser to find elements.
+                     * Maybe some how we can signal that this is not possible?
+                     * */
                     if (await trainGoal.HasReachedAGoalCondition(currentState, stateAndActionPairWithResultState.Action))
                     {
                         return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);

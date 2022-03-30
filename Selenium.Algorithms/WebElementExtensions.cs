@@ -16,7 +16,7 @@
         private const string GetElementsInformationJavaScript = @"
 var list = [];
 for(var i = 0; i < arguments.length; ++i) {
-    var isTypingElement = (arguments[i].tagName.toLowerCase() === 'input' && arguments[i].getAttribute('type').toLowerCase() === 'text')
+    var isTypingElement = (arguments[i].tagName.toLowerCase() === 'input' && (arguments[i].getAttribute('type').toLowerCase() === 'text' || arguments[i].getAttribute('type').toLowerCase() === 'password'))
         || (arguments[i].tagName.toLowerCase() === 'textarea');
     
     list.push({
@@ -95,7 +95,10 @@ return !!checkForElement;
                     Convert.ToString(dictionary["class"]),
                     Convert.ToString(dictionary["id"]),
                     Convert.ToString(dictionary["data-automation-id"]),
-                    ParseAutomationActions(Convert.ToString(dictionary["data-automation-actions"])), // TODO: remove it?
+                    ((IReadOnlyCollection<object>)dictionary["data-automation-actions"])
+                        .Select(x => Convert.ToString(x))
+                        .ToList()
+                        .AsReadOnly(),
                     Convert.ToString(dictionary["tagName"]),
                     Convert.ToString(dictionary["text"]),
                     Convert.ToString(dictionary["name"]),
@@ -246,6 +249,13 @@ return !!checkForElement;
                         actions.Perform();
                         // Recalculate the position
                         elementPositionalData = GetElementsInteractionData(new IWebElement[] { webElement }).First();
+
+                        if (elementPositionalData.X < 0 || elementPositionalData.Y < 0
+                            || elementPositionalData.X > windowSize.Width || elementPositionalData.Y > windowSize.Height)
+                        {
+                            // If we tried to move to it, but still out of view, that means it is not interactible (e.g fixed elements)
+                            return false;
+                        }
                     }
                     catch (Exception) // Should that be a specific exception type?
                     {
@@ -280,16 +290,6 @@ return !!checkForElement;
         public static IJavaScriptExecutor GetJavascriptExecutor(this IWebElement webElement)
         {
             return (IJavaScriptExecutor)((IWrapsDriver)webElement).WrappedDriver;
-        }
-
-        public static IReadOnlyCollection<string> ParseAutomationActions(string actions)
-        {
-            return actions?.Split(' ')
-                ?.Select(x => x.Trim())
-                ?.Where(x => !string.IsNullOrWhiteSpace(x))
-                ?.ToList()
-                ?.AsReadOnly()
-                ?? new List<string>().AsReadOnly();
         }
     }
 }

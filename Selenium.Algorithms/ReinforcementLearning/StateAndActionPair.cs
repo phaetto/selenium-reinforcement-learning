@@ -1,7 +1,10 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
+    using Selenium.Algorithms.ReinforcementLearning.Serialization;
     using System.Diagnostics;
+    using System.Text.Json.Serialization;
 
+    [JsonConverter(typeof(StateAndActionConverterFactory))]
     [DebuggerDisplay("State: {State.ToString()} --- Action: {Action.ToString()}")]
     public class StateAndActionPair<TData>
     {
@@ -32,6 +35,7 @@
         }
     }
 
+    [JsonConverter(typeof(StateAndActionConverterFactory))]
     [DebuggerDisplay("State: {State.ToString()} --- Action: {Action.ToString()} --- Plus result")]
     public class StateAndActionPairWithResultState<TData> : StateAndActionPair<TData>
     {
