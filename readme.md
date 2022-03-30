@@ -63,10 +63,7 @@ For this to work correctly this repo is
 
 ## Feedback
 
-If you have any questions and/or feedback feel free to create an issue.
-
-Also if you feel like challenging the idea and having some fun,
-    feel free to send me a website and a task to train/execute! :smiley:
+If you have any questions and/or feedback feel free to create an issue/discussion.
 
 ## License
 
