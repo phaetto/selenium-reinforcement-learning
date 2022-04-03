@@ -22,10 +22,15 @@
                     new SeleniumEnvironmentOptions
                     {
                         Url = Data.HomePage.AbsoluteUri,
-                        ActionableElementsCssSelectors = new[] {
+                        ActionableElementsCssSelectors = new[]
+                        {
                             "#login-button",
                             ".login-box .form_input",
                             ".btn_inventory"
+                        },
+                        GoalElementSelectors = new[]
+                        {
+                            ".shopping_cart_link .shopping_cart_badge",
                         },
                         InputTextData = inputTextData,
                     });
@@ -52,6 +57,10 @@
                             "input[data-test='continue']",
                             "button[data-test='finish']",
                         },
+                        GoalElementSelectors = new[]
+                        {
+                            "h2.complete-header",
+                        },
                         InputTextData = inputTextData,
                         SetupInitialState = async (webDriver, options) =>
                         {
@@ -59,7 +68,7 @@
                             var Index_AddAnyItemToCartEnvironment = Index_LoginAndAddItemToCart(driver);
                             var initialState = await Index_AddAnyItemToCartEnvironment.GetInitialState();
                             var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(Index_AddAnyItemToCartEnvironment, seleniumExperimentState);
-                            var pathList = await pathFinder.FindRoute(initialState, Goals.IsInInventory(driver));
+                            var pathList = await pathFinder.FindRoute(initialState, Goals.IsInInventory());
                             if (pathList.State != PathFindResultState.GoalReached)
                             {
                                 throw new InvalidOperationException();

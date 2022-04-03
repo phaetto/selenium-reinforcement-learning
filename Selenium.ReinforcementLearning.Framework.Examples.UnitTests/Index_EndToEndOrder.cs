@@ -54,7 +54,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                     seleniumEnvironment,
                     seleniumRandomStepPolicy,
                     seleniumExperimentState,
-                    Goals.DoesCartHasOneItem(driver)));
+                    Goals.DoesCartHasOneItem()));
 
                 var trainerReport = await rlTrainer.Run(epochs: 5, maximumActions: 40);
                 trainerReport.TimesReachedGoal.ShouldBePositive();
@@ -98,9 +98,9 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                     seleniumEnvironment,
                     seleniumRandomStepPolicy,
                     seleniumExperimentState,
-                    Goals.HasOrderBeenPosted(driver)));
+                    Goals.HasOrderBeenPosted()));
 
-                var trainerReport = await rlTrainer.Run(epochs: 10, maximumActions: 50);
+                var trainerReport = await rlTrainer.Run(epochs: 15, maximumActions: 50);
                 trainerReport.TimesReachedGoal.ShouldBePositive();
 
                 File.WriteAllText($"{nameof(_2_Cart_CheckOut)}.trained.json", JsonSerializer.Serialize(seleniumExperimentState, jsonSerializerOptions));
@@ -147,7 +147,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                 var Index_AddAnyItemToCartEnvironment = Environments.Index_LoginAndAddItemToCart(driver);
                 var indexState = await Index_AddAnyItemToCartEnvironment.GetCurrentState();
                 var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(Index_AddAnyItemToCartEnvironment, Index_AddAnyItemToCartSeleniumExperimentState);
-                var pathList = await pathFinder.FindRoute(indexState, Goals.DoesCartHasOneItem(driver));
+                var pathList = await pathFinder.FindRoute(indexState, Goals.DoesCartHasOneItem());
                 if (pathList.State != PathFindResultState.GoalReached)
                 {
                     throw new InvalidOperationException();
@@ -162,7 +162,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                 var Cart_CheckoutEnvironment = Environments.Cart_CheckOut(driver, Index_AddAnyItemToCartSeleniumExperimentState);
                 var cartState = await Cart_CheckoutEnvironment.GetCurrentState();
                 pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(Cart_CheckoutEnvironment, Cart_CheckOutSeleniumExperimentState);
-                pathList = await pathFinder.FindRoute(cartState, Goals.HasOrderBeenPosted(driver));
+                pathList = await pathFinder.FindRoute(cartState, Goals.HasOrderBeenPosted());
                 if (pathList.State != PathFindResultState.GoalReached)
                 {
                     throw new InvalidOperationException();
