@@ -18,6 +18,7 @@
     <None Remove="Run_WhenOutOfViewPortElementsExistWithSomeScrolling_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenOutOfViewPortElementsExist_ThenItSuccessfullyFindsTheCorrectActions.html" />
     <None Remove="Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation.html" />
+    <None Remove="Run_WhenThereIsADelayedActionAndEmptyEndingState_ThenItSuccessfullyWaits.html" />
     <None Remove="Run_WhenThereIsADelayedActionWithLoader_ThenItSuccessfullyWaits.html" />
     <None Remove="Run_WhenThereIsADelayedAction_ThenItSuccessfullyWaits.html" />
     <None Remove="Serialization\Serialize_WhenTrainingASimpleTestCase_ThenItSuccessfullySerializesAndDeserializesState.html" />
@@ -44,6 +45,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenThereIsADelayedActionWithLoader_ThenItSuccessfullyWaits.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Run_WhenThereIsADelayedActionAndEmptyEndingState_ThenItSuccessfullyWaits.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Run_WhenThereIsADelayedAction_ThenItSuccessfullyWaits.html">
