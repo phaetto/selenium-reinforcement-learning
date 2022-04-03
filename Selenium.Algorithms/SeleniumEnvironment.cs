@@ -69,11 +69,6 @@
             var actionableElements = actionableElementQuerySelectors.GetElementsFromQuerySelectors(javaScriptExecutor);
             var filteredActionableElements = actionableElements.ToInteractibleElements();
 
-            if (actionableElements.Count == 7 && filteredActionableElements.Count == 6)
-            {
-                var b = actionableElements[6].CanBeInteracted();
-            }
-
             var filteredElementsData = filteredActionableElements.GetElementsInformation();
 
             return new SeleniumState(filteredElementsData);
