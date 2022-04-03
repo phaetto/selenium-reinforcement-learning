@@ -12,6 +12,7 @@
         public Action<string> WriteLine { get; set; } = x => Debug.WriteLine(x);
         public IReadOnlyCollection<string> ActionableElementsCssSelectors { get; set; } = new string[] { "body *[data-automation-id]" };
         public IReadOnlyCollection<string> LoadingElementsCssSelectors { get; set; } = new string[0];
+        public IReadOnlyCollection<string> GoalElementSelectors { get; set; } = new string[] { "body *[data-automation-goal]" };
         public string Url { get; set; } = string.Empty;
         public Func<IWebDriver, ISeleniumEnvironmentOptions, Task> SetupInitialState { get; set; } = (webDriver, options) => {
             webDriver.Navigate().GoToUrl(options.Url);

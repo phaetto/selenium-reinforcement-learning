@@ -53,7 +53,7 @@
                     return new WalkResult<TData>(PathFindResultState.Unreachable);
                 }
 
-                var maximumValue = 0D;
+                var maximumValue = double.MinValue;
                 var maximumReturnAction = stateAndActionPairs.First().action;
                 foreach (var pair in stateAndActionPairs)
                 {
@@ -132,7 +132,7 @@
                     return new WalkResult<TData>(PathFindResultState.Unreachable);
                 }
 
-                var maximumValue = 0D;
+                var maximumValue = double.MinValue;
                 var maximumReturnPair = stateAndActionPairs.First().pair;
                 foreach (var pairAndScore in stateAndActionPairs)
                 {
@@ -155,10 +155,6 @@
                     resultStates.Add(stateAndActionPairWithResultState);
                     currentState = newState;
 
-                    /* 
-                     * Note: The goals cannot be reached if the code uses the browser to find elements.
-                     * Maybe some how we can signal that this is not possible?
-                     * */
                     if (await trainGoal.HasReachedAGoalCondition(currentState, stateAndActionPairWithResultState.Action))
                     {
                         return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);

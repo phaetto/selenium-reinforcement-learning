@@ -49,7 +49,7 @@
                     currentActionCounter += currentStabilizationCounter;
                     totalActionsRun += currentStabilizationCounter;
 
-                    if (await options.TrainGoal.HasReachedAGoalCondition(nextState, nextAction))
+                    if (await options.TrainGoal.HasReachedAGoalCondition(currentState, nextAction))
                     {
                         ++timesReachedGoal;
                         break;
@@ -84,17 +84,10 @@
                 await options.Environment.WaitForPostActionIntermediateStabilization();
                 nextState = await options.Environment.GetCurrentState();
                 ++currentStabilizationCounter;
-
-                if (await options.TrainGoal.HasReachedAGoalCondition(nextState, nextAction))
-                {
-                    await ApplyQMatrixLogicWithFinishingState(currentState, nextAction, nextState);
-                    return (nextState, currentStabilizationCounter);
-                }
             }
 
             if (currentStabilizationCounter >= maximumWaitForStabilization)
             {
-                await ApplyQMatrixLogicWithFinishingState(currentState, nextAction, nextState);
                 return (nextState, currentStabilizationCounter);
             }
 

@@ -277,8 +277,8 @@ return !!checkForElement;
 
                 return (bool)javaScriptExecutor.ExecuteScript(
                     IsElementInCoordinatesChildOfElementJavaScript,
-                    elementPositionalData.X + 1,
-                    elementPositionalData.Y + 1,
+                    elementPositionalData.X + elementPositionalData.Width / 2, // We need to target the middle because of rounded borders
+                    elementPositionalData.Y + elementPositionalData.Height / 2,
                     webElement);
             }
             catch (StaleElementReferenceException)

@@ -3,54 +3,30 @@
     using OpenQA.Selenium;
     using Selenium.Algorithms;
     using System.Collections.Generic;
+    using System.Linq;
 
     public static class Goals
     {
-        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> DoesCartHasOneItem(WebDriver driver)
+        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> DoesCartHasOneItem()
         {
-            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) => {
-                try
-                {
-                    var target = driver.FindElement(By.CssSelector(".shopping_cart_link .shopping_cart_badge"));
-
-                    return target.Text == "1";
-                }
-                catch (NoSuchElementException)
-                {
-                    return false;
-                }
+            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) => {
+                return state.Data
+                    .Where(x => x.Class.Contains("shopping_cart_badge"))
+                    .Any(x => x.Text == "1");
             });
         }
 
-        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> IsInInventory(WebDriver driver)
+        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> IsInInventory()
         {
-            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) => {
-                try
-                {
-                    var target = driver.FindElement(By.CssSelector(".btn_inventory"));
-
-                    return target.CanBeInteracted();
-                }
-                catch (NoSuchElementException)
-                {
-                    return false;
-                }
+            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) => {
+                return state.Data.Any(x => x.Class.Contains("btn_inventory"));
             });
         }
 
-        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> HasOrderBeenPosted(WebDriver driver)
+        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> HasOrderBeenPosted()
         {
-            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) => {
-                try
-                {
-                    var target = driver.FindElement(By.CssSelector("h2.complete-header"));
-
-                    return target.Text == "THANK YOU FOR YOUR ORDER";
-                }
-                catch (NoSuchElementException)
-                {
-                    return false;
-                }
+            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) => {
+                return state.Data.Any(x => x.Text == "THANK YOU FOR YOUR ORDER");
             });
         }
     }

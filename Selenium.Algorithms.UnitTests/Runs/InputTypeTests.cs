@@ -10,6 +10,7 @@
     using Selenium.Algorithms;
     using Selenium.Algorithms.IntegrationTests.Framework;
     using OpenQA.Selenium;
+    using System.Linq;
 
     public sealed class InputTypeTests : IClassFixture<TestFixture>
     {
@@ -37,11 +38,10 @@
                 var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation)}.html"));
                 var random = new Random(1);
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
+                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) =>
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var target = driver.FindElement(By.CssSelector(".third-panel"));
-                    return target.Displayed && target.Enabled;
+                    return state.Data.Any(x => x.Class.Contains("third-panel"));
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
@@ -67,8 +67,8 @@
                 pathList.Steps.ShouldNotBeEmpty();
                 pathList.Steps.Count.ShouldBe(5);
                 pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='name']");
-                pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='description']");
-                pathList.Steps[2].Action.ToString().ShouldEndWith("textarea[data-automation-id='text']");
+                pathList.Steps[1].Action.ToString().ShouldEndWith("textarea[data-automation-id='text']");
+                pathList.Steps[2].Action.ToString().ShouldEndWith("input[data-automation-id='description']");
                 pathList.Steps[3].Action.ToString().ShouldEndWith("input[data-automation-id='done']");
                 pathList.Steps[4].Action.ToString().ShouldEndWith("input[data-automation-id='accept']");
             }

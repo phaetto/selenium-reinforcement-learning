@@ -9,7 +9,7 @@
     using System.Threading.Tasks;
     using Selenium.Algorithms;
     using Selenium.Algorithms.IntegrationTests.Framework;
-    using OpenQA.Selenium;
+    using System.Linq;
 
     public sealed class NestedElementTests : IClassFixture<TestFixture>
     {
@@ -30,11 +30,10 @@
                 var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenAnActionableElementHasOtherNestedElements_ThenItSuccessfullyFindsTheCorrectActions)}.html"));
                 var random = new Random(1);
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
+                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) =>
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
                 {
-                    var target = driver.FindElement(By.CssSelector(".third"));
-                    return target.Displayed && target.Enabled;
+                    return state.Data.Any(x => x.Class.Contains("third"));
                 });
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
@@ -47,7 +46,7 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumRandomStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                var trainerReport = await rlTrainer.Run(epochs: 2, maximumActions: 20);
+                var trainerReport = await rlTrainer.Run(epochs: 4, maximumActions: 20);
                 trainerReport.TimesReachedGoal.ShouldBePositive();
 
                 var initialState = await seleniumEnvironment.GetInitialState();
