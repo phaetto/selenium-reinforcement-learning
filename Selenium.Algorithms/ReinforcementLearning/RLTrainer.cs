@@ -84,10 +84,17 @@
                 await options.Environment.WaitForPostActionIntermediateStabilization();
                 nextState = await options.Environment.GetCurrentState();
                 ++currentStabilizationCounter;
+
+                if (await options.TrainGoal.HasReachedAGoalCondition(nextState, nextAction))
+                {
+                    await ApplyQMatrixLogicWithFinishingState(currentState, nextAction, nextState);
+                    return (nextState, currentStabilizationCounter);
+                }
             }
 
             if (currentStabilizationCounter >= maximumWaitForStabilization)
             {
+                await ApplyQMatrixLogicWithFinishingState(currentState, nextAction, nextState);
                 return (nextState, currentStabilizationCounter);
             }
 
@@ -108,6 +115,21 @@
             });
 
             var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, nextState);
+            if (!options.ExperimentState.QualityMatrix.ContainsKey(selectedPair))
+            {
+                options.ExperimentState.QualityMatrix.Add(selectedPair, 0D);
+            }
+
+            // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
+            options.ExperimentState.QualityMatrix[selectedPair] =
+                ((1 - options.LearningRate) * options.ExperimentState.QualityMatrix[selectedPair])
+                + (options.LearningRate * (await options.TrainGoal.RewardFunction(currentState, nextAction) + (options.DiscountRate * maxQ)));
+        }
+
+        private async Task ApplyQMatrixLogicWithFinishingState(IState<TData> currentState, IAgentAction<TData> nextAction, IState<TData> emptyState)
+        {
+            var maxQ = 0D;
+            var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, emptyState);
             if (!options.ExperimentState.QualityMatrix.ContainsKey(selectedPair))
             {
                 options.ExperimentState.QualityMatrix.Add(selectedPair, 0D);
