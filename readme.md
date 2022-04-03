@@ -61,6 +61,13 @@ For this to work correctly this repo is
     ignoring the timing dimension (because that is included in the state in browser systems)
     and replaces that with "user wait" mechanic.
 
+## Example
+
+There is a full [end to end example](Selenium.ReinforcementLearning.Framework.Examples.UnitTests/Index_EndToEndOrder.cs)
+that you can see this in action. Just run the tests marked at 1,2,3 in consecutive order and watch how the trained output is been used to navigate the site.
+
+You can debug the tests in order to see the algorithm in action in the local chromium browser.
+
 ## Feedback
 
 If you have any questions and/or feedback feel free to create an issue/discussion.
