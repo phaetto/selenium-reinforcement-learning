@@ -6,6 +6,7 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
 
     public sealed class TestFixture
@@ -19,18 +20,21 @@
             var chromeOptions = new ChromeOptions();
             if (!Debugger.IsAttached)
             {
-                chromeOptions.AddArgument("headless");
+                chromeOptions.AddArgument("--headless");
+                chromeOptions.AddArgument("--disable-gpu");
             }
 
-            var binaryFolder = @"ungoogled-chromium-96.0.4664.45-1_Win64";
+            var binaryFolder = Path.Combine(AssemblyDirectory, "binaries", "ungoogled-chromium-96.0.4664.45-1_Win64");
             if (Environment.OSVersion.Platform == PlatformID.Unix)
             {
-                binaryFolder = @"ungoogled-chromium_96.0.4664.45_1.vaapi_linux";
+                binaryFolder = "/usr/local/bin/";
+                chromeOptions.AddArgument("--disable-dev-shm-usage"); // overcome limited resource problems
+                chromeOptions.AddArgument("disable-infobars"); // disabling infobars
+                chromeOptions.AddArgument("--disable-extensions"); // disabling extensions
+                chromeOptions.AddArgument("--no-sandbox"); // Bypass OS security model
             }
 
-            Console.WriteLine("Starting chromium...");
-
-            var driver = new ChromeDriver(Path.Combine(AssemblyDirectory, "binaries", binaryFolder), chromeOptions);
+            var driver = new ChromeDriver(binaryFolder, chromeOptions);
             driver.Manage().Window.Size = new Size(1000, 768);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1);
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(10);
