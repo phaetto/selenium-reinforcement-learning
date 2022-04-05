@@ -1,0 +1,51 @@
+name: Build And Test
+
+on:
+  # Triggers the workflow on push
+  push:
+    branches-ignore: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    name: Build and run tests
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      
+      # Get nuget packages
+      - name: Restore dependencies
+        run: dotnet restore 
+        
+      # Build solution
+      - name: Build
+        run: dotnet build --no-restore
+      
+      - name: Setup Chrome
+        run: |
+          VERSION_STRING="96.0.4664.45-1"
+          wget "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${VERSION_STRING}_amd64.deb"
+          sudo dpkg -i "google-chrome-stable_${VERSION_STRING}_amd64.deb"
+        
+      - name: Setup Chromedriver
+        uses: nanasess/setup-chromedriver@v1.0.7
+        with:
+          chromedriver-version: '96.0.4664.45'
+      
+      # Verify tests
+      - name: Run integration tests
+        run: dotnet test ./Selenium.Algorithms.UnitTests/ --no-build --verbosity normal
