@@ -2,8 +2,6 @@
 {
     using OpenQA.Selenium;
     using Selenium.Algorithms;
-    using Selenium.Algorithms.ReinforcementLearning;
-    using System;
     using System.Collections.Generic;
 
     public static class Environments
@@ -36,7 +34,7 @@
                     });
         }
 
-        public static SeleniumEnvironment Cart_CheckOut(WebDriver driver, SeleniumExperimentState seleniumExperimentState)
+        public static SeleniumEnvironment Cart_CheckOut(WebDriver driver)
         {
             var inputTextData = new Dictionary<string, string>
             {
@@ -48,7 +46,7 @@
             return new SeleniumEnvironment(
                     driver,
                     driver,
-                    new SeleniumEnvironmentOptions // TODO: Add dependency for other experiments (maybe)
+                    new SeleniumEnvironmentOptions
                     {
                         Url = Data.CartPage.AbsoluteUri,
                         ActionableElementsCssSelectors = new[] {
@@ -62,20 +60,6 @@
                             "h2.complete-header",
                         },
                         InputTextData = inputTextData,
-                        SetupInitialState = async (webDriver, options) =>
-                        {
-                            // Dependency on Environment, ExperimentState, Goal
-                            var Index_AddAnyItemToCartEnvironment = Index_LoginAndAddItemToCart(driver);
-                            var initialState = await Index_AddAnyItemToCartEnvironment.GetInitialState();
-                            var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(Index_AddAnyItemToCartEnvironment, seleniumExperimentState);
-                            var pathList = await pathFinder.FindRoute(initialState, Goals.IsInInventory());
-                            if (pathList.State != PathFindResultState.GoalReached)
-                            {
-                                throw new InvalidOperationException();
-                            }
-
-                            webDriver.Navigate().GoToUrl(Data.CartPage);
-                        }
                     });
         }
     }

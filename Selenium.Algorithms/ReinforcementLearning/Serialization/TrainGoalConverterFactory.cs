@@ -6,15 +6,15 @@
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
-    public sealed class AgentActionConverterFactory : JsonConverterFactory
+    public sealed class TrainGoalConverterFactory : JsonConverterFactory
     {
         public override bool CanConvert(Type typeToConvert)
         {
-            if (!typeToConvert.IsGenericType || typeToConvert.GetGenericTypeDefinition() != typeof(IAgentAction<>))
+            if (!typeToConvert.IsGenericType || typeToConvert.GetGenericTypeDefinition() != typeof(ITrainGoal<>))
             {
                 var interfaces = typeToConvert.GetInterfaces();
 
-                if (!interfaces.Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IAgentAction<>)))
+                if (!interfaces.Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ITrainGoal<>)))
                 {
                     return false;
                 }
@@ -25,13 +25,13 @@
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            var type = typeToConvert.IsGenericType && typeToConvert.GetGenericTypeDefinition() == typeof(IAgentAction<>)
+            var type = typeToConvert.IsGenericType && typeToConvert.GetGenericTypeDefinition() == typeof(ITrainGoal<>)
                 ? typeToConvert
-                : typeToConvert.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IAgentAction<>));
+                : typeToConvert.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ITrainGoal<>));
             var internalType = type.GetGenericArguments()[0];
 
             var converter = (JsonConverter)Activator.CreateInstance(
-                typeof(AgentActionConverter<>).MakeGenericType(new[] { internalType }),
+                typeof(TrainGoalConverter<>).MakeGenericType(new[] { internalType }),
                 BindingFlags.Instance | BindingFlags.Public,
                 binder: null,
                 args: new object[] {},
@@ -40,12 +40,12 @@
             return converter;
         }
 
-        private sealed class AgentActionConverter<TData> : JsonConverter<IAgentAction<TData>>
+        private sealed class TrainGoalConverter<TData> : JsonConverter<ITrainGoal<TData>>
         {
             private const string ObjectPropertyName = "Object";
             private const string TypePropertyName = "Type";
 
-            public override IAgentAction<TData>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            public override ITrainGoal<TData>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 if (reader.TokenType != JsonTokenType.StartObject)
                 {
@@ -53,18 +53,18 @@
                 }
 
                 string? typeName = null;
-                IAgentAction<TData>? agentAction = null;
+                ITrainGoal<TData>? trainGoal = null;
 
                 while (reader.Read())
                 {
                     if (reader.TokenType == JsonTokenType.EndObject)
                     {
-                        if (agentAction == null)
+                        if (trainGoal == null)
                         {
                             throw new InvalidOperationException();
                         }
 
-                        return agentAction;
+                        return trainGoal;
                     }
 
                     if (reader.TokenType != JsonTokenType.PropertyName)
@@ -88,9 +88,9 @@
 
                             var type = Type.GetType(typeName);
                             var converter = options.GetConverter(type);
-                            if (converter is JsonConverter<IAgentAction<TData>> agentActionConverter)
+                            if (converter is JsonConverter<ITrainGoal<TData>> trainGoalConverter)
                             {
-                                agentAction = agentActionConverter.Read(ref reader, typeof(IAgentAction<TData>), options);
+                                trainGoal = trainGoalConverter.Read(ref reader, typeof(ITrainGoal<TData>), options);
                             }
                             else
                             {
@@ -99,8 +99,9 @@
                                 {
                                     throw new InvalidOperationException();
                                 }
-                                agentAction = (IAgentAction<TData>)trainGoalObject;
+                                trainGoal = (ITrainGoal<TData>)trainGoalObject;
                             }
+                            
                             break;
                     }
                 }
@@ -108,7 +109,7 @@
                 throw new JsonException();
             }
 
-            public override void Write(Utf8JsonWriter writer, IAgentAction<TData> objectValue, JsonSerializerOptions options)
+            public override void Write(Utf8JsonWriter writer, ITrainGoal<TData> objectValue, JsonSerializerOptions options)
             {
                 var objectValueType = objectValue.GetType();
 
@@ -119,9 +120,9 @@
 
                 writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName(ObjectPropertyName) ?? ObjectPropertyName);
                 var converter = options.GetConverter(objectValueType);
-                if (converter is JsonConverter<IAgentAction<TData>> agentActionConverter)
+                if (converter is JsonConverter<ITrainGoal<TData>> trainGoalConverter)
                 {
-                    agentActionConverter.Write(writer, objectValue, options);
+                    trainGoalConverter.Write(writer, objectValue, options);
                 }
                 else
                 {
