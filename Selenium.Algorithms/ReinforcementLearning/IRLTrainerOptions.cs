@@ -1,4 +1,6 @@
-﻿namespace Selenium.Algorithms.ReinforcementLearning
+﻿using System.Collections.Generic;
+
+namespace Selenium.Algorithms.ReinforcementLearning
 {
     public interface IRLTrainerOptions<TData>
     {
@@ -8,5 +10,6 @@
         IPolicy<TData> Policy { get; }
         ITrainGoal<TData> TrainGoal { get; }
         IExperimentState<TData> ExperimentState { get; }
+        IEnumerable<ExperimentDependency<TData>> Dependencies { get; }
     }
 }

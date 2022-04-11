@@ -1,9 +1,8 @@
 ﻿namespace Selenium.Algorithms
 {
-    using OpenQA.Selenium;
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
+    using System.Text.Json.Serialization;
 
     public interface ISeleniumEnvironmentOptions
     {
@@ -12,7 +11,8 @@
         IReadOnlyCollection<string> LoadingElementsCssSelectors { get; set; }
         IReadOnlyCollection<string> GoalElementSelectors { get; set; }
         string Url { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         Action<string> WriteLine { get; set; }
-        Func<IWebDriver, ISeleniumEnvironmentOptions, Task> SetupInitialState { get; set; }
     }
 }

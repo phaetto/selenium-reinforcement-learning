@@ -9,8 +9,6 @@
     using System.Threading.Tasks;
     using Selenium.Algorithms;
     using Selenium.Algorithms.IntegrationTests.Framework;
-    using OpenQA.Selenium;
-    using System.Linq;
 
     public sealed class InputTypeTests : IClassFixture<TestFixture>
     {
@@ -37,12 +35,7 @@
             {
                 var fileUri = new Uri(Path.GetFullPath($"{nameof(Run_WhenThereAreInputElements_ThenItSuccessfullyTypesRelevantInformation)}.html"));
                 var random = new Random(1);
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) =>
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-                {
-                    return state.Data.Any(x => x.Class.Contains("third-panel"));
-                });
+                var seleniumTrainGoal = new SeleniumClassContainsGoal("third-panel");
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
                     driver,

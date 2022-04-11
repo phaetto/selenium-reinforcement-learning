@@ -1,6 +1,5 @@
 ﻿namespace Selenium.Algorithms.IntegrationTests.Serialization
 {
-    using OpenQA.Selenium;
     using Selenium.Algorithms.IntegrationTests.Framework;
     using Selenium.Algorithms.ReinforcementLearning;
     using System;
@@ -29,13 +28,7 @@
             {
                 var fileUri = new Uri(Path.GetFullPath(Path.Combine("Serialization", $"{nameof(Serialize_WhenTrainingASimpleTestCase_ThenItSuccessfullySerializesAndDeserializesState)}.html")));
                 var random = new Random(1);
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-                {
-                    var target = driver.FindElement(By.CssSelector(".third"));
-                    return target.Displayed && target.Enabled;
-                });
+                var seleniumTrainGoal = new SeleniumClassContainsGoal("third");
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
                     driver,
@@ -69,13 +62,7 @@
             {
                 var fileUri = new Uri(Path.GetFullPath(Path.Combine("Serialization", $"{nameof(Serialize_WhenTrainingASimpleTestCase_ThenItSuccessfullySerializesAndDeserializesState)}.html")));
                 var random = new Random(1);
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-                var seleniumTrainGoal = new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (_1, _2) =>
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-                {
-                    var target = driver.FindElement(By.CssSelector(".third"));
-                    return target.Displayed && target.Enabled;
-                });
+                var seleniumTrainGoal = new SeleniumClassContainsGoal("third");
                 var seleniumEnvironment = new SeleniumEnvironment(
                     driver,
                     driver,

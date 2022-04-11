@@ -30,7 +30,7 @@
         public async Task<IState<IReadOnlyCollection<ElementData>>> GetInitialState()
         {
             Options.WriteLine("SeleniumEnvironment: Getting the initial state...");
-            await Options.SetupInitialState(webDriver, Options);
+            webDriver.Navigate().GoToUrl(Options.Url);
             return await GetCurrentState();
         }
 

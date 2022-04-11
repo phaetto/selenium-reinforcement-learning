@@ -1,33 +1,22 @@
 ﻿namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
 {
-    using OpenQA.Selenium;
     using Selenium.Algorithms;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public static class Goals
     {
-        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> DoesCartHasOneItem()
+        public static SeleniumTextEqualsGoal DoesCartHasOneItem()
         {
-            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) => {
-                return state.Data
-                    .Where(x => x.Class.Contains("shopping_cart_badge"))
-                    .Any(x => x.Text == "1");
-            });
+            return new SeleniumTextEqualsGoal("1", "shopping_cart_badge");
         }
 
-        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> IsInInventory()
+        public static SeleniumClassContainsGoal IsInventoryVisible()
         {
-            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) => {
-                return state.Data.Any(x => x.Class.Contains("btn_inventory"));
-            });
+            return new SeleniumClassContainsGoal("btn_inventory");
         }
 
-        public static SeleniumTrainGoal<IReadOnlyCollection<ElementData>> HasOrderBeenPosted()
+        public static SeleniumTextEqualsGoal HasOrderBeenPosted()
         {
-            return new SeleniumTrainGoal<IReadOnlyCollection<ElementData>>(async (state, _2) => {
-                return state.Data.Any(x => x.Text == "THANK YOU FOR YOUR ORDER");
-            });
+            return new SeleniumTextEqualsGoal("THANK YOU FOR YOUR ORDER");
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -25,8 +27,11 @@
         {
             var timesReachedGoal = 0;
             var totalActionsRun = 0;
+            var dependencies = options.Dependencies.ToList();
             for (int epoch = 0; epoch < epochs; ++epoch)
             {
+                await ExecuteDependentTrainedExperiments(dependencies);
+
                 var currentState = await options.Environment.GetInitialState();
                 var currentActionCounter = 0;
 
@@ -39,6 +44,7 @@
 
                 if (currentActionCounter >= maximumActions)
                 {
+                    totalActionsRun += currentActionCounter;
                     continue;
                 }
 
@@ -47,7 +53,7 @@
                     var nextAction = await options.Policy.GetNextAction(options.Environment, currentState, options.ExperimentState);
                     var (nextState, currentStabilizationCounter) = await Step(currentState, nextAction, maximumActions - currentActionCounter);
                     currentActionCounter += currentStabilizationCounter;
-                    totalActionsRun += currentStabilizationCounter;
+                    totalActionsRun += currentStabilizationCounter + 1;
 
                     if (await options.TrainGoal.HasReachedAGoalCondition(currentState, nextAction))
                     {
@@ -96,6 +102,23 @@
             return (nextState, currentStabilizationCounter);
         }
 
+        private static async Task ExecuteDependentTrainedExperiments(List<ExperimentDependency<TData>> dependencies)
+        {
+            for (var i = 0; i < dependencies.Count; ++i)
+            {
+                var dependency = dependencies[0];
+                var rlPathFinder = new RLPathFinder<TData>(dependency.Environment, dependency.ExperimentState);
+                var state = i == 0
+                    ? await dependency.Environment.GetInitialState()
+                    : await dependency.Environment.GetCurrentState();
+                var walkResult = await rlPathFinder.FindRoute(state, dependency.TrainGoal, dependency.MaxSteps);
+                if (walkResult.State != PathFindResultState.GoalReached)
+                {
+                    throw new InvalidOperationException("Dependency could not be verified reaching the goal");
+                }
+            }
+        }
+
         private async Task ApplyQMatrixLogic(IState<TData> currentState, IAgentAction<TData> nextAction, IState<TData> nextState)
         {
             var nextNextActions = await options.Environment.GetPossibleActions(nextState);
@@ -108,21 +131,6 @@
             });
 
             var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, nextState);
-            if (!options.ExperimentState.QualityMatrix.ContainsKey(selectedPair))
-            {
-                options.ExperimentState.QualityMatrix.Add(selectedPair, 0D);
-            }
-
-            // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
-            options.ExperimentState.QualityMatrix[selectedPair] =
-                ((1 - options.LearningRate) * options.ExperimentState.QualityMatrix[selectedPair])
-                + (options.LearningRate * (await options.TrainGoal.RewardFunction(currentState, nextAction) + (options.DiscountRate * maxQ)));
-        }
-
-        private async Task ApplyQMatrixLogicWithFinishingState(IState<TData> currentState, IAgentAction<TData> nextAction, IState<TData> emptyState)
-        {
-            var maxQ = 0D;
-            var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, emptyState);
             if (!options.ExperimentState.QualityMatrix.ContainsKey(selectedPair))
             {
                 options.ExperimentState.QualityMatrix.Add(selectedPair, 0D);

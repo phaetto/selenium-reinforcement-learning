@@ -3,7 +3,6 @@
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
     using System;
-    using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.Reflection;
@@ -17,7 +16,7 @@
         public WebDriver GetWebDriver()
         {
             var chromeOptions = new ChromeOptions();
-            if (!Debugger.IsAttached)
+            //if (!Debugger.IsAttached)
             {
                 chromeOptions.AddArgument("--headless");
                 chromeOptions.AddArgument("--disable-gpu");
@@ -39,6 +38,11 @@
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(10);
 
             return driver;
+        }
+
+        public IPersistenceIO GetPersistenceProvider()
+        {
+            throw new NotImplementedException();
         }
 
         public static string AssemblyDirectory
