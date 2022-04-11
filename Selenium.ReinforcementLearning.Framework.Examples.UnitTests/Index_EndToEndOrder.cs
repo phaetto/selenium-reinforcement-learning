@@ -53,7 +53,19 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                     Goals.DoesCartHasOneItem(),
                     Enumerable.Empty<ITrainedInput>(),
                     new FileIO(),
-                    40
+                    40,
+                    maxActions: 100,
+                    epochCleanupFunction: () =>
+                    {
+                        driver.Navigate().GoToUrl(Data.CartPage);
+                        var removeButtons = driver.FindElements(By.CssSelector(".cart_button"));
+                        foreach (var removeButton in removeButtons)
+                        {
+                            removeButton.Click();
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 );
 
                 result.TimesReachedGoal.ShouldBePositive();
@@ -91,7 +103,19 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                     },
                     new FileIO(),
                     40,
-                    maxDependencySteps: 50
+                    maxActions: 100,
+                    maxDependencySteps: 50,
+                    epochCleanupFunction: () =>
+                    {
+                        driver.Navigate().GoToUrl(Data.CartPage);
+                        var removeButtons = driver.FindElements(By.CssSelector(".cart_button"));
+                        foreach (var removeButton in removeButtons)
+                        {
+                            removeButton.Click();
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 );
 
                 result.TimesReachedGoal.ShouldBePositive();

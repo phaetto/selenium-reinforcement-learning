@@ -48,7 +48,7 @@
                 var seleniumExperimentState = new SeleniumExperimentState();
                 var rlTrainer = new RLTrainer<IReadOnlyCollection<ElementData>>(new RLTrainerOptions<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumQLearningStepPolicy, seleniumExperimentState, seleniumTrainGoal));
 
-                var trainerReport = await rlTrainer.Run(epochs: 5, maximumActions: 20);
+                var trainerReport = await rlTrainer.Run(epochs: 10, maximumActions: 20);
                 trainerReport.TimesReachedGoal.ShouldBePositive();
 
                 var initialState = await seleniumEnvironment.GetInitialState();
@@ -59,8 +59,8 @@
                 pathList.Steps.ShouldNotBeNull();
                 pathList.Steps.ShouldNotBeEmpty();
                 pathList.Steps.Count.ShouldBe(5);
-                pathList.Steps[0].Action.ToString().ShouldEndWith("input[data-automation-id='name']");
-                pathList.Steps[1].Action.ToString().ShouldEndWith("textarea[data-automation-id='text']");
+                pathList.Steps[0].Action.ToString().ShouldEndWith("textarea[data-automation-id='text']");
+                pathList.Steps[1].Action.ToString().ShouldEndWith("input[data-automation-id='name']");
                 pathList.Steps[2].Action.ToString().ShouldEndWith("input[data-automation-id='description']");
                 pathList.Steps[3].Action.ToString().ShouldEndWith("input[data-automation-id='done']");
                 pathList.Steps[4].Action.ToString().ShouldEndWith("input[data-automation-id='accept']");
