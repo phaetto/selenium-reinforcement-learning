@@ -5,7 +5,6 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
     using System.Threading.Tasks;
     using Xunit;
     using Shouldly;
-    using System.Text.Json;
     using OpenQA.Selenium;
     using System.Linq;
 
@@ -25,10 +24,6 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
     )]
     public sealed class Index_EndToEndOrder : IClassFixture<TestFixture>
     {
-        private static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-        };
         private readonly TestFixture testFixture;
 
         public Index_EndToEndOrder(TestFixture testFixture)
@@ -121,9 +116,6 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
              * */
 
             using var driver = testFixture.GetWebDriver();
-            var fileIO = new FileIO();
-            var indexExperiment = await Index_AddAnyItemToCartSelenium.GetExperiment(driver, fileIO);
-            var cartExperiment = await Cart_CheckOutSelenium.GetExperiment(driver, fileIO);
 
             try
             {

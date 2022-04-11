@@ -23,6 +23,7 @@
             IEnumerable<ITrainedInput> trainedInputs,
             IPersistenceIO persistenceIO,
             int maxIterations,
+            int epochs = 5,
             int maxActions = 1000,
             int maxDependencySteps = 1000)
         {
@@ -42,7 +43,7 @@
             var isTrainedGoodEnough = false;
             while (++iteration < maxIterations && !isTrainedGoodEnough)
             {
-                totalTrainerReport += await rlTrainer.Run(epochs: 5, maximumActions: maxActions);
+                totalTrainerReport += await rlTrainer.Run(epochs: epochs, maximumActions: maxActions);
 
                 if (totalTrainerReport.TimesReachedGoal > 0)
                 {
