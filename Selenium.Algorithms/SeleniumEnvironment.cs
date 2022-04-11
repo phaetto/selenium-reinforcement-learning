@@ -50,7 +50,9 @@
 
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumEnvironment)} that has no data");
 
-            return seleniumState.Data.Select(x =>
+            return seleniumState.Data
+                .Where(x => !x.IsGoalElement)
+                .Select(x =>
                     (IAgentAction<IReadOnlyCollection<ElementData>>)
                     (x.IsTypingElement switch
                     {
@@ -65,11 +67,20 @@
         public async Task<IState<IReadOnlyCollection<ElementData>>> GetCurrentState()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var actionableElementQuerySelectors = GetActionableElementsQuerySelectors();
-            var actionableElements = actionableElementQuerySelectors.GetElementsFromQuerySelectors(javaScriptExecutor);
-            var filteredActionableElements = actionableElements.ToInteractibleElements();
+            var listOfListsOfSelectors = new []
+            {
+                Options.ActionableElementsCssSelectors,
+                Options.GoalElementSelectors,
+            };
+            var actionableElements = listOfListsOfSelectors.GetMultiListElementsFromQuerySelectors(javaScriptExecutor);
+            var filteredActionableElements = actionableElements.Select(x => x.ToInteractibleElements())
+                .ToList()
+                .AsReadOnly();
 
-            var filteredElementsData = filteredActionableElements.GetElementsInformation();
+            var filteredElementsData = filteredActionableElements[0].GetElementsInformation()
+                .Concat(filteredActionableElements[1].GetElementsInformation(true))
+                .ToList()
+                .AsReadOnly();
 
             return new SeleniumState(filteredElementsData);
         }
@@ -97,14 +108,6 @@
         public async Task WaitForPostActionIntermediateStabilization()
         {
             await Task.Delay(300);
-        }
-
-        private IReadOnlyCollection<string> GetActionableElementsQuerySelectors()
-        {
-            return Options.ActionableElementsCssSelectors
-                .Concat(Options.GoalElementSelectors)
-                .ToList()
-                .AsReadOnly();
         }
 
         private ElementTypeAction GetElementTypeAction(ElementData elementData, IState<IReadOnlyCollection<ElementData>> state)

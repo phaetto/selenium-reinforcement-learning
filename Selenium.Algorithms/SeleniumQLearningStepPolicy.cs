@@ -25,7 +25,6 @@
 
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumQLearningStepPolicy)} that has no data");
 
-            // TODO: exploration mode for some iterations could be beneficial (or another class)
             var stateAndActionPairs = actions
                 .Select(x =>
                 {
@@ -41,6 +40,11 @@
             var maxStateAndActionPairs = stateAndActionPairs
                 .Where(x => x.Score == stateAndActionPairs[0].Score)
                 .ToList();
+
+            if (maxStateAndActionPairs.Count == 0)
+            {
+                return new NoAction<IReadOnlyCollection<ElementData>>();
+            }
 
             return maxStateAndActionPairs.Count > 1
                 ? maxStateAndActionPairs.ElementAt(random.Next(0, maxStateAndActionPairs.Count)).Action

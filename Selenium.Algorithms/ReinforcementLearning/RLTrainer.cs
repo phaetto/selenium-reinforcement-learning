@@ -27,6 +27,7 @@
         {
             var timesReachedGoal = 0;
             var totalActionsRun = 0;
+            var stabilizationWaitCount = 0;
             var dependencies = options.Dependencies.ToList();
             for (int epoch = 0; epoch < epochs; ++epoch)
             {
@@ -40,22 +41,30 @@
                     await options.Environment.WaitForPostActionIntermediateStabilization();
                     currentState = await options.Environment.GetCurrentState();
                     ++currentActionCounter;
+                    ++totalActionsRun;
+                    ++stabilizationWaitCount;
                 }
 
                 if (currentActionCounter >= maximumActions)
                 {
-                    totalActionsRun += currentActionCounter;
                     continue;
                 }
 
                 do
                 {
                     var nextAction = await options.Policy.GetNextAction(options.Environment, currentState, options.ExperimentState);
+                    if (nextAction is NoAction<TData> && await options.TrainGoal.HasReachedAGoalCondition(currentState))
+                    {
+                        ++timesReachedGoal;
+                        break;
+                    }
+
                     var (nextState, currentStabilizationCounter) = await Step(currentState, nextAction, maximumActions - currentActionCounter);
                     currentActionCounter += currentStabilizationCounter;
                     totalActionsRun += currentStabilizationCounter + 1;
+                    stabilizationWaitCount += currentStabilizationCounter;
 
-                    if (await options.TrainGoal.HasReachedAGoalCondition(currentState, nextAction))
+                    if (await options.TrainGoal.HasReachedAGoalCondition(currentState))
                     {
                         ++timesReachedGoal;
                         break;
@@ -71,7 +80,7 @@
                 while (++currentActionCounter < maximumActions);
             }
 
-            return new TrainerReport(timesReachedGoal, totalActionsRun / (float)epochs);
+            return new TrainerReport(timesReachedGoal, totalActionsRun, stabilizationWaitCount, epochs);
         }
 
         /// <summary>
@@ -87,6 +96,11 @@
             var currentStabilizationCounter = 0;
             while (await options.Environment.IsIntermediateState(nextState) && currentStabilizationCounter < maximumWaitForStabilization)
             {
+                if (await options.TrainGoal.HasReachedAGoalCondition(nextState))
+                {
+                    break;
+                }
+
                 await options.Environment.WaitForPostActionIntermediateStabilization();
                 nextState = await options.Environment.GetCurrentState();
                 ++currentStabilizationCounter;
@@ -122,13 +136,15 @@
         private async Task ApplyQMatrixLogic(IState<TData> currentState, IAgentAction<TData> nextAction, IState<TData> nextState)
         {
             var nextNextActions = await options.Environment.GetPossibleActions(nextState);
-            var maxQ = nextNextActions.Max(x =>
-            {
-                var pair = new StateAndActionPair<TData>(nextState, x);
-                return options.ExperimentState.QualityMatrix.ContainsKey(pair)
-                ? options.ExperimentState.QualityMatrix[pair]
+            var maxQ = nextNextActions.Any()
+                ? nextNextActions.Max(x =>
+                {
+                    var pair = new StateAndActionPair<TData>(nextState, x);
+                    return options.ExperimentState.QualityMatrix.ContainsKey(pair)
+                    ? options.ExperimentState.QualityMatrix[pair]
+                    : 0D;
+                })
                 : 0D;
-            });
 
             var selectedPair = new StateAndActionPairWithResultState<TData>(currentState, nextAction, nextState);
             if (!options.ExperimentState.QualityMatrix.ContainsKey(selectedPair))

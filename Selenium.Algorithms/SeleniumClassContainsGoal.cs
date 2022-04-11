@@ -14,7 +14,7 @@
             ClassValue = classValue;
         }
 
-        public Task<bool> HasReachedAGoalCondition(IState<IReadOnlyCollection<ElementData>> state, IAgentAction<IReadOnlyCollection<ElementData>> action)
+        public Task<bool> HasReachedAGoalCondition(IState<IReadOnlyCollection<ElementData>> state)
         {
             return Task.FromResult(state.Data.Any(x => x.Class.Contains(ClassValue)));
         }

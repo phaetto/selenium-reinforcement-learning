@@ -16,16 +16,19 @@
             this.random = random;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IAgentAction<IReadOnlyCollection<ElementData>>> GetNextAction(
             IEnvironment<IReadOnlyCollection<ElementData>> environment,
             IState<IReadOnlyCollection<ElementData>> state,
             IExperimentState<IReadOnlyCollection<ElementData>> experimentState)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             Debug.Assert(state.Data.Count > 0, $"A state reached {nameof(SeleniumRandomStepPolicy)} that has no data");
 
             var possibleActions = (await environment.GetPossibleActions(state)).ToList();
+
+            if (possibleActions.Count == 0)
+            {
+                return new NoAction<IReadOnlyCollection<ElementData>>();
+            }
 
             return possibleActions.Count > 1
                 ? possibleActions.ElementAt(random.Next(0, possibleActions.Count))
