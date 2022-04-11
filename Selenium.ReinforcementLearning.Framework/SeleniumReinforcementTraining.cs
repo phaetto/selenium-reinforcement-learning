@@ -25,7 +25,8 @@
             int maxIterations,
             int epochs = 5,
             int maxActions = 1000,
-            int maxDependencySteps = 1000)
+            int maxDependencySteps = 1000,
+            Func<Task>? epochCleanupFunction = null)
         {
             var seleniumRandomStepPolicy = new SeleniumQLearningStepPolicy(random);
             var seleniumExperimentState = new SeleniumExperimentState();
@@ -43,11 +44,12 @@
             var isTrainedGoodEnough = false;
             while (++iteration < maxIterations && !isTrainedGoodEnough)
             {
-                totalTrainerReport += await rlTrainer.Run(epochs: epochs, maximumActions: maxActions);
+                totalTrainerReport += await rlTrainer.Run(epochs: epochs, maximumActions: maxActions, epochCleanupFunction: epochCleanupFunction);
 
                 if (totalTrainerReport.TimesReachedGoal > 0)
                 {
                     var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);
+                    await pathFinder.ExecuteTrainedExperiments(experimentDependencies);
                     var initialState = await seleniumEnvironment.GetInitialState();
                     var pathList = await pathFinder.FindRoute(initialState, seleniumTrainGoal);
                     if (pathList.State == PathFindResultState.GoalReached)

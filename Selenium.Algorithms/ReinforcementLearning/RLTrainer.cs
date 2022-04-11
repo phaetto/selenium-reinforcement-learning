@@ -23,7 +23,8 @@
         /// </summary>
         /// <param name="epochs">The amount of iterations that the algorithm will make (each epoch starts from the initial state)</param>
         /// <param name="maximumActions">The max actions to apply in an epoch</param>
-        public async Task<TrainerReport> Run(int epochs = 1000, int maximumActions = 1000)
+        /// <param name="epochCleanupFunction">Clean up function callback called after each epoch end</param>
+        public async Task<TrainerReport> Run(int epochs = 1000, int maximumActions = 1000, Func<Task>? epochCleanupFunction = null)
         {
             var timesReachedGoal = 0;
             var totalActionsRun = 0;
@@ -78,6 +79,11 @@
                     currentState = nextState;
                 }
                 while (++currentActionCounter < maximumActions);
+
+                if (epochCleanupFunction != null)
+                {
+                    await epochCleanupFunction();
+                }
             }
 
             return new TrainerReport(timesReachedGoal, totalActionsRun, stabilizationWaitCount, epochs);
@@ -120,7 +126,7 @@
         {
             for (var i = 0; i < dependencies.Count; ++i)
             {
-                var dependency = dependencies[0];
+                var dependency = dependencies[i];
                 var rlPathFinder = new RLPathFinder<TData>(dependency.Environment, dependency.ExperimentState);
                 var state = i == 0
                     ? await dependency.Environment.GetInitialState()
@@ -155,7 +161,7 @@
             // Q = [(1-a) * Q]  +  [a * (R + (g * maxQ))]
             options.ExperimentState.QualityMatrix[selectedPair] =
                 ((1 - options.LearningRate) * options.ExperimentState.QualityMatrix[selectedPair])
-                + (options.LearningRate * (await options.TrainGoal.RewardFunction(currentState, nextAction) + (options.DiscountRate * maxQ)));
+                + (options.LearningRate * (await options.TrainGoal.RewardFunction(currentState, nextAction, nextState) + (options.DiscountRate * maxQ)));
         }
     }
 }

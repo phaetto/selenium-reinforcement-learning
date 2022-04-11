@@ -1,5 +1,6 @@
 ﻿namespace Selenium.Algorithms.ReinforcementLearning
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -169,6 +170,28 @@
             }
 
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
+        }
+
+        /// <summary>
+        /// Executes experiments in a specific order.
+        /// </summary>
+        /// <param name="experiments">The experiments list</param>
+        public async Task ExecuteTrainedExperiments(IEnumerable<ExperimentDependency<TData>> experiments)
+        {
+            var experimentsList = experiments.ToList();
+            for (var i = 0; i < experimentsList.Count; ++i)
+            {
+                var dependency = experimentsList[i];
+                var rlPathFinder = new RLPathFinder<TData>(dependency.Environment, dependency.ExperimentState);
+                var state = i == 0
+                    ? await dependency.Environment.GetInitialState()
+                    : await dependency.Environment.GetCurrentState();
+                var walkResult = await rlPathFinder.FindRoute(state, dependency.TrainGoal, dependency.MaxSteps);
+                if (walkResult.State != PathFindResultState.GoalReached)
+                {
+                    throw new InvalidOperationException("Dependency could not be verified reaching the goal");
+                }
+            }
         }
     }
 }

@@ -9,9 +9,9 @@
     {
         Task<bool> HasReachedAGoalCondition(IState<TData> state);
 
-        public async Task<double> RewardFunction(IState<TData> stateFrom, IAgentAction<TData> action)
+        public async Task<double> RewardFunction(IState<TData> stateFrom, IAgentAction<TData> action, IState<TData> stateTo)
         {
-            if (await HasReachedAGoalCondition(stateFrom))
+            if (await HasReachedAGoalCondition(stateTo))
             {
                 return 100;
             }
