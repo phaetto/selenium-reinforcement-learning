@@ -24,7 +24,7 @@
         {
             public string? SerializableProperty { get; set; }
 
-            public Task<bool> HasReachedAGoalCondition(IState<int> state, IAgentAction<int> action)
+            public Task<bool> HasReachedAGoalCondition(IState<int> state)
             {
                 throw new System.NotImplementedException();
             }

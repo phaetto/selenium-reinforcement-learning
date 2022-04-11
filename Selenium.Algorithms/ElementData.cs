@@ -19,6 +19,7 @@
         public string ExtraState { get; }
         [JsonIgnore]
         public IWebElement WebElementReference { get; }
+        public bool IsGoalElement { get; }
 
         public ElementData(
             string @class,
@@ -30,7 +31,8 @@
             string name,
             bool isTypingElement,
             string extraState,
-            IWebElement webElementReference)
+            IWebElement webElementReference,
+            bool isGoalElement = false)
         {
             Class = @class;
             Id = id;
@@ -42,6 +44,7 @@
             IsTypingElement = isTypingElement;
             ExtraState = extraState;
             WebElementReference = webElementReference;
+            IsGoalElement = isGoalElement;
         }
 
         [JsonConstructor]
@@ -54,7 +57,8 @@
             string text,
             string name,
             bool isTypingElement,
-            string extraState)
+            string extraState,
+            bool isGoalElement = false)
         {
             Class = @class;
             Id = id;
@@ -66,6 +70,7 @@
             IsTypingElement = isTypingElement;
             ExtraState = extraState;
             WebElementReference = new NonInteractibleElement();
+            IsGoalElement = isGoalElement;
         }
 
         private sealed class NonInteractibleElement : IWebElement

@@ -3,6 +3,7 @@
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
     using System;
+    using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.Reflection;
@@ -16,7 +17,7 @@
         public WebDriver GetWebDriver()
         {
             var chromeOptions = new ChromeOptions();
-            //if (!Debugger.IsAttached)
+            if (!Debugger.IsAttached)
             {
                 chromeOptions.AddArgument("--headless");
                 chromeOptions.AddArgument("--disable-gpu");

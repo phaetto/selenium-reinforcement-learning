@@ -64,7 +64,7 @@ namespace Selenium.Algorithms.IntegrationTests.Runs.RLDemoTestCase
             }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public async Task<bool> HasReachedAGoalCondition(IState<int> state, IAgentAction<int> action)
+            public async Task<bool> HasReachedAGoalCondition(IState<int> state)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 return new TestState(11).Equals(state);

@@ -34,9 +34,7 @@
             CachedHash = 0;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IState<IReadOnlyCollection<ElementData>>> ExecuteAction(IEnvironment<IReadOnlyCollection<ElementData>> environment, IState<IReadOnlyCollection<ElementData>> state)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var seleniumEnvironment = (SeleniumEnvironment)environment;
             try

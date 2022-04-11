@@ -61,7 +61,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                     40
                 );
 
-                result.ShouldBeTrue();
+                result.TimesReachedGoal.ShouldBePositive();
             }
             finally
             {
@@ -99,7 +99,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                     maxDependencySteps: 50
                 );
 
-                result.ShouldBeTrue();
+                result.TimesReachedGoal.ShouldBePositive();
             }
             finally
             {

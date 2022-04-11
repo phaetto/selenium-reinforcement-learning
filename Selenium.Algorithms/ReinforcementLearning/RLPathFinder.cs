@@ -72,7 +72,7 @@
                     newState = await environment.GetCurrentState();
                     ++currentStep;
 
-                    if (await trainGoal.HasReachedAGoalCondition(newState, maximumReturnAction))
+                    if (await trainGoal.HasReachedAGoalCondition(newState))
                     {
                         break;
                     }
@@ -93,7 +93,7 @@
                 resultStates.Add(newPair);
                 currentState = newState;
 
-                if (await trainGoal.HasReachedAGoalCondition(currentState, maximumReturnAction))
+                if (await trainGoal.HasReachedAGoalCondition(currentState))
                 {
                     return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
                 }
@@ -155,7 +155,7 @@
                     resultStates.Add(stateAndActionPairWithResultState);
                     currentState = newState;
 
-                    if (await trainGoal.HasReachedAGoalCondition(currentState, stateAndActionPairWithResultState.Action))
+                    if (await trainGoal.HasReachedAGoalCondition(currentState))
                     {
                         return new WalkResult<TData>(PathFindResultState.GoalReached, resultStates);
                     }

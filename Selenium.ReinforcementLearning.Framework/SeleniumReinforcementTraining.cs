@@ -14,7 +14,7 @@
     /// </summary>
     public static class SeleniumReinforcementTraining
     {
-        public static async Task<bool> Train(
+        public static async Task<TrainerReport> Train(
             IWebDriver webDriver,
             string experimentName,
             Random random,
@@ -38,13 +38,13 @@
                 experimentDependencies));
 
             var iteration = 0;
-            TrainerReport lastTrainerReport = new TrainerReport();
+            TrainerReport totalTrainerReport = new TrainerReport();
             var isTrainedGoodEnough = false;
             while (++iteration < maxIterations && !isTrainedGoodEnough)
             {
-                lastTrainerReport = await rlTrainer.Run(epochs: 5, maximumActions: maxActions);
+                totalTrainerReport += await rlTrainer.Run(epochs: 5, maximumActions: maxActions);
 
-                if (lastTrainerReport.TimesReachedGoal > 0)
+                if (totalTrainerReport.TimesReachedGoal > 0)
                 {
                     var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(seleniumEnvironment, seleniumExperimentState);
                     var initialState = await seleniumEnvironment.GetInitialState();
@@ -61,7 +61,7 @@
             jsonSerializerOptions.Converters.Add(new SeleniumEnvironmentConverter(webDriver, (IJavaScriptExecutor)webDriver));
             await persistenceIO.Write(experimentName, JsonSerializer.Serialize(experiment, jsonSerializerOptions));
             
-            return lastTrainerReport.TimesReachedGoal > 0;
+            return totalTrainerReport;
         }
 
         public static async Task<WalkResult<IReadOnlyCollection<ElementData>>> Navigate(

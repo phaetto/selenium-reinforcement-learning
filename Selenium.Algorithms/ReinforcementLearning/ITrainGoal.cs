@@ -7,11 +7,11 @@
     [JsonConverter(typeof(TrainGoalConverterFactory))]
     public interface ITrainGoal<TData>
     {
-        Task<bool> HasReachedAGoalCondition(IState<TData> state, IAgentAction<TData> action);
+        Task<bool> HasReachedAGoalCondition(IState<TData> state);
 
         public async Task<double> RewardFunction(IState<TData> stateFrom, IAgentAction<TData> action)
         {
-            if (await HasReachedAGoalCondition(stateFrom, action))
+            if (await HasReachedAGoalCondition(stateFrom))
             {
                 return 100;
             }

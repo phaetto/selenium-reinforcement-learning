@@ -77,7 +77,7 @@ while(checkForElement && !checkForElement.isSameNode(element)) {
 return !!checkForElement;
 ";
 
-        public static IReadOnlyList<ElementData> GetElementsInformation(this IReadOnlyCollection<IWebElement> webElementCollection)
+        public static IReadOnlyList<ElementData> GetElementsInformation(this IReadOnlyCollection<IWebElement> webElementCollection, bool isGoalElement = false)
         {
             if (webElementCollection.Count == 0)
             {
@@ -104,7 +104,8 @@ return !!checkForElement;
                     Convert.ToString(dictionary["name"]),
                     Convert.ToBoolean(dictionary["isTypingElement"]),
                     Convert.ToString(dictionary["extraState"]),
-                    webElementCollection.ElementAt(index)
+                    webElementCollection.ElementAt(index),
+                    isGoalElement
                 );
             })
             .ToList()
