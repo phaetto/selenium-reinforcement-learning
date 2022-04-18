@@ -6,12 +6,12 @@
     {
         public static SeleniumTextEqualsGoal DoesCartHasOneItem()
         {
-            return new SeleniumTextEqualsGoal("1", "shopping_cart_badge");
+            return new SeleniumTextEqualsGoal("1");
         }
 
         public static SeleniumClassContainsGoal IsInventoryVisible()
         {
-            return new SeleniumClassContainsGoal("btn_inventory");
+            return new SeleniumClassContainsGoal("btn_inventory", false);
         }
 
         public static SeleniumTextEqualsGoal HasOrderBeenPosted()

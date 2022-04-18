@@ -7,19 +7,21 @@
 
     public sealed class SeleniumTextEqualsGoal : ITrainGoal<IReadOnlyCollection<ElementData>>
     {
-        public SeleniumTextEqualsGoal(string textValue, string classToLimit = "")
+        public string TextValue { get; set; }
+        public bool UseOnlyGoals { get; set; }
+
+        public SeleniumTextEqualsGoal(string textValue, bool useOnlyGoals = true)
         {
             TextValue = textValue;
-            ClassToLimit = classToLimit;
+            UseOnlyGoals = useOnlyGoals;
         }
-        public string TextValue { get; set; }
-        public string ClassToLimit { get; set; }
 
         public Task<bool> HasReachedAGoalCondition(IState<IReadOnlyCollection<ElementData>> state)
         {
             return Task.FromResult(state.Data
-                .Where(x => string.IsNullOrWhiteSpace(ClassToLimit) || x.Class.Contains(ClassToLimit))
-                .Any(x => x.Text == TextValue));
+                .Where(x => !UseOnlyGoals || x.IsGoalElement)
+                .Any(x => x.Text == TextValue)
+            );
         }
     }
 }
