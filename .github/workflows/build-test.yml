@@ -51,5 +51,5 @@ jobs:
         run: dotnet test ./Selenium.Algorithms.UnitTests/ --no-build --verbosity normal
 
       # Verify example tests
-      - name: Run integration tests
+      - name: Run example tests
         run: dotnet test ./Selenium.ReinforcementLearning.Framework.Examples.UnitTests/ --no-build --verbosity normal
