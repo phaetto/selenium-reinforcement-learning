@@ -30,7 +30,7 @@
         /// <param name="target">The target state</param>
         /// <param name="maxSteps">Maximum steps that should be taken</param>
         /// <returns>A report data structure that describes what happened while attempting</returns>
-        public async Task<WalkResult<TData>> FindRoute(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
+        public async Task<WalkResult<TData>> FindRoute(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10, IRLParameter<TData>[]? parameters = null)
         {
             var resultStates = new List<StateAndActionPair<TData>>();
 
@@ -65,7 +65,13 @@
                     }
                 }
 
-                var newState = await maximumReturnAction.ExecuteAction(environment, currentState);
+                IAgentAction<TData> selectedAction = maximumReturnAction;
+                if (parameters != null && parameters.Any(x => x.Test(maximumReturnAction)))
+                {
+                    selectedAction = parameters.First(x => x.Test(maximumReturnAction)).Select(actions);
+                }
+
+                var newState = await selectedAction.ExecuteAction(environment, currentState);
 
                 while (await environment.IsIntermediateState(newState) && currentStep < maxSteps)
                 {
@@ -105,10 +111,14 @@
             return new WalkResult<TData>(PathFindResultState.StepsExhausted, resultStates);
         }
 
-        // TODO: Revisit method FindRouteWithoutApplyingActions
-        // In order for this to work truly offline it needs to be decoupled from browser:
-        // - No environment usage
-        // - Goal that is only supported through state/action pair
+        /// <summary>
+        /// Uses the matrix  to try and find the optimal route without executing any action.
+        /// This method does not mutate the environment.
+        /// </summary>
+        /// <param name="start">The starting state</param>
+        /// <param name="target">The target state</param>
+        /// <param name="maxSteps">Maximum steps that should be taken</param>
+        /// <returns>A report data structure that describes what happened while attempting</returns>
         public async Task<WalkResult<TData>> FindRouteWithoutApplyingActions(IState<TData> start, ITrainGoal<TData> trainGoal, int maxSteps = 10)
         {
             var resultStates = new List<StateAndActionPair<TData>>();

@@ -97,6 +97,11 @@
         /// <returns>The new state after the action has been resolved</returns>
         public async Task<(IState<TData>, int)> Step(IState<TData> currentState, IAgentAction<TData> nextAction, int maximumWaitForStabilization = 1000)
         {
+            if (nextAction is NoAction<TData>)
+            {
+                throw new InvalidOperationException($"There was no actionable element found on state: {currentState.ToString()}\nMake sure you are marking intermediate states correctly.");
+            }
+
             var nextState = await nextAction.ExecuteAction(options.Environment, currentState);
 
             var currentStabilizationCounter = 0;

@@ -15,7 +15,7 @@
     public static class SeleniumReinforcementTraining
     {
         public static async Task<TrainerReport> Train(
-            IWebDriver webDriver,
+            this IWebDriver webDriver,
             string experimentName,
             Random random,
             SeleniumEnvironment seleniumEnvironment,
@@ -68,12 +68,13 @@
         }
 
         public static async Task<WalkResult<IReadOnlyCollection<ElementData>>> Navigate(
-            IWebDriver webDriver,
+            this IWebDriver webDriver,
             ITrainedInput trainedInput,
             IPersistenceIO persistenceIO,
             int maxSteps = 1000,
             SeleniumEnvironment? seleniumEnvironment = null,
-            ITrainGoal<IReadOnlyCollection<ElementData>>? seleniumTrainGoal = null)
+            ITrainGoal<IReadOnlyCollection<ElementData>>? seleniumTrainGoal = null,
+            IRLParameter<IReadOnlyCollection<ElementData>>[]? parameters = null)
         {
             var experiment = await trainedInput.GetExperiment(webDriver, persistenceIO);
             var selectedSeleniumEnvironment = seleniumEnvironment ?? experiment.Environment;
@@ -81,7 +82,7 @@
 
             var currentState = await selectedSeleniumEnvironment.GetCurrentState();
             var pathFinder = new RLPathFinder<IReadOnlyCollection<ElementData>>(selectedSeleniumEnvironment, experiment.ExperimentState);
-            var pathList = await pathFinder.FindRoute(currentState, selectedSeleniumGoal, maxSteps);
+            var pathList = await pathFinder.FindRoute(currentState, selectedSeleniumGoal, maxSteps, parameters);
             if (pathList.State != PathFindResultState.GoalReached)
             {
                 throw new InvalidOperationException();

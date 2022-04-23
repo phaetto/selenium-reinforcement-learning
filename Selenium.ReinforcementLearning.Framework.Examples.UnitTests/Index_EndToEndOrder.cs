@@ -7,6 +7,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
     using Shouldly;
     using OpenQA.Selenium;
     using System.Linq;
+    using Selenium.Algorithms;
 
     /// <summary>
     /// Simulates an order done in https://www.saucedemo.com/.
@@ -45,14 +46,13 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
             {
                 var random = new Random(1);
 
-                var result = await SeleniumReinforcementTraining.Train(
-                    driver,
+                var result = await driver.Train(
                     nameof(_1_Index_LoginAndAddItemToCart),
                     random,
                     Environments.Index_LoginAndAddItemToCart(driver),
                     Goals.DoesCartHasOneItem(),
                     Enumerable.Empty<ITrainedInput>(),
-                    new FileIO(),
+                    testFixture.GetPersistenceProvider(),
                     40,
                     maxActions: 100,
                     epochCleanupFunction: () =>
@@ -92,8 +92,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
             {
                 var random = new Random(1);
 
-                var result = await SeleniumReinforcementTraining.Train(
-                    driver,
+                var result = await driver.Train(
                     nameof(_2_Cart_CheckOut),
                     random,
                     Environments.Cart_CheckOut(driver),
@@ -101,7 +100,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                     new[] {
                         Index_AddAnyItemToCartSelenium
                     },
-                    new FileIO(),
+                    testFixture.GetPersistenceProvider(),
                     40,
                     maxActions: 100,
                     maxDependencySteps: 50,
@@ -147,29 +146,92 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                 driver.Navigate().GoToUrl(Data.HomePage);
 
                 // Navigate to add an item to cart with our pre trained input:
-                await SeleniumReinforcementTraining.Navigate(
-                    driver,
+                await driver.Navigate(
                     Index_AddAnyItemToCartSelenium,
-                    new FileIO(),
-                    seleniumTrainGoal: Goals.IsInventoryVisible()
+                    testFixture.GetPersistenceProvider()
                 );
 
                 // We should have an item in the cart now
+                var shoppingCart = driver.FindElement(By.CssSelector(".shopping_cart_badge"));
+                shoppingCart.Text.ShouldBe("1");
 
                 // Got to cart page
                 driver.Navigate().GoToUrl(Data.CartPage);
 
+                var removeButtons = driver.FindElements(By.CssSelector(".cart_button"));
+                removeButtons.ShouldNotBeEmpty("No items found in the cart - something went wrong!");
+
                 // Navigate to checkout using our pre trained checkout input:
-                await SeleniumReinforcementTraining.Navigate(
-                    driver,
+                await driver.Navigate(
                     Cart_CheckOutSelenium,
-                    new FileIO()
+                    testFixture.GetPersistenceProvider()
                 );
 
                 // We should be on the checkout page now - verify
 
                 var target = driver.FindElement(By.CssSelector("h2.complete-header"));
                 target.Text.ShouldBe("THANK YOU FOR YOUR ORDER");
+            }
+            finally
+            {
+                driver.Close();
+                driver.Quit();
+            }
+        }
+
+        [TrainedFact]
+        [TrainedInput(nameof(_1_Index_LoginAndAddItemToCart))]
+        public async Task _4_EndToEndTest_CanWeAddMultipleItemsInCart(
+            ITrainedInput Index_AddAnyItemToCartSelenium)
+        {
+            /* 
+             * Parameterization example
+             * This test uses the trained data to enter two items in the cart.
+             * The main trained data have only trained with a specific item button, so we need to parameterize
+             *   the existing actions, providing a searcher. This allows us to select a specific element
+             *   in the flow, even if there has been many other elements and different goals
+             * */
+
+            using var driver = testFixture.GetWebDriver();
+
+            try
+            {
+                // Go to homepage
+                driver.Navigate().GoToUrl(Data.HomePage);
+
+                // Login and add an item to cart with our pre trained input
+                // Plot twist: Choose the first item instead in the list of all items - not necessary the one we trained it with!
+                await driver.Navigate(
+                    Index_AddAnyItemToCartSelenium,
+                    testFixture.GetPersistenceProvider(),
+                    seleniumTrainGoal: Goals.DoesCartHasOneItem(),
+                    // When this class is going to be visible on page, we will instead click the first item
+                    parameters: new[] { new ClassContainsParameter("btn_inventory", 0) }
+                );
+
+                // We should have an item in the cart now
+                var shoppingCart = driver.FindElement(By.CssSelector(".shopping_cart_badge"));
+                shoppingCart.Text.ShouldBe("1");
+
+                // Add a second item
+                // Notice that event if the test has been written from login to adding to cart,
+                //   the algorithm will check what state we are (and we are in the inventory page)
+                //   and do the necessary actions there.
+                await driver.Navigate(
+                    Index_AddAnyItemToCartSelenium,
+                    testFixture.GetPersistenceProvider(),
+                    seleniumTrainGoal: Goals.DoesCartHasTwoItems(),
+                    // When this class is going to be visible on page, we will instead click the second item
+                    parameters: new[] { new ClassContainsParameter("btn_inventory", 1) }
+                );
+
+                // We should have now 2 items on our cart
+
+                shoppingCart = driver.FindElement(By.CssSelector(".shopping_cart_badge"));
+                shoppingCart.Text.ShouldBe("2");
+                driver.Navigate().GoToUrl(Data.CartPage);
+                var removeButtons = driver.FindElements(By.CssSelector(".cart_button"));
+                removeButtons.Count.ShouldBe(2);
             }
             finally
             {
