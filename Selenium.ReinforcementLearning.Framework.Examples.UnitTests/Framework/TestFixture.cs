@@ -10,6 +10,8 @@
 
     public sealed class TestFixture
     {
+        private FileIO fileIO = new FileIO();
+
         public TestFixture()
         {
         }
@@ -43,7 +45,7 @@
 
         public IPersistenceIO GetPersistenceProvider()
         {
-            throw new NotImplementedException();
+            return fileIO;
         }
 
         public static string AssemblyDirectory

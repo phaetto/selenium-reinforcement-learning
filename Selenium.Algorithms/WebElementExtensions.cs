@@ -28,7 +28,8 @@ for(var i = 0; i < arguments.length; ++i) {
         'tagName': arguments[i].tagName.toLowerCase() || '',
         'text': arguments[i].innerText || '',
         'isTypingElement': isTypingElement,
-        'extraState': isTypingElement ? arguments[i].value : '',
+        'extraState': arguments[i].getAttribute('data-automation-state') ||
+            (isTypingElement ? arguments[i].value : ''),
     });
 }
 return list;

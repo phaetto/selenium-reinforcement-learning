@@ -8,15 +8,16 @@
     using System.Threading.Tasks;
 
     [JsonConverter(typeof(ElementClickActionConverter))]
-    public sealed class ElementClickAction : IAgentAction<IReadOnlyCollection<ElementData>>
+    public sealed class ElementClickAction : IAgentAction<IReadOnlyCollection<ElementData>>, IAgentActionForElement
     {
-        public readonly ElementData WebElement;
         public readonly string CachedName;
         public readonly int CachedHash;
 
+        public ElementData ElementData { get; private set; }
+
         public ElementClickAction(in ElementData webElement)
         {
-            this.WebElement = webElement;
+            ElementData = webElement;
 
             // We have to cache those values because the element will get out of the DOM eventually
             CachedHash = webElement.ExtendedGetHashCode();
@@ -29,7 +30,7 @@
             try
             {
                 seleniumEnvironment.Options.WriteLine($"\t{CachedName}");
-                WebElement.WebElementReference.Click();
+                ElementData.WebElementReference.Click();
                 seleniumEnvironment.Options.WriteLine($"\t\t... done!");
             }
             catch (ElementNotInteractableException)

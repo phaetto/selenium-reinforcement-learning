@@ -9,9 +9,9 @@
             return new SeleniumTextEqualsGoal("1");
         }
 
-        public static SeleniumClassContainsGoal IsInventoryVisible()
+        public static SeleniumTextEqualsGoal DoesCartHasTwoItems()
         {
-            return new SeleniumClassContainsGoal("btn_inventory", false);
+            return new SeleniumTextEqualsGoal("2");
         }
 
         public static SeleniumTextEqualsGoal HasOrderBeenPosted()

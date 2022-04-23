@@ -44,7 +44,7 @@
 
                 switch (propertyName)
                 {
-                    case nameof(ElementClickAction.WebElement):
+                    case nameof(ElementClickAction.ElementData):
                         var converter = (JsonConverter<ElementData>)options.GetConverter(typeof(ElementData));
                         elementData = converter.Read(ref reader, typeof(ElementData), options);
                         break;
@@ -59,8 +59,8 @@
             var elementClickAction = (ElementClickAction)value;
             writer.WriteStartObject();
 
-            writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName(nameof(elementClickAction.WebElement)) ?? nameof(elementClickAction.WebElement));
-            JsonSerializer.Serialize(writer, elementClickAction.WebElement, options);
+            writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName(nameof(elementClickAction.ElementData)) ?? nameof(elementClickAction.ElementData));
+            JsonSerializer.Serialize(writer, elementClickAction.ElementData, options);
 
             writer.WriteEndObject();
         }
