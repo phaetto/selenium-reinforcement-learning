@@ -3,6 +3,7 @@
     using OpenQA.Selenium;
     using Selenium.Algorithms;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public static class Environments
     {
@@ -31,6 +32,7 @@
                             ".shopping_cart_link .shopping_cart_badge",
                         },
                         InputTextData = inputTextData,
+                        WriteLine = (message) => { if (Debugger.IsAttached) { Debug.WriteLine(message); } },
                     });
         }
 
@@ -60,6 +62,7 @@
                             "h2.complete-header",
                         },
                         InputTextData = inputTextData,
+                        WriteLine = (message) => { if (Debugger.IsAttached) { Debug.WriteLine(message); } },
                     });
         }
     }

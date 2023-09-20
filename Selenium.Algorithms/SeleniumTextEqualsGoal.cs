@@ -1,18 +1,21 @@
 ﻿namespace Selenium.Algorithms
 {
     using Selenium.Algorithms.ReinforcementLearning;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     public sealed class SeleniumTextEqualsGoal : ITrainGoal<IReadOnlyCollection<ElementData>>
     {
-        public string TextValue { get; set; }
-        public bool UseOnlyGoals { get; set; }
+        public string TextValue { get; }
+        public StringComparison StringComparison { get; }
+        public bool UseOnlyGoals { get; }
 
-        public SeleniumTextEqualsGoal(string textValue, bool useOnlyGoals = true)
+        public SeleniumTextEqualsGoal(string textValue, StringComparison stringComparison = StringComparison.Ordinal, bool useOnlyGoals = true)
         {
             TextValue = textValue;
+            StringComparison = stringComparison;
             UseOnlyGoals = useOnlyGoals;
         }
 
@@ -20,7 +23,7 @@
         {
             return Task.FromResult(state.Data
                 .Where(x => !UseOnlyGoals || x.IsGoalElement)
-                .Any(x => x.Text == TextValue)
+                .Any(x => string.Equals(x.Text, TextValue, StringComparison))
             );
         }
     }
