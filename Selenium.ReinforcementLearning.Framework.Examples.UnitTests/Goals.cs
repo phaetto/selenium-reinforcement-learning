@@ -1,6 +1,7 @@
 ﻿namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
 {
     using Selenium.Algorithms;
+    using System;
 
     public static class Goals
     {
@@ -16,7 +17,7 @@
 
         public static SeleniumTextEqualsGoal HasOrderBeenPosted()
         {
-            return new SeleniumTextEqualsGoal("THANK YOU FOR YOUR ORDER");
+            return new SeleniumTextEqualsGoal("THANK YOU FOR YOUR ORDER!", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

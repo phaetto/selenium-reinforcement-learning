@@ -170,7 +170,7 @@ namespace Selenium.ReinforcementLearning.Framework.Examples.UnitTests
                 // We should be on the checkout page now - verify
 
                 var target = driver.FindElement(By.CssSelector("h2.complete-header"));
-                target.Text.ShouldBe("THANK YOU FOR YOUR ORDER");
+                target.Text.ShouldBe("Thank you for your order!");
             }
             finally
             {

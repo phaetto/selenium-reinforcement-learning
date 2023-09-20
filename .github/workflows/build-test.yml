@@ -38,7 +38,7 @@ jobs:
       - name: Setup Chrome
         run: |
           VERSION_STRING="96.0.4664.45-1"
-          wget "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${VERSION_STRING}_amd64.deb"
+          wget "http://mirror.cs.uchicago.edu/google-chrome/pool/main/g/google-chrome-stable//google-chrome-stable_${VERSION_STRING}_amd64.deb"
           sudo dpkg -i "google-chrome-stable_${VERSION_STRING}_amd64.deb"
         
       - name: Setup Chromedriver
